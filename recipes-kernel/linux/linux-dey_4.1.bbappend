@@ -1,5 +1,3 @@
-# Modify default kernel recipe to point to our local kernel repo rather than Digi foreign repo.
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-dey-4.1:"
 
 SRCREV = "f1810a3190faad9b96cc8385b394ce7c9a6c5c3e"
