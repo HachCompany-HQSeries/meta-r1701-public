@@ -21,6 +21,10 @@ HQD_EXTRAS = " \
 
 IMAGE_FEATURES = " \
     debug-tweaks \
+    tools-debug \
+    eclipse-debug \
+	ssh-server-openssh \
+	qtcreator-debug \
     dey-qt \
 "
 
