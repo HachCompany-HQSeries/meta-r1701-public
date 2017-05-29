@@ -10,7 +10,6 @@ EXTRA_TOOLS_INSTALL = " \
     tmux \
     vim \
     dtc \
-    devmem2 \
 "
 
 HQD_EXTRAS = " \
