@@ -19,6 +19,6 @@ BBLAYERS ?= " \
     ${TOPDIR}/../sources/meta-fsl-demos \
     ${TOPDIR}/../sources/meta-digi/meta-digi-arm \
     ${TOPDIR}/../sources/meta-digi/meta-digi-dey \
-    ${TOPDIR}/../sources/meta-hqd \
+    ${TOPDIR}/../sources/meta-r1701 \
 "
 
