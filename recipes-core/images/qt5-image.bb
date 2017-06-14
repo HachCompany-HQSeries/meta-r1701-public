@@ -8,8 +8,6 @@ inherit populate_sdk_qt5
 EXTRA_TOOLS_INSTALL = " \
     rsync \
     tmux \
-    vim \
-    dtc \
 "
 
 HQD_EXTRAS = " \
