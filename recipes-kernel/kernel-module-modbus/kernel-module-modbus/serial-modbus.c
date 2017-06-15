@@ -20,6 +20,7 @@
 #include <linux/fs.h>                               // File operations.
 #include <linux/device.h>                           // class_create(), device_create()
 #include <linux/slab.h>                             // kmalloc(), kfree()
+#include <linux/uaccess.h>                          // copy_(to,from)_user
 
 // The following class and device names result in the creation of a device that appears in the file system
 // at "/sys/class/modbus_class/modbus_dev".
@@ -31,13 +32,18 @@ static dev_t firstAssignedDevNum;                   // First device number being
 static const unsigned int firstOfMinorNum = 0;  
 static const unsigned int countOfMinorNum = 1;      // Range of contiguous minor numbers associated with this driver's 
                                                     // major.
-static struct class*  modbusClass = NULL;           // class struct pointer.
+static struct class* modbusClass = NULL;            // class struct pointer.
 static struct device* modbusDevice = NULL;          // device struct pointer.
+
+static const int DEFAULT_BUFFER_SIZE = 1024;        // Size of communication buffer to support half duplex modbus. 
 
 // The following structure is used to contain data specific to opened instances of this device driver and maintainted
 // within the private_data field of the file structure.
 struct private_data {
     int tempPlaceholder;
+    char* buffPtr;
+    int buffMaxLen;
+    int buffLen;
 };
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -65,6 +71,17 @@ static int modbus_dev_open(struct inode* inode,     //!< [in] inode structure re
         pr_err("Failed to allocate memory for private data.\n");
         return -ENOMEM;
     }
+
+    // Allocate modbus buffer.
+    myPrivateData->buffMaxLen = DEFAULT_BUFFER_SIZE;
+    myPrivateData->buffPtr = kzalloc((size_t)myPrivateData->buffMaxLen, GFP_KERNEL);
+    myPrivateData->buffLen = 0;
+    if(!myPrivateData->buffPtr) {
+        pr_err("Failed to allocate buffer memory.\n");
+        return -ENOMEM;
+    }
+
+    // Persist private data in file instance associated with this open.
     file->private_data = myPrivateData;
 
 	pr_info("modbus_dev_open() is called.\n");
@@ -97,6 +114,8 @@ static int modbus_dev_close(struct inode* inode,    //!< [in] inode structure re
     }
 
     // Free resources.
+    if(myPrivateData->buffPtr)
+        kfree(myPrivateData->buffPtr);
     kfree(myPrivateData);
    
 	pr_info("modbus_dev_close() is called.\n");
@@ -122,12 +141,15 @@ static long modbus_dev_ioctl(struct file* file,
         return -ENOMEM;
     }
 
+    // TODO:
+    // 1. Add feature to modify size of modbus buffer.
+
 	pr_info("modbus_dev_ioctl() is called. cmd = %d, arg = %ld\n", cmd, arg);
 	return 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
-//! This function reads from the device, returning the number of bytes read.
+//! This function reads from the device, returning the number of bytes read. 
 //
 //! @retval int - <0: error, 0: may mean end of device and not an error, >0: number of bytes read
 //
@@ -135,20 +157,43 @@ static ssize_t modbus_dev_read(struct file* file,   //!< [in] Open instance of a
                                                     //!< of the private data field to access information specific to this
                                                     //!< minor number.
                                char __user* buf,    //!< [in] Buffer to user space containing data to be written. 
-                               size_t lbuf,         //!< [in] Size of the user space buffer.
+                               size_t lbuf,         //!< [in] Number of bytes to read.
                                loff_t *ppos)        //!< [in, out] Position in buffer,
 {
     struct private_data* myPrivateData;
+    int nbytes;
     
     // Access private data associated with the file structure specific to this open instance.
     myPrivateData = (struct private_data*)file->private_data;
-    if(!myPrivateData) {
+    if((!myPrivateData)&&(myPrivateData->buffPtr)) {
         pr_err("Failed to access memory for private data.\n");
         return -ENOMEM;
     }
 
-	pr_info("modbus_dev_read() is called.\n");
-    return 0;
+    // Validate starting position of read is within range of the packet length.
+    if(*ppos > myPrivateData->buffMaxLen) {
+        pr_info("Invalid starting position in entry point modbus_dev_read().\n");
+        return -1;
+    }
+    
+    // Check for end of file.
+    if(*ppos == myPrivateData->buffMaxLen) {
+        return 0;
+    }
+
+    // Debug - Block until the modbus packet is received and buffLen is set.
+    myPrivateData->buffLen = 50;
+    // Debug
+
+    // Adjust lbuf based on the size of the modbus packet. i.e. there is no reason to read past end of packet.
+    if((*ppos + lbuf) > myPrivateData->buffLen)
+        lbuf = myPrivateData->buffLen - *ppos;
+
+    nbytes = lbuf - copy_to_user(buf, myPrivateData->buffPtr + *ppos, lbuf);
+    *ppos += nbytes;
+
+	pr_info("modbus_dev_read() is called: nbytes=%d pos=%d.\n", nbytes, (int)*ppos);
+    return nbytes;
 }
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -165,6 +210,7 @@ modbus_dev_write(struct file* file,                 //!< [in] Open instance of a
                  loff_t *ppos)                      //!< [in, out] Position in buffer,
 {
     struct private_data* myPrivateData;
+    int nbytes;
     
     // Access private data associated with the file structure specific to this open instance.
     myPrivateData = (struct private_data*)file->private_data;
@@ -173,8 +219,18 @@ modbus_dev_write(struct file* file,                 //!< [in] Open instance of a
         return -ENOMEM;
     }
 
-	pr_info("modbus_write_read() is called.\n");
-    return 0;
+    // Verify write is within range of our buffer.
+    if((*ppos + lbuf) > myPrivateData->buffMaxLen) {
+        pr_info("Attempting to write outside of buffer range.\n");
+        return -1;  
+    }
+
+    // Write the user data to the kernel buffer.
+    nbytes = lbuf - copy_from_user(myPrivateData->buffPtr + *ppos, buf, lbuf);
+    *ppos += nbytes;
+
+	pr_info("modbus_write_read() is called: nbytes=%d pos=%d.\n", nbytes, (int)*ppos);
+    return nbytes;
 }
 
 // Define the entry points, or callback functions, implemented by this driver when a system call is made from user-space.
