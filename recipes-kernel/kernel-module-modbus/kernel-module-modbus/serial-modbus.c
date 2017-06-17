@@ -21,6 +21,7 @@
 #include <linux/device.h>                           // class_create(), device_create()
 #include <linux/slab.h>                             // kmalloc(), kfree()
 #include <linux/uaccess.h>                          // copy_(to,from)_user
+#include <linux/platform_device.h>
 
 // The following class and device names result in the creation of a device that appears in the file system
 // at "/sys/class/modbus_class/modbus_dev".
@@ -229,7 +230,7 @@ modbus_dev_write(struct file* file,                 //!< [in] Open instance of a
     nbytes = lbuf - copy_from_user(myPrivateData->buffPtr + *ppos, buf, lbuf);
     *ppos += nbytes;
 
-	pr_info("modbus_write_read() is called: nbytes=%d pos=%d.\n", nbytes, (int)*ppos);
+	pr_info("modbus_dev_write() is called: nbytes=%d pos=%d.\n", nbytes, (int)*ppos);
     return nbytes;
 }
 
@@ -245,11 +246,17 @@ static const struct file_operations modbus_dev_fops = {
 	.unlocked_ioctl = modbus_dev_ioctl,
 };
 
-static int __init modbus_dev_init(void)
+//--------------------------------------------------------------------------------------------------------------------//
+//! This function is called when the platform device driver matches its "compatible of_device_id" entry with the 
+//! "compatible property" of the DT device node. 
+//
+//! @retval int -
+//
+static int __init modbus_dev_probe(struct platform_device* pdev)
 {
     int ret;
 
-    pr_info("modbus_dev_init() is called.\n");
+    pr_info("modbus_dev_probe() is called.\n");
 
 	// Automatically allocate an available major and the range of minor numbers to go with it, return the first in
     // firstAssignedDevNum.
@@ -304,9 +311,14 @@ static int __init modbus_dev_init(void)
     return 0;
 }
 
-static void __exit modbus_dev_exit(void)
+//--------------------------------------------------------------------------------------------------------------------//
+//! This function is called when platform driver is unloaded.
+//
+//! @retval int -
+//
+static int __exit modbus_dev_remove(struct platform_device* pdev)
 {
-    dev_info(modbusDevice, "Device unregistered.\n");
+	pr_info("modbus_dev_remove() is called.\n");
 
     // Remove the device from the system.
     if(my_dev) {
@@ -322,10 +334,31 @@ static void __exit modbus_dev_exit(void)
     
     // Unregister the device numbers and remove the association with device numbers.
     unregister_chrdev_region(firstAssignedDevNum, countOfMinorNum);
+
+    return 0;
 }
 
-module_init(modbus_dev_init);
-module_exit(modbus_dev_exit);
+// Declare a list of devices support by this driver. The kernel will use this table to bind this driver to any matching 
+// devices represented in the device tree when the module is loaded.
+static const struct of_device_id my_of_ids[] = {
+    { .compatible = "hach,serial-modbus"},
+	{},
+};
+MODULE_DEVICE_TABLE(of, my_of_ids);
+
+// Define platform driver structure.
+static struct platform_driver my_platform_driver = {
+	.probe = modbus_dev_probe,
+	.remove = modbus_dev_remove,
+	.driver = {
+		.name = "serial-modbus",
+		.of_match_table = my_of_ids,
+		.owner = THIS_MODULE,
+	}
+};
+
+// Register our platform 'device' driver with the platform 'bus' driver.
+module_platform_driver(my_platform_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Tim Higgins");
