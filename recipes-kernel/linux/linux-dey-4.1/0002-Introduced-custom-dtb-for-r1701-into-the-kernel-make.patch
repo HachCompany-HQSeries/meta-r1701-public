@@ -1,0 +1,24 @@
+From 0af45df6fc97c59b9ab9729f4c0bcbd96552288b Mon Sep 17 00:00:00 2001
+From: Tim Higgins <thiggins@hach.com>
+Date: Fri, 30 Jun 2017 14:22:12 -0600
+Subject: [PATCH 2/2] Introduced custom dtb for r1701 into the kernel makefile.
+
+---
+ arch/arm/boot/dts/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index a7a978153c21..2b978f7b7af3 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -388,6 +388,7 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+ 	imx6ul-ccimx6ul-mfg-rf.dtb \
+ 	imx6ul-ccimx6ulsbc.dtb \
+ 	imx6ul-ccimx6ulsbc-id135.dtb \
++	imx6ul-r1701.dtb \
+ 	imx6ul-ccimx6ulsbc-wb.dtb \
+ 	imx6ul-ccimx6ulsbc-wb-mfg.dtb \
+ 	imx6ul-ccimx6ulstarter.dtb \
+-- 
+2.11.0
+
