@@ -16,7 +16,7 @@ clean:
 
 else
 
-export KROOT=/opt/hachdev/buildsystem/r1701/build/tmp/work/ccimx6ulsbc-dey-linux-gnueabi/linux-dey/4.1-r0/build/
+export KROOT=/opt/hachdev/kernel/r1701/
 all:
 	@$(MAKE) -C $(KROOT) M=$(shell pwd)
 modules_install:
