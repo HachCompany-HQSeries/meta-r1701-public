@@ -21,6 +21,12 @@
 #include <linux/fs.h>                               // File operations.
 #include <linux/slab.h>                             // kmalloc(), kfree()
 #include <linux/uaccess.h>                          // copy_(to,from)_user
+#include <linux/gpio.h>                             // required to use gpiolib from kernel space
+#include <linux/of_gpio.h>                          // of_get_named_gpio()
+
+// Debug
+#include <linux/delay.h>                            // msleep()
+// Debug
 
 // Private device data.
 struct private_data {
@@ -29,6 +35,8 @@ struct private_data {
     char* buffPtr;
     int buffMaxLen;
     int buffLen;
+    int gpioDE;
+    int gpioRE;
 };
 static unsigned int nextAvailDevId = 0;
 static const int DEFAULT_BUFFER_SIZE = 1024;        // Size of communication buffer to support half duplex modbus. 
@@ -263,6 +271,10 @@ static int modbus_dev_probe(struct platform_device* pdev)
     struct private_data* pData;
     int ret;
 
+    // Debug
+    int loopCt;
+    // Debug
+
     pr_info("modbus_dev_probe() is called %d.\n", nextAvailDevId);
 
     // Allocate memory for the private data, initialize it, and sets the owner and ops fields to point to the current
@@ -273,6 +285,47 @@ static int modbus_dev_probe(struct platform_device* pdev)
         return -ENOMEM;
     }
 	pData->pdev = pdev;
+
+    // Configure gpio for RS485 drive enable (DE).
+    pData->gpioDE = of_get_named_gpio(pData->pdev->dev.of_node, "gpio-DE", 0);
+    if(pData->gpioDE < 0) {
+        pr_err("Failed to get named gpio-DE from device tree.\n");
+        return -ENODEV;
+    }
+    if(!gpio_is_valid(pData->gpioDE)) {
+        pr_err("Invalid DE gpio.\n");
+        return -ENODEV;
+    }
+    if(devm_gpio_request(&pdev->dev, pData->gpioDE, "tim")) {
+        pr_err("Request for DE gpio failed.\n");
+        return -ENODEV;
+    }
+    gpio_direction_output(pData->gpioDE, 0);
+    gpio_export(pData->gpioDE, 0);
+
+    // Configure gpio for RS485 receive enable (DE).
+    pData->gpioRE = of_get_named_gpio(pData->pdev->dev.of_node, "gpio-RE", 0);
+    if(pData->gpioRE < 0) {
+        pr_err("Failed to get named gpio-DE from device tree.\n");
+        return -ENODEV;
+    }
+    if(!gpio_is_valid(pData->gpioRE)) {
+        pr_err("Invalid DE gpio.\n");
+        return -ENODEV;
+    }
+    if(devm_gpio_request(&pdev->dev, pData->gpioRE, "tim")) {
+        pr_err("Request for DE gpio failed.\n");
+        return -ENODEV;
+    }
+    gpio_direction_output(pData->gpioRE, 0);
+    gpio_export(pData->gpioRE, 0);
+
+    // Debug
+    for(loopCt=0; loopCt<5; loopCt++) {
+        gpio_set_value(pData->gpioRE, loopCt%2);
+        msleep(250);
+    }
+    // Debug
 
 	// misc device registration.
 	pData->miscdev.minor = MISC_DYNAMIC_MINOR;
