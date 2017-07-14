@@ -5,23 +5,20 @@
 #
 # Set device tree filename depending on the board ID (if defined)
 #
-#if test -n "${board_id}"; then
-#	setenv fdt_file zImage-imx6ul-ccimx6ulsbc-id${board_id}.dtb
-#else
+if test "${board_id}" < "128"; then
+	setenv fdt_file zImage-imx6ul-r1701-id${board_id}.dtb
+else
 	#
 	# Set device tree filename depending on the hardware variant
 	#
-#	if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
-#		setenv fdt_file zImage-imx6ul-ccimx6ulsbc-wb.dtb
-#	elif test "${module_variant}" = "0x03"; then
-#		setenv fdt_file zImage-imx6ul-ccimx6ulsbc.dtb
-#	else
-#		echo "------ Using default fdt_file: $fdt_file"
-#	fi
-#fi
-
-	setenv fdt_file zImage-imx6ul-r1701.dtb
-
+	if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
+		setenv fdt_file zImage-imx6ul-r1701-wb.dtb
+	elif test "${module_variant}" = "0x03"; then
+		setenv fdt_file zImage-imx6ul-r1701.dtb
+	else
+		echo "------ Using default fdt_file: $fdt_file"
+	fi
+fi
 
 if test "${mtdbootpart}" = "recovery"; then
 	setenv boot_initrd true

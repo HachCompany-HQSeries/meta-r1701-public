@@ -14,8 +14,8 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 /* i.MX6 UltraLite CPU */
 #include "imx6ul.dtsi"
-/* ConnectCore 6UL (common) */
-#include "imx6ul-ccimx6ul.dtsi"
+/* ConnectCore 6UL (wireless/bluetooth variant) */
+#include "imx6ul-ccimx6ul-wb.dtsi"
 /* ConnectCore 6UL StarterBoard */
 #include "imx6ul-ccimx6ulstarter.dtsi"
 

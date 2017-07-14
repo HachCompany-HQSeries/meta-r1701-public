@@ -1,7 +1,7 @@
-From 227a70cb1dae13e0e9e7b860f2f0c8c48f82b53b Mon Sep 17 00:00:00 2001
+From f1c11ccaaf2bffd55cfb0993aacbdfecf91fdc73 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Fri, 30 Jun 2017 14:33:30 -0600
-Subject: [PATCH] Add new platform for r1701.
+Date: Thu, 13 Jul 2017 21:14:38 -0600
+Subject: [PATCH] Added custom r1701 platform.
 
 ---
  arch/arm/Kconfig             |   5 +
@@ -20,15 +20,15 @@ Subject: [PATCH] Add new platform for r1701.
  create mode 100644 include/configs/r1701.h
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 6be5d26878..c2852a4a81 100644
+index 6be5d26878..57fe8a8a59 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -589,6 +589,10 @@ config TARGET_CCIMX6ULSTARTER
          bool "Support ccimx6ulstarter"
          select CPU_V7
  
-+config TARGET_r1701
-+        bool "Support r1701"
++config TARGET_R1701
++        bool "Support for the r1701"
 +        select CPU_V7
 +
  config TARGET_PICOSOM_IMX6UL
@@ -44,11 +44,11 @@ index 6be5d26878..c2852a4a81 100644
  source "board/freescale/ls2085a/Kconfig"
 diff --git a/board/digi/r1701/Kconfig b/board/digi/r1701/Kconfig
 new file mode 100644
-index 0000000000..944a37fbb2
+index 0000000000..caa2456cce
 --- /dev/null
 +++ b/board/digi/r1701/Kconfig
 @@ -0,0 +1,15 @@
-+if TARGET_r1701
++if TARGET_R1701
 +
 +config SYS_BOARD
 +	default "r1701"
@@ -65,11 +65,11 @@ index 0000000000..944a37fbb2
 +endif
 diff --git a/board/digi/r1701/MAINTAINERS b/board/digi/r1701/MAINTAINERS
 new file mode 100644
-index 0000000000..1ee79cf09a
+index 0000000000..d1fb7f4f30
 --- /dev/null
 +++ b/board/digi/r1701/MAINTAINERS
 @@ -0,0 +1,6 @@
-+CCIMX6ULSBC BOARD
++R1701 BOARD
 +M:	Tim Higgins <thiggins@hach.com>
 +S:	Supported
 +F:	board/digi/r1701/
@@ -645,12 +645,12 @@ index 0000000000..79c6bc9dff
 +#endif /*CONFIG_FSL_FASTBOOT*/
 diff --git a/configs/r1701_defconfig b/configs/r1701_defconfig
 new file mode 100644
-index 0000000000..03e2b57ea8
+index 0000000000..a23f37d211
 --- /dev/null
 +++ b/configs/r1701_defconfig
 @@ -0,0 +1,7 @@
 +CONFIG_ARM=y
-+CONFIG_TARGET_r1701=y
++CONFIG_TARGET_R1701=y
 +CONFIG_DM=y
 +CONFIG_IMX_HAB=y
 +CONFIG_SECURE_BOOT=y
@@ -658,7 +658,7 @@ index 0000000000..03e2b57ea8
 +CONFIG_DM_THERMAL=y
 diff --git a/include/configs/r1701.h b/include/configs/r1701.h
 new file mode 100644
-index 0000000000..10816b480e
+index 0000000000..b3e2b26499
 --- /dev/null
 +++ b/include/configs/r1701.h
 @@ -0,0 +1,256 @@
@@ -675,7 +675,7 @@ index 0000000000..10816b480e
 +
 +#include "ccimx6ul_common.h"
 +
-+#define CONFIG_BOARD_DESCRIPTION	"r1701 Board"
++#define CONFIG_BOARD_DESCRIPTION	"R1701 Board"
 +
 +/* uncomment for PLUGIN mode support */
 +/* #define CONFIG_USE_PLUGIN */
