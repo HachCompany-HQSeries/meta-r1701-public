@@ -1,4 +1,4 @@
-SUMMARY = "A Qt5 image derived from dey-image-qt"
+SUMMARY = "A QT5 image derived from dey-image-qt"
 LICENSE = "MIT"
 
 require recipes-core/images/dey-image-qt.bb
@@ -9,6 +9,7 @@ EXTRA_TOOLS_INSTALL = " \
     rsync \
     tmux \
     devmem2 \
+    htop \
 "
 
 HQD_EXTRAS = " \
