@@ -1,4 +1,4 @@
-SUMMARY = "A Qt5 image derived from dey-image-qt"
+SUMMARY = "A QT5 image derived from dey-image-qt"
 LICENSE = "MIT"
 
 require recipes-core/images/dey-image-qt.bb
