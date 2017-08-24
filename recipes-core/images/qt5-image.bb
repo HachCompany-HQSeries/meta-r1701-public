@@ -9,6 +9,7 @@ EXTRA_TOOLS_INSTALL = " \
     rsync \
     tmux \
     devmem2 \
+    htop \
 "
 
 HQD_EXTRAS = " \
