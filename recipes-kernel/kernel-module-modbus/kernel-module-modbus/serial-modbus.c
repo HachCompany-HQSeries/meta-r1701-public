@@ -23,6 +23,9 @@
 #include <linux/uaccess.h>                          // copy_(to,from)_user
 #include <linux/gpio.h>                             // required to use gpiolib from kernel space
 #include <linux/of_gpio.h>                          // of_get_named_gpio()
+#include <linux/clk.h>
+#include <linux/rational.h>
+#include <linux/interrupt.h>
 
 // Debug
 #include <linux/delay.h>                            // msleep()
@@ -147,6 +150,10 @@
 #define UTS_RXFULL (1<<3)                           // RxFIFO full
 #define UTS_SOFTRST (1<<0)                          // Software reset
 
+#define IMX_MODULE_MAX_CLK_RATE	80000000
+
+#define CTSTL 16                                    // CTS Level = half the receive buffer size.
+
 // Private device data.
 struct private_data {
     struct platform_device* pdev;
@@ -157,8 +164,15 @@ struct private_data {
     int gpioDE;
     int gpioRE;
 	void __iomem* regs;
+    struct clk* clk_ipg;
+    struct clk* clk_per;
+    unsigned int uartclk;
+	int irq;
 };
 static const int DEFAULT_BUFFER_SIZE = 1024;        // Size of communication buffer to support half duplex modbus. 
+//static const unsigned int DEFAULT_BAUD = 19200; 
+static const unsigned int DEFAULT_BAUD = 115200; 
+static const unsigned int DEFAULT_PARITY = 'n'; 
 
 //--------------------------------------------------------------------------------------------------------------------//
 //! This callback function is executed by the kernel when a user-application makes a system call to open the file, or
@@ -379,6 +393,252 @@ static const struct file_operations modbus_dev_fops = {
 	.unlocked_ioctl = modbus_dev_ioctl,
 };
 
+static void modbus_print_regs(struct private_data* pData) {
+    unsigned int reg;
+
+    reg = ioread32(pData->regs + UCR1);
+    pr_info("UCR1: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UCR2);
+    pr_info("UCR2: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UCR3);
+    pr_info("UCR3: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UCR4);
+    pr_info("UCR4: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UFCR);
+    pr_info("UFCR: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + USR1);
+    pr_info("USR1: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + USR2);
+    pr_info("USR2: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UESC);
+    pr_info("UESC: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UTIM);
+    pr_info("UTIM: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UBIR);
+    pr_info("UBIR: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UBMR);
+    pr_info("UBMR: 0x%08x\n", reg);
+    reg = ioread32(pData->regs + UBRC);
+    pr_info("UBRC: 0x%08x\n", reg);
+}
+
+static int modbus_setup_frame(struct private_data* pData, char parity) {
+    
+    unsigned int reg;
+
+    // Set word size = 8 bits. 
+    reg = ioread32(pData->regs + UCR2);
+	reg |= UCR2_WS;
+
+    // Configure stop bits based on parity.
+    if(parity == 'n') {
+	    reg |= UCR2_STPB;
+	    reg &= ~UCR2_PREN;
+
+    }
+    else if(parity == 'o') {
+	    reg &= ~(UCR2_STPB);
+	    reg |= UCR2_PREN;
+        reg |= UCR2_PROE;
+    }
+    else if(parity == 'n') {
+	    reg &= ~(UCR2_STPB);
+	    reg |= UCR2_PREN;
+        reg &= ~(UCR2_PROE);
+    }
+    else {
+        return -ENXIO;
+    }
+
+    iowrite32(reg, pData->regs + UCR2);
+
+    return 0;
+}
+
+static int modbus_setup_baud(struct private_data* pData, unsigned int baud) {
+
+    unsigned int div;
+	unsigned long num, denom;
+    unsigned int reg;
+    struct device* dev = &pData->pdev->dev;
+
+	if(!(ioread32(pData->regs + UCR1) & UCR1_UARTEN))  {
+	    dev_err(dev, "modbus_setup_baud(): UART not enabled.\n");
+        return -EACCES;
+    }
+
+    // Calculate module_clock divisior to generate 16x baud rate clock ref_clk.
+	div = pData->uartclk / (baud * 16);
+	if(div > 7)
+	    div = 7;
+	if(!div)
+	    div = 1;
+    pr_info("div: %d\n", div);
+    
+	// Solve for (UBMR + 1)/(UBIR + 1) in baud = ref_clk / 16 * ((UBMR + 1)/(UBIR + 1)) where ref_clk = module_clock / div.
+	rational_best_approximation(pData->uartclk, 16 * div * baud, 1 << 16, 1 << 16, &num, &denom);
+	num -= 1;
+	denom -= 1;
+
+    // Write the reference frequency divisor.
+    reg = (ioread32(pData->regs + UFCR) & (~UFCR_RFDIV)) | UFCR_RFDIV_REG(div);
+    iowrite32(reg, pData->regs + UFCR);
+
+    // Write input and output frequency ratio (UBMR/UBIR).
+    iowrite32(denom, pData->regs + UBIR);
+    iowrite32(num, pData->regs + UBMR);
+
+	return 0;
+}
+
+static int modbus_reset_uart(struct private_data* pData) {
+
+    int ret;
+    unsigned int reg;
+	int i = 100;
+
+    // Initialize UART clocks.
+	pData->clk_ipg = devm_clk_get(&pData->pdev->dev, "ipg");
+	if(IS_ERR(pData->clk_ipg)) {
+        ret = PTR_ERR(pData->clk_ipg);
+	    dev_err(&pData->pdev->dev, "Failed to get ipg clk: %d\n", ret);
+		return ret;
+	}
+	pData->clk_per = devm_clk_get(&pData->pdev->dev, "per");
+	if(IS_ERR(pData->clk_per)) {
+		ret = PTR_ERR(pData->clk_per);
+		dev_err(&pData->pdev->dev, "Failed to get per clk: %d\n", ret);
+		return ret;
+	}
+	pData->uartclk = clk_get_rate(pData->clk_per);
+    pr_info("uartclk: 0x%08x\n", pData->uartclk);
+	if(pData->uartclk > IMX_MODULE_MAX_CLK_RATE) {
+		ret = clk_set_rate(pData->clk_per, IMX_MODULE_MAX_CLK_RATE);
+		if(ret < 0) {
+			dev_err(&pData->pdev->dev, "clk_set_rate() failed.\n");
+			return ret;
+		}
+	}
+	pData->uartclk = clk_get_rate(pData->clk_per);
+    pr_info("uartclk: 0x%08x\n", pData->uartclk);
+
+    // Enable the UART clocks.
+	ret = clk_prepare_enable(pData->clk_ipg);
+	if(ret)
+		return ret;
+	ret = clk_prepare_enable(pData->clk_per);
+	if(ret)
+        clk_disable_unprepare(pData->clk_ipg);
+
+    // Enable the UART peripheral.
+    reg = ioread32(pData->regs + UCR1);
+    reg |= UCR1_UARTEN;
+    iowrite32(reg, pData->regs + UCR1);
+
+    // Print registers to verify contents.
+    modbus_print_regs(pData);
+
+    // Reset UART FIFO and state machines.
+    reg = ioread32(pData->regs + UCR2);
+	reg &= ~UCR2_SRST;
+    iowrite32(reg, pData->regs + UCR2);
+
+	while(!(ioread32(pData->regs + UCR2) & UCR2_SRST) && (--i > 0))
+		udelay(1);
+
+    // Configure as DCE.
+    reg = ioread32(pData->regs + UFCR);
+	reg &= (~UFCR_DCEDTE);
+    iowrite32(reg, pData->regs + UFCR);
+
+    // Setup default baud.
+    ret = modbus_setup_baud(pData, DEFAULT_BAUD);
+    if(ret)
+        return ret;
+
+    // Disable receiver.
+    reg = ioread32(pData->regs + UCR2);
+	reg &= ~(UCR2_RXEN);
+
+    // Disable transmitter.
+	reg &= ~(UCR2_TXEN);
+    
+    // Disable aging timer interrupt.
+	reg &= ~(UCR2_ATEN);
+
+    // Disable request to send interrupt.
+	reg &= ~(UCR2_RTSEN);
+
+    // Disable escape detection.
+	reg &= ~(UCR2_ESCEN);
+
+    // Configure default CTS.
+	reg &= ~(UCR2_CTS);
+	reg &= ~(UCR2_CTSC);
+
+    // Ignore RTS pin.
+	reg |= UCR2_IRTS;
+
+    // Disable escape detection interrupt.
+    reg &= ~(UCR2_ESCI);
+    iowrite32(reg, pData->regs + UCR2);
+   
+    // Setup frame (size, parity, number of stop bits).
+    ret = modbus_setup_frame(pData, DEFAULT_PARITY);
+    if(ret)
+        return ret;
+
+    // Configure RXD muxed input selection.
+    reg = ioread32(pData->regs + UCR3);
+	reg |= IMX21_UCR3_RXDMUXSEL;
+    iowrite32(reg, pData->regs + UCR3);
+
+    // Configure autobaud detection.
+    reg = ioread32(pData->regs + UCR3);
+	reg |= UCR3_ADNIMP;
+    iowrite32(reg, pData->regs + UCR3);
+
+    // Set the trigger level for CTS.
+    reg = ioread32(pData->regs + UCR4);
+	reg &= ~(UCR4_CTSTL_MASK << UCR4_CTSTL_SHF);
+	reg |= CTSTL << UCR4_CTSTL_SHF;
+    iowrite32(reg, pData->regs + UCR4);
+    
+
+    // Enable the receive interrupt.
+    reg = ioread32(pData->regs + UCR4);
+	reg |= UCR4_DREN;
+    iowrite32(reg, pData->regs + UCR4);
+    // Debug
+    
+    // Enable the transmitter and receiver.
+    reg = ioread32(pData->regs + UCR2);
+	reg |= (UCR2_TXEN | UCR2_RXEN);
+    iowrite32(reg, pData->regs + UCR2);
+    
+    // Debug
+    
+    // Print registers to verify contents.
+    modbus_print_regs(pData);
+
+    return 0;
+}
+
+static irqreturn_t irq_handler(int irq, void *dev)
+{
+	unsigned int temp;
+    struct private_data* pData;
+	pData = (struct private_data*) dev;
+
+	pr_info("Interrupt handled.\n");
+    while(ioread32(pData->regs + USR2) & USR2_RDR) {
+        temp = ioread32(pData->regs + URXD0);
+	    pr_info("RX: %c\n", (int)temp);
+    }
+
+	return IRQ_HANDLED;
+}
+
 //--------------------------------------------------------------------------------------------------------------------//
 //! This function is called when the platform device driver matches its "compatible of_device_id" entry with the 
 //! "compatible property" of the DT device node. 
@@ -393,6 +653,8 @@ static int modbus_dev_probe(struct platform_device* pdev)
 
     // Debug
     int loopCt;
+    unsigned char debugChar = 0xAA;
+    unsigned int reg;
     // Debug
 
     pr_info("modbus_dev_probe() is called.\n");
@@ -418,7 +680,7 @@ static int modbus_dev_probe(struct platform_device* pdev)
     // Map physical memory associated with the resource to kernel virtual address space.
 	pData->regs = devm_ioremap_resource(&pdev->dev, res);
 	if(!pData->regs) {
-		dev_err(&pdev->dev, "Cannot remap registers.\n");
+		dev_err(&pData->pdev->dev, "Cannot remap registers.\n");
 		return -ENOMEM;
 	}
 
@@ -456,10 +718,37 @@ static int modbus_dev_probe(struct platform_device* pdev)
     gpio_direction_output(pData->gpioRE, 0);
     gpio_export(pData->gpioRE, 0);
 
+    // Register the interrupt handler.
+	pData->irq = platform_get_irq(pdev, 0);
+	ret = devm_request_irq(&pdev->dev, 
+                           pData->irq, 
+                           irq_handler, 
+                           0,
+		                   pdev->name, 
+                           pData);
+
+    // Configure the UART. 
+	ret = modbus_reset_uart(pData);
+	if(ret)
+		return ret;
+
+   
+
     // Debug
     for(loopCt=0; loopCt<5; loopCt++) {
+
+        reg = ioread32(pData->regs + USR1);
+        pr_info("USR1: 0x%08x\n", reg);
+        if(reg & USR1_TRDY) {
+            pr_err("Tx ready.\n");
+            iowrite32(debugChar, pData->regs + URTX0);
+        }
+        else {
+            pr_err("Tx not ready.\n");
+        }
+
         gpio_set_value(pData->gpioRE, loopCt%2);
-        msleep(250);
+        msleep(1);
     }
     // Debug
 
@@ -479,6 +768,7 @@ static int modbus_dev_probe(struct platform_device* pdev)
 
 	return 0;
 }
+
 
 //--------------------------------------------------------------------------------------------------------------------//
 //! This function is called when platform driver is unloaded.
