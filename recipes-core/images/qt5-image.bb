@@ -5,6 +5,8 @@ require recipes-core/images/dey-image-qt.bb
 
 inherit populate_sdk_qt5
 
+DEPENDS = "protobuf-native"
+
 EXTRA_TOOLS_INSTALL = " \
     rsync \
     tmux \
