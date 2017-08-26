@@ -1,27 +1,27 @@
-From 4624237176f0740fc375c0ad5facf8afc46a4987 Mon Sep 17 00:00:00 2001
+From add09f75cac0b8d8019f202cd2fac7dff6a30e48 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Fri, 14 Jul 2017 09:02:34 -0600
-Subject: [PATCH] Add r1701 device trees to the kernel makefile.
+Date: Sat, 26 Aug 2017 07:47:28 -0600
+Subject: [PATCH 1/2] Add r1701 device trees to the kernel makefile.
 
 ---
  arch/arm/boot/dts/Makefile | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index a7a978153c21..4d43942dde75 100644
+index d1ea43a538d4..012c7d9e0cc9 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -393,7 +393,9 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+@@ -396,7 +396,9 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
  	imx6ul-ccimx6ulstarter.dtb \
  	imx6ul-ccimx6ulstarter-id129.dtb \
  	imx6ul-ccimx6ulstarter-wb.dtb \
 -	imx6ul-ccimx6ulstarter-wb-mfg.dtb
 +	imx6ul-ccimx6ulstarter-wb-mfg.dtb \
 +	imx6ul-r1701-wb.dtb \
-+	imx6ul-r1701.dtb \
- dtb-$(CONFIG_SOC_IMX7D) += \
- 	imx7d-12x12-lpddr3-arm2.dtb \
- 	imx7d-12x12-lpddr3-arm2-m4.dtb \
++	imx6ul-r1701.dtb
+ dtb-$(CONFIG_SOC_IMX6ULL) += \
+ 	imx6ull-14x14-ddr3-arm2.dtb \
+ 	imx6ull-14x14-ddr3-arm2-adc.dtb \
 -- 
 2.11.0
 
