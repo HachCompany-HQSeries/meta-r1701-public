@@ -1,21 +1,30 @@
+//--------------------------------------------------------------------------------------------------------------------//
+//! @file memory-display.c
+//!
+//! @brief Entry point into kernel module for Sharp memory display framebuffer driver
+//! @section DESCRIPTION
+//! The following file is responsible for initializing and setting up framebuffer driver framework for Sharp memory  
+//! display. This driver exports the framebuffer character driver ex. "/dev/fb1" for user space to use.
+//! @copyright     Hach Confidential
+//!                Copyright(c) (2017)
+//!                Hach
+//!                All Rights Reserved
+//! This product is protected by copyright and distributed under
+//! Hach Software License, Version 1.0 (See accompanying file LICENSE_1.0.txt)
+//--------------------------------------------------------------------------------------------------------------------//
+
 #include <linux/init.h>             // macros used to mark up functions e.g. __init __exit
 #include <linux/module.h>           // core header for loading LKMs into the kernel
 #include <linux/fs.h>               // file_operations
 #include <linux/slab.h>             // kmalloc
-#include <linux/cdev.h>             // cdev utilities
 #include <linux/uaccess.h>          // copy_(to,from)_user
 #include <linux/fb.h>               // linux framebuffer operations
 #include <linux/spi/spi.h>          // linux spi bus operations
-#include <linux/gpio.h>             // Required for the GPIO functions
-#include <linux/workqueue.h>        // work queue handling for linux
-#include <linux/mm.h>               // linux virtual memory manager primitives
 #include <linux/platform_device.h>
 
 #define MYDEV_NAME "memdisplay"
 #define WIDTH   400
 #define HEIGHT  240
-#define BPP     1
-#define FPS     4       // Start with 4 times a second
 
 static int memdisplay_open(struct inode *inode, struct file *file)
 {
@@ -82,7 +91,7 @@ static struct spi_driver memdisplay_spi_driver = {
 	.driver = {
 		.name   = MYDEV_NAME,
 		.owner  = THIS_MODULE,
-        .of_match_table = of_match_ptr(dt_ids),
+      .of_match_table = of_match_ptr(dt_ids),
 	},
 	.probe  = memdisplay_spi_probe,
 	.remove = memdisplay_spi_remove,
@@ -92,7 +101,7 @@ static struct platform_driver memdisplay_platform_driver = {
 	.driver = {
 		.name   = MYDEV_NAME,
 		.owner  = THIS_MODULE,
-        .of_match_table = of_match_ptr(dt_ids),
+      .of_match_table = of_match_ptr(dt_ids),
 	},
 	.probe  = memdisplay_probe_pdev,
 	.remove = memdisplay_remove_pdev,
@@ -123,7 +132,7 @@ static void __exit memdisplay_exit(void)
 {
 	spi_unregister_driver(&memdisplay_spi_driver);
 	platform_driver_unregister(&memdisplay_platform_driver);
-    pr_info("%s - __EXIT function called successfully\n", MYDEV_NAME);
+   pr_info("%s - __EXIT function called successfully\n", MYDEV_NAME);
 }
 
 module_init(memdisplay_init);
