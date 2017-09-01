@@ -1,6 +1,7 @@
 YOCTO	:= Y
 
-obj-m 	:= serial-modbus.o
+obj-m		:= serial-modbus.o
+obj-m		+= memory-display.o
 
 ifeq ($(YOCTO), Y)
 
