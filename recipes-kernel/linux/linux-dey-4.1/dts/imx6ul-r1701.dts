@@ -60,14 +60,15 @@
 	 * There are no SPI slave devices on the SBC.
 	 * Enable if adding your slave devices below.
 	 */
-	//status = "okay";
+	status = "okay";
 
 	/* Add your slave devices here. Next is an example of spidev. */
-	//spidev@0 {
-	//	reg = <0>;
-	//	compatible = "spidev";
-	//	spi-max-frequency = <1000000>;
-	//};
+	spidev@0 {
+		reg = <0>;
+		compatible = "spidev";
+		spi-max-frequency = <1000000>;
+        SPI_CS_HIGH;
+	};
 };
 
 /* ENET1 */
