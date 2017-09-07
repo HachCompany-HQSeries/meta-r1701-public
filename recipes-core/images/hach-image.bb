@@ -35,4 +35,4 @@ IMAGE_INSTALL_append = " \
 
 DISTRO_FEATURES_remove = "x11"
 
-export IMAGE_BASENAME = "r1701-image"
+export IMAGE_BASENAME = "hach-image"
