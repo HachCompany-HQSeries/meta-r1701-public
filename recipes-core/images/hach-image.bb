@@ -18,6 +18,9 @@ R1701_INSTALL = " \
     boost \
     protobuf \
     lighttpd \
+    php \
+    php-cgi \
+    fcgi \
 "
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
