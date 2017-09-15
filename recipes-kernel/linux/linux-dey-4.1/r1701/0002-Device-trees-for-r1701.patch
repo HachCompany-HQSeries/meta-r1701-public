@@ -1,21 +1,21 @@
-From e7e3d3d9afd236db6efa0e685b21af5118e00b29 Mon Sep 17 00:00:00 2001
+From f92a9b052cdee0b14bc2eb2b1a7cd2e4db5ad072 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Sat, 26 Aug 2017 07:49:52 -0600
+Date: Wed, 6 Sep 2017 08:07:54 -0600
 Subject: [PATCH 2/2] Device trees for r1701.
 
 ---
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 249 ++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 249 ++++++++++++++++++++++++++++++++++
- 2 files changed, 498 insertions(+)
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 250 ++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 250 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 500 insertions(+)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 000000000000..63c8cf29f66b
+index 000000000000..aea84f347045
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-@@ -0,0 +1,249 @@
+@@ -0,0 +1,250 @@
 +/*
 + * Copyright 2016 Digi International, Inc.
 + *
@@ -78,14 +78,15 @@ index 000000000000..63c8cf29f66b
 +	 * There are no SPI slave devices on the SBC.
 +	 * Enable if adding your slave devices below.
 +	 */
-+	//status = "okay";
++	status = "okay";
 +
 +	/* Add your slave devices here. Next is an example of spidev. */
-+	//spidev@0 {
-+	//	reg = <0>;
-+	//	compatible = "spidev";
-+	//	spi-max-frequency = <1000000>;
-+	//};
++	spidev@0 {
++		reg = <0>;
++		compatible = "spidev";
++		spi-max-frequency = <1000000>;
++        SPI_CS_HIGH;
++	};
 +};
 +
 +/* ENET1 */
@@ -267,10 +268,10 @@ index 000000000000..63c8cf29f66b
 +
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..ea9ca0c06a5e
+index 000000000000..099947fb58d7
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,249 @@
+@@ -0,0 +1,250 @@
 +/*
 + * Copyright 2016 Digi International, Inc.
 + *
@@ -333,14 +334,15 @@ index 000000000000..ea9ca0c06a5e
 +	 * There are no SPI slave devices on the SBC.
 +	 * Enable if adding your slave devices below.
 +	 */
-+	//status = "okay";
++	status = "okay";
 +
 +	/* Add your slave devices here. Next is an example of spidev. */
-+	//spidev@0 {
-+	//	reg = <0>;
-+	//	compatible = "spidev";
-+	//	spi-max-frequency = <1000000>;
-+	//};
++	spidev@0 {
++		reg = <0>;
++		compatible = "spidev";
++		spi-max-frequency = <1000000>;
++        SPI_CS_HIGH;
++	};
 +};
 +
 +/* ENET1 */
