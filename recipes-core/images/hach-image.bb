@@ -30,7 +30,7 @@ IMAGE_FEATURES += " \
 "
 
 # Add a new filesystem
-IMAGE_FSTYPES = "ext4"
+IMAGE_FSTYPES_append = " sdcard"
 
 # Add individual recipes.
 IMAGE_INSTALL_append = " \
