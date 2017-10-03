@@ -29,6 +29,9 @@ IMAGE_FEATURES += " \
     tools-debug \
 "
 
+# Add a new filesystem
+IMAGE_FSTYPES = "ext4"
+
 # Add individual recipes.
 IMAGE_INSTALL_append = " \
     ${R1701_INSTALL} \
