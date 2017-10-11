@@ -19,6 +19,8 @@ R1701_INSTALL = " \
     protobuf \
     lighttpd \
     fcgi \
+    sqlite3 \
+
 "
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
