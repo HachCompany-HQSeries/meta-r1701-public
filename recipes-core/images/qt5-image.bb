@@ -16,6 +16,7 @@ HQD_EXTRAS = " \
     zeromq \
     boost \
     protobuf \
+    sqlite3 \
 "
 
 IMAGE_FEATURES = " \
