@@ -20,7 +20,6 @@ R1701_INSTALL = " \
     lighttpd \
     fcgi \
     sqlite3 \
-
 "
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
