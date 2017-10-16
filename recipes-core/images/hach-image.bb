@@ -28,9 +28,7 @@ IMAGE_FEATURES += " \
     qtcreator-debug \
     ssh-server-openssh \
     tools-debug  \
-    tools-sdk \
 "
-
 
 # Add a new filesystem
 IMAGE_FSTYPES_append = " sdcard"
