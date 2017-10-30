@@ -1,21 +1,21 @@
-From f92a9b052cdee0b14bc2eb2b1a7cd2e4db5ad072 Mon Sep 17 00:00:00 2001
+From d3b1576d6d70d4be78fbcfdd01fe68f346e71130 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Wed, 6 Sep 2017 08:07:54 -0600
+Date: Mon, 30 Oct 2017 14:22:25 -0600
 Subject: [PATCH 2/2] Device trees for r1701.
 
 ---
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 250 ++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 250 ++++++++++++++++++++++++++++++++++
- 2 files changed, 500 insertions(+)
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 295 +++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 296 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 591 insertions(+)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 000000000000..aea84f347045
+index 000000000000..334ba652e404
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-@@ -0,0 +1,250 @@
+@@ -0,0 +1,295 @@
 +/*
 + * Copyright 2016 Digi International, Inc.
 + *
@@ -78,15 +78,33 @@ index 000000000000..aea84f347045
 +	 * There are no SPI slave devices on the SBC.
 +	 * Enable if adding your slave devices below.
 +	 */
++        cs-gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
++	pinctrl-0 = <&pinctrl_ecspi1_master>;
 +	status = "okay";
 +
-+	/* Add your slave devices here. Next is an example of spidev. */
-+	spidev@0 {
-+		reg = <0>;
-+		compatible = "spidev";
-+		spi-max-frequency = <1000000>;
-+        SPI_CS_HIGH;
++	/* 2.7" Landscape MIP Display */
++	mipDisplay: ecspi@0{
++		compatible 		= "sharp,ls027b7dh01";
++		reg 			= <0>;
++		spi-max-frequency 	= <2000000>;
++		spi-cs-high;
++		gpios 			= <&gpio1 5 GPIO_ACTIVE_HIGH>,	/* DISP PIN		*/
++					  <&gpio1 3 GPIO_ACTIVE_HIGH>;	/* EXTCOMIN PIN		*/
++		status = "okay";
 +	};
++
++	/* 3.2" Portrait MIP Display */
++	/*
++	mipDisplay: ecspi@0{
++		compatible 		= "sharp,ls032b7dd02";
++		reg 			= <0>;
++		spi-max-frequency 	= <2000000>;
++		spi-cs-high;
++		gpios 			= <&gpio1 5 GPIO_ACTIVE_HIGH>,
++					  <&gpio1 3 GPIO_ACTIVE_HIGH>;
++		status = "disable";
++	};
++	*/
 +};
 +
 +/* ENET1 */
@@ -111,17 +129,17 @@ index 000000000000..aea84f347045
 +
 +/* Fusion touch */
 +&fusion_touch {
-+	status = "okay";
++	status = "disable";
 +};
 +
 +/* Parallel LCD */
 +&lcdif {
-+	status = "okay";
++	status = "disable";
 +};
 +
 +/* LCD backlight (PWM5) */
 +&lcd_backlight {
-+	status = "okay";
++	status = "disable";
 +};
 +
 +/* Audio chip */
@@ -169,14 +187,12 @@ index 000000000000..aea84f347045
 +	//pinctrl-0 = <&pinctrl_uart2_4wires>;
 +	//fsl,uart-has-rtscts;
 +	//status = "okay";
-+
-+
-+    compatible = "hach,serial-modbus";
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&pinctrl_modbus0 &pinctrl_uart2_2wires>;
-+    gpio-DE = <&gpio1 5 0>;
-+    gpio-RE = <&gpio1 3 0>;
-+	status = "okay";
++	compatible = "hach,serial-modbus";
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_modbus0 &pinctrl_uart2_2wires>;
++	gpio-DE = <&gpio1 5 0>;
++	gpio-RE = <&gpio1 3 0>;
++	status = "disable";
 +};
 +
 +/* UART3 */
@@ -241,18 +257,47 @@ index 000000000000..aea84f347045
 +		//	>;
 +		//};
 +
-+        pinctrl_modbus0: modbus0grp {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0xf030
-+                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0xf030
-+            >;
-+        };
++		pinctrl_modbus0: modbus0grp {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0x3031
++				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x3031
++			>;
++		};
 +
-+        pinctrl_led: led {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO02__GPIO1_IO02 0xf030
-+            >;
-+        };
++		pinctrl_led: led {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO02__GPIO1_IO02 0xf030
++			>;
++		};
++
++		pinctrl_additionalgpio: additionalgpios {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0x3031
++				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x3031
++			>;
++		};
++
++		pinctrl_ecspi1_master: ecspi1grp1 {
++			fsl,pins = <
++				MX6UL_PAD_LCD_DATA20__ECSPI1_SCLK	0x10b0
++				MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI	0x10b0
++				MX6UL_PAD_LCD_DATA23__ECSPI1_MISO	0x10b0
++				MX6UL_PAD_LCD_DATA21__GPIO3_IO26	0x30b0 /* Chip Select */
++			>;
++		};
++
++		/* LCD_DATA_21 is multiplexed with one of the SPI line, hence disable it. Redefined from 
++           imx6ul-ccimx6ulsbc.dtsi. */
++		pinctrl_lcdif_dat18_23: lcdifdatgrp18_23 {
++			fsl,pins = <
++				MX6UL_PAD_LCD_DATA18__LCDIF_DATA18	0x79
++				MX6UL_PAD_LCD_DATA19__LCDIF_DATA19	0x79
++				MX6UL_PAD_LCD_DATA20__LCDIF_DATA20	0x79
++				//MX6UL_PAD_LCD_DATA21__LCDIF_DATA21	0x79
++				MX6UL_PAD_LCD_DATA22__LCDIF_DATA22	0x79
++				MX6UL_PAD_LCD_DATA23__LCDIF_DATA23	0x79
++			>;
++		};
 +	};
 +};
 +
@@ -268,10 +313,10 @@ index 000000000000..aea84f347045
 +
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..099947fb58d7
+index 000000000000..3ef4335ced1c
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,250 @@
+@@ -0,0 +1,296 @@
 +/*
 + * Copyright 2016 Digi International, Inc.
 + *
@@ -334,15 +379,33 @@ index 000000000000..099947fb58d7
 +	 * There are no SPI slave devices on the SBC.
 +	 * Enable if adding your slave devices below.
 +	 */
++        cs-gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
++	pinctrl-0 = <&pinctrl_ecspi1_master>;
 +	status = "okay";
 +
-+	/* Add your slave devices here. Next is an example of spidev. */
-+	spidev@0 {
-+		reg = <0>;
-+		compatible = "spidev";
-+		spi-max-frequency = <1000000>;
-+        SPI_CS_HIGH;
++	/* 2.7" Landscape MIP Display */
++	mipDisplay: ecspi@0{
++		compatible 		= "sharp,ls027b7dh01";
++		reg 			= <0>;
++		spi-max-frequency 	= <2000000>;
++		spi-cs-high;
++		gpios			= <&gpio1 5 GPIO_ACTIVE_HIGH>,	/* DISP PIN		*/
++					  <&gpio1 3 GPIO_ACTIVE_HIGH>;	/* EXTCOMIN PIN		*/
++		status = "okay";
 +	};
++
++	/* 3.2" Portrait MIP Display */
++	/*
++	mipDisplay: ecspi@0{
++		compatible 		= "sharp,ls032b7dd02";
++		reg 			= <0>;
++		spi-max-frequency 	= <2000000>;
++		spi-cs-high;
++		gpios			= <&gpio1 5 GPIO_ACTIVE_HIGH>,
++					  <&gpio1 3 GPIO_ACTIVE_HIGH>;
++		status = "disable";
++	};
++	*/
 +};
 +
 +/* ENET1 */
@@ -367,17 +430,17 @@ index 000000000000..099947fb58d7
 +
 +/* Fusion touch */
 +&fusion_touch {
-+	status = "okay";
++	status = "disable";
 +};
 +
 +/* Parallel LCD */
 +&lcdif {
-+	status = "okay";
++	status = "disable";
 +};
 +
 +/* LCD backlight (PWM5) */
 +&lcd_backlight {
-+	status = "okay";
++	status = "disable";
 +};
 +
 +/* Audio chip */
@@ -426,13 +489,12 @@ index 000000000000..099947fb58d7
 +	//fsl,uart-has-rtscts;
 +	//status = "okay";
 +
-+
-+    compatible = "hach,serial-modbus";
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&pinctrl_modbus0 &pinctrl_uart2_2wires>;
-+    gpio-DE = <&gpio1 5 0>;
-+    gpio-RE = <&gpio1 3 0>;
-+	status = "okay";
++	compatible = "hach,serial-modbus";
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_modbus0 &pinctrl_uart2_2wires>;
++	gpio-DE = <&gpio1 5 0>;
++	gpio-RE = <&gpio1 3 0>;
++	status = "disable";
 +};
 +
 +/* UART3 */
@@ -497,28 +559,57 @@ index 000000000000..099947fb58d7
 +		//	>;
 +		//};
 +
-+        pinctrl_modbus0: modbus0grp {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0xf030
-+                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0xf030
-+            >;
-+        };
++		pinctrl_modbus0: modbus0grp {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0x3031
++				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x3031
++			>;
++		};
 +
-+        pinctrl_led: led {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO02__GPIO1_IO02 0xf030
-+            >;
-+        };
++		pinctrl_led: led {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO02__GPIO1_IO02 0xf030
++			>;
++		};
++
++		pinctrl_additionalgpio: additionalgpios {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0x3031
++				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x3031
++			>;
++		};
++
++		pinctrl_ecspi1_master: ecspi1grp1 {
++			fsl,pins = <
++				MX6UL_PAD_LCD_DATA20__ECSPI1_SCLK	0x10b0
++				MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI	0x10b0
++				MX6UL_PAD_LCD_DATA23__ECSPI1_MISO	0x10b0
++				MX6UL_PAD_LCD_DATA21__GPIO3_IO26	0x30b0 /* Chip Select */
++			>;
++		};
++
++		/* LCD_DATA_21 is multiplexed with one of the SPI line, hence disable it. Redefined from 
++           imx6ul-ccimx6ulsbc.dtsi. */
++		pinctrl_lcdif_dat18_23: lcdifdatgrp18_23 {
++			fsl,pins = <
++				MX6UL_PAD_LCD_DATA18__LCDIF_DATA18	0x79
++				MX6UL_PAD_LCD_DATA19__LCDIF_DATA19	0x79
++				MX6UL_PAD_LCD_DATA20__LCDIF_DATA20	0x79
++				//MX6UL_PAD_LCD_DATA21__LCDIF_DATA21	0x79
++				MX6UL_PAD_LCD_DATA22__LCDIF_DATA22	0x79
++				MX6UL_PAD_LCD_DATA23__LCDIF_DATA23	0x79
++			>;
++		};
 +	};
 +};
 +
 +/ {
 +    UIO {
-+        compatible = "arrow,UIO";
-+        reg = <0x0209C000 0x4000>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_led>;
-+        status = "okay";
++	compatible = "arrow,UIO";
++	reg = <0x0209C000 0x4000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_led>;
++	status = "okay";
 +    };
 +};
 +

@@ -21,6 +21,12 @@ R1701_INSTALL = " \
     fcgi \
     sqlite3 \
 "
+
+# Custom kernel modules built out of tree
+KERNEL_MODULES_OOT = "\
+    hach-kernel-modules \
+"
+
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
     debug-tweaks \
@@ -36,6 +42,7 @@ IMAGE_FSTYPES_append = " sdcard"
 # Add individual recipes.
 IMAGE_INSTALL_append = " \
     ${R1701_INSTALL} \
+    ${KERNEL_MODULES_OOT} \
 "
 
 DISTRO_FEATURES_remove = "x11"

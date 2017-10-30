@@ -1,7 +1,8 @@
 YOCTO	:= Y
 
-obj-m		:= serial-modbus.o
-obj-m		+= memory-display.o
+obj-m	:= serial-modbus.o
+obj-m	+= mipdisplay-2-7-inch.o
+obj-m	+= mipdisplay-3-2-inch.o
 
 ifeq ($(YOCTO), Y)
 
@@ -28,4 +29,3 @@ clean:
 	rm -rf .tmp_versions Modules.symvers
 
 endif
-
