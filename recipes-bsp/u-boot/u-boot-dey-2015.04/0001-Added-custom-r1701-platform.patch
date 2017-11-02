@@ -1,6 +1,6 @@
-From 8c74a26b625ff590beb790aa65a575fe7e115ed3 Mon Sep 17 00:00:00 2001
+From 3a4a9bc356577eacf52f32fdd4fc7a9b26ad516c Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Wed, 1 Nov 2017 16:25:49 -0600
+Date: Thu, 2 Nov 2017 15:11:37 -0600
 Subject: [PATCH] Added custom r1701 platform.
 
 ---
@@ -696,7 +696,7 @@ index 0000000000..a23f37d211
 +CONFIG_DM_THERMAL=y
 diff --git a/include/configs/r1701.h b/include/configs/r1701.h
 new file mode 100644
-index 0000000000..e8f5547ff2
+index 0000000000..8a8727408c
 --- /dev/null
 +++ b/include/configs/r1701.h
 @@ -0,0 +1,259 @@
@@ -889,7 +889,7 @@ index 0000000000..e8f5547ff2
 +	"install_linux_fw_sd=if load mmc 0 ${loadaddr} install_linux_fw_sd.scr;then " \
 +			"source ${loadaddr};" \
 +		"fi;\0" \
-+	"linux_file=core-image-base-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
++	"linux_file=hach-image-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
 +	"loadscript=" \
 +		"if test -z \"${mtdbootpart}\"; then " \
 +			"setenv mtdbootpart " CONFIG_LINUX_PARTITION ";" \
@@ -907,7 +907,7 @@ index 0000000000..e8f5547ff2
 +	"recoverycmd=" \
 +		"setenv mtdbootpart " CONFIG_RECOVERY_PARTITION ";" \
 +		"boot\0" \
-+	"rootfs_file=core-image-base-" CONFIG_SYS_BOARD ".ubifs\0" \
++	"rootfs_file=hach-image-" CONFIG_SYS_BOARD ".ubifs\0" \
 +	""	/* end line */
 +#else
 +#define CONFIG_EXTRA_ENV_SETTINGS \
