@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Digi International, Inc.
+ * Copyright 2016, 2017 Digi International, Inc.
  *
  * The code contained herein is licensed under the GNU General Public
  * License. You may obtain a copy of the GNU General Public License
@@ -14,10 +14,10 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 /* i.MX6 UltraLite CPU */
 #include "imx6ul.dtsi"
-/* ConnectCore 6UL */
+/* ConnectCore 6UL (common) */
 #include "imx6ul-ccimx6ul.dtsi"
-/* ConnectCore 6UL SBC */
-#include "imx6ul-ccimx6ulsbc.dtsi"
+/* ConnectCore 6UL StarterBoard */
+#include "imx6ul-ccimx6ulstarter.dtsi"
 
 /*
  * Uncomment to enable the i.MX6UL SoC ADCs.
@@ -28,161 +28,84 @@
 //&adc1 {
 //	pinctrl-names = "default";
 //	pinctrl-0 = <&pinctrl_adc1>;
-//	adc-ch-list = <2 3 5>;
+//	adc-ch-list = <4>;
 //	status = "okay";
 //};
-
-/*
- * Uncomment to enable the I/O Expander ADCs.
- * Include in adc-ch-list the ADC channels that you want to enable.
- */
-// &mca_ioexp_adc {
-// 	digi,adc-ch-list = <3>;
-// 	digi,adc-vref = <3300000>;
-// };
 
 &caam_keyblob {
 	status = "okay";
 };
 
-/*
- * CSI camera conflicts with microSD/eMMC.
- * Before enabling the camera you need to disable
- * usdhc2 node.
- */
-//&csi {
-//	status = "okay";
-//};
+/* ECSPI3 (as master - Raspberry PI Expansion header) */
+// &ecspi3 {
+// 	/*
+// 	 * There are no SPI slave devices on the SBC.
+// 	 * Enable if adding your slave devices below.
+// 	 */
+// 	status = "okay";
+//
+// 	/*
+// 	 * Add your slave devices here. Next is an example of spidev.
+// 	 * Expect a harmless kernel warning if you enable spidev as slave.
+// 	 */
+// 	spidev@0 {
+// 		reg = <0>;
+// 		compatible = "spidev";
+// 		spi-max-frequency = <1000000>;
+// 	};
+// };
 
-/* ECSPI1 */
-&ecspi1 {
-	/*
-	 * There are no SPI slave devices on the SBC.
-	 * Enable if adding your slave devices below.
-	 */
-        cs-gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-	pinctrl-0 = <&pinctrl_ecspi1_master>;
-	status = "okay";
+/* ECSPI3 (as slave - Raspberry PI Expansion header) */
+// &ecspi3 {
+// 	pinctrl-0 = <&pinctrl_ecspi3_slave>;
+// 	spi-slave;
+// 	status = "okay";
+//
+// 	/*
+// 	 * Unique slave node. Property 'compatible' must be set to the
+// 	 * slave driver that will be registered by default.
+// 	 */
+// 	slave@0 {
+// 		reg = <0>;	/* must match the used CS line */
+// 		compatible = "spidev";
+// 		spi-max-frequency = <1000000>;
+// 	};
+// };
 
-	/* 2.7" Landscape MIP Display */
-	mipDisplay: ecspi@0{
-		compatible 		= "sharp,ls027b7dh01";
-		reg 			= <0>;
-		spi-max-frequency 	= <2000000>;
-		spi-cs-high;
-		gpios			= <&gpio1 5 GPIO_ACTIVE_HIGH>,	/* DISP PIN		*/
-					  <&gpio1 3 GPIO_ACTIVE_HIGH>;	/* EXTCOMIN PIN		*/
-		status = "okay";
-	};
-
-	/* 3.2" Portrait MIP Display */
-	/*
-	mipDisplay: ecspi@0{
-		compatible 		= "sharp,ls032b7dd02";
-		reg 			= <0>;
-		spi-max-frequency 	= <2000000>;
-		spi-cs-high;
-		gpios			= <&gpio1 5 GPIO_ACTIVE_HIGH>,
-					  <&gpio1 3 GPIO_ACTIVE_HIGH>;
-		status = "disable";
-	};
-	*/
-};
-
-/* ENET1 */
 &fec1 {
 	status = "okay";
 };
 
-/* ENET2 */
-&fec2 {
-	status = "okay";
-};
-
-/* CAN1 (multiplexed with UART3 RTS/CTS) */
+/* CAN1 (Raspberry PI Expansion header) */
 &flexcan1 {
 	status = "okay";
 };
 
-/* CAN2 (multiplexed with UART2 RTS/CTS) */
-// &flexcan2 {
-// 	status = "okay";
-// };
-
-/* Fusion touch */
-&fusion_touch {
-	status = "disable";
-};
-
-/* Parallel LCD */
-&lcdif {
-	status = "disable";
-};
-
-/* LCD backlight (PWM5) */
-&lcd_backlight {
-	status = "disable";
-};
-
-/* Audio chip */
-&max98089 {
+/* I2C2 (Raspberry PI Expansion header and Grove connector) */
+&i2c2 {
 	status = "okay";
 };
 
-/* Uncomment to Enable Tamper detection. Two interfaces (0 and 1) are available */
-//&mca_tamper {
-//	digi,tamper-if-list = <0 1>;
-//};
+/* MCA IO0 connected to Grove ADC connector */
+&mca_adc {
+	digi,adc-ch-list = <0>;
+	digi,adc-vref = <3000000>;
+};
 
-/*
- * CSI camera conflicts with microSD/eMMC.
- * Before enabling the camera you need to disable
- * usdhc2 node.
+/* Uncomment to Enable Tamper detection. There are 2 digital (0 and 1) and 2
+ * analog (2 and 3) tamper interfaces.
  */
-//&ov5642 {
-//	status = "okay";
+//&mca_tamper {
+//	digi,tamper-if-list = <0 1 2 3>;
 //};
 
-&pwm5 {
+/* PWM1 (Raspberry PI Expansion header) */
+&pwm1 {
 	status = "okay";
 };
 
-&pxp {
-	status = "okay";
-};
-
-&pxp_v4l2 {
-	status = "okay";
-};
-
-&sai2 {
-	status = "okay";
-};
-
-&sound_max98089 {
-	status = "okay";
-};
-
-/* UART2 */
-&uart2 {
-	/* RTS/CTS lines multiplexed with CAN2 */
-	//pinctrl-0 = <&pinctrl_uart2_4wires>;
-	//fsl,uart-has-rtscts;
-	//status = "okay";
-
-	compatible = "hach,serial-modbus";
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_modbus0 &pinctrl_uart2_2wires>;
-	gpio-DE = <&gpio1 5 0>;
-	gpio-RE = <&gpio1 3 0>;
-	status = "disable";
-};
-
-/* UART3 */
-&uart3 {
-	/* RTS/CTS lines multiplexed with CAN1 */
-	// pinctrl-0 = <&pinctrl_uart3_4wires>;
-	// fsl,uart-has-rtscts;
+/* UART4 (Raspberry PI Expansion header) */
+&uart4 {
 	status = "okay";
 };
 
@@ -199,30 +122,9 @@
 	status = "okay";
 };
 
-/* USDHC2 (microSD, conflicts with eMMC) */
+/* USDHC2 (microSD) */
 &usdhc2 {
-	pinctrl-assert-gpios = <&gpio5 1 GPIO_ACTIVE_LOW>;
-	broken-cd;	/* no carrier detect line (use polling) */
 	status = "okay";
-};
-
-/* USDHC2 (eMMC, conflicts with microSD) */
-//&usdhc2 {
-//	pinctrl-assert-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
-//	non-removable;
-//	/*
-//	 * Comment these two lines for 4-bit data bus or leave uncommented
-//	 * for 8-bit data bus
-//	 */
-//	pinctrl-0 = <&pinctrl_usdhc2_8databits>;
-//	bus-width = <8>;
-//
-//	status = "okay";
-//};
-
-&mca_ioexp {
-	status = "okay";
-	restore-config-on-resume;
 };
 
 /* Pin mux configuration */
@@ -231,66 +133,9 @@
 		/* Uncomment specific pins of the ADC channels enabled in 'adc-ch-list' */
 		//pinctrl_adc1: adc1grp {
 		//	fsl,pins = <
-		//		/* EXP_GPIO_1 -> GPIO1_5/ADC1_IN5 */
-		//		MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0xb0
-		//		/* EXP_GPIO_2 -> GPIO1_3/ADC1_IN3 */
-		//		MX6UL_PAD_GPIO1_IO03__GPIO1_IO03        0xb0
-		//		/* EXP_GPIO_3 -> GPIO1_2/ADC1_IN2 */
-		//		MX6UL_PAD_GPIO1_IO02__GPIO1_IO02        0xb0
+		//		/* GPIO1_4/ADC1_IN4 (pin 7 of the expansion header) */
+		//		MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0xb0
 		//	>;
 		//};
-
-		pinctrl_modbus0: modbus0grp {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0x3031
-				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x3031
-			>;
-		};
-
-		pinctrl_led: led {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO02__GPIO1_IO02 0xf030
-			>;
-		};
-
-		pinctrl_additionalgpio: additionalgpios {
-			fsl,pins = <
-				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05 0x3031
-				MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x3031
-			>;
-		};
-
-		pinctrl_ecspi1_master: ecspi1grp1 {
-			fsl,pins = <
-				MX6UL_PAD_LCD_DATA20__ECSPI1_SCLK	0x10b0
-				MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI	0x10b0
-				MX6UL_PAD_LCD_DATA23__ECSPI1_MISO	0x10b0
-				MX6UL_PAD_LCD_DATA21__GPIO3_IO26	0x30b0 /* Chip Select */
-			>;
-		};
-
-		/* LCD_DATA_21 is multiplexed with one of the SPI line, hence disable it. Redefined from 
-           imx6ul-ccimx6ulsbc.dtsi. */
-		pinctrl_lcdif_dat18_23: lcdifdatgrp18_23 {
-			fsl,pins = <
-				MX6UL_PAD_LCD_DATA18__LCDIF_DATA18	0x79
-				MX6UL_PAD_LCD_DATA19__LCDIF_DATA19	0x79
-				MX6UL_PAD_LCD_DATA20__LCDIF_DATA20	0x79
-				//MX6UL_PAD_LCD_DATA21__LCDIF_DATA21	0x79
-				MX6UL_PAD_LCD_DATA22__LCDIF_DATA22	0x79
-				MX6UL_PAD_LCD_DATA23__LCDIF_DATA23	0x79
-			>;
-		};
 	};
 };
-
-/ {
-    UIO {
-	compatible = "arrow,UIO";
-	reg = <0x0209C000 0x4000>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_led>;
-	status = "okay";
-    };
-};
-
