@@ -1,6 +1,6 @@
-From f1c11ccaaf2bffd55cfb0993aacbdfecf91fdc73 Mon Sep 17 00:00:00 2001
+From 8c74a26b625ff590beb790aa65a575fe7e115ed3 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Thu, 13 Jul 2017 21:14:38 -0600
+Date: Wed, 1 Nov 2017 16:25:49 -0600
 Subject: [PATCH] Added custom r1701 platform.
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] Added custom r1701 platform.
  board/digi/r1701/Kconfig     |  15 ++
  board/digi/r1701/MAINTAINERS |   6 +
  board/digi/r1701/Makefile    |  10 +
- board/digi/r1701/r1701.c     | 546 +++++++++++++++++++++++++++++++++++++++++++
+ board/digi/r1701/r1701.c     | 584 +++++++++++++++++++++++++++++++++++++++++++
  configs/r1701_defconfig      |   7 +
- include/configs/r1701.h      | 256 ++++++++++++++++++++
- 7 files changed, 845 insertions(+)
+ include/configs/r1701.h      | 259 +++++++++++++++++++
+ 7 files changed, 886 insertions(+)
  create mode 100644 board/digi/r1701/Kconfig
  create mode 100644 board/digi/r1701/MAINTAINERS
  create mode 100644 board/digi/r1701/Makefile
@@ -65,11 +65,11 @@ index 0000000000..caa2456cce
 +endif
 diff --git a/board/digi/r1701/MAINTAINERS b/board/digi/r1701/MAINTAINERS
 new file mode 100644
-index 0000000000..d1fb7f4f30
+index 0000000000..8e4c57f6fc
 --- /dev/null
 +++ b/board/digi/r1701/MAINTAINERS
 @@ -0,0 +1,6 @@
-+R1701 BOARD
++CCIMX6ULSTARTER BOARD
 +M:	Tim Higgins <thiggins@hach.com>
 +S:	Supported
 +F:	board/digi/r1701/
@@ -93,10 +93,10 @@ index 0000000000..be50bf5b9e
 +	$(OBJCOPY) -O binary --gap-fill 0xff $< $@
 diff --git a/board/digi/r1701/r1701.c b/board/digi/r1701/r1701.c
 new file mode 100644
-index 0000000000..79c6bc9dff
+index 0000000000..3d58ea2856
 --- /dev/null
 +++ b/board/digi/r1701/r1701.c
-@@ -0,0 +1,546 @@
+@@ -0,0 +1,584 @@
 +/*
 + * Copyright (C) 2016 Digi International, Inc
 + * Copyright (C) 2015 Freescale Semiconductor, Inc.
@@ -155,6 +155,11 @@ index 0000000000..79c6bc9dff
 +	PAD_CTL_PUS_100K_UP | PAD_CTL_SPEED_MED |		\
 +	PAD_CTL_DSE_40ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
 +
++#define I2C_PAD_CTRL    (PAD_CTL_PKE | PAD_CTL_PUE |            \
++	PAD_CTL_PUS_100K_UP | PAD_CTL_SPEED_MED |               \
++	PAD_CTL_DSE_40ohm | PAD_CTL_HYS |			\
++	PAD_CTL_ODE)
++
 +#define USDHC_PAD_CTRL (PAD_CTL_PKE | PAD_CTL_PUE |		\
 +	PAD_CTL_PUS_22K_UP  | PAD_CTL_SPEED_LOW |		\
 +	PAD_CTL_DSE_80ohm   | PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
@@ -184,12 +189,16 @@ index 0000000000..79c6bc9dff
 +	MX6_PAD_UART5_RX_DATA__UART5_DCE_RX | MUX_PAD_CTRL(UART_PAD_CTRL),
 +};
 +
++#ifdef CONFIG_CONSOLE_ENABLE_GPIO
 +static iomux_v3_cfg_t const ext_gpios_pads[] = {
-+	MX6_PAD_NAND_CE1_B__GPIO4_IO14 | MUX_PAD_CTRL(GPI_PAD_CTRL),
-+	MX6_PAD_GPIO1_IO05__GPIO1_IO05 | MUX_PAD_CTRL(GPI_PAD_CTRL),
-+	MX6_PAD_GPIO1_IO03__GPIO1_IO03 | MUX_PAD_CTRL(GPI_PAD_CTRL),
-+	MX6_PAD_GPIO1_IO02__GPIO1_IO02 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_GPIO1_IO04__GPIO1_IO04 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_JTAG_TDO__GPIO1_IO12 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_JTAG_TDI__GPIO1_IO13 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_JTAG_TMS__GPIO1_IO11 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_JTAG_TRST_B__GPIO1_IO15 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_JTAG_TCK__GPIO1_IO14 | MUX_PAD_CTRL(GPI_PAD_CTRL),
 +};
++#endif
 +
 +/* micro SD */
 +static iomux_v3_cfg_t const usdhc2_pads[] = {
@@ -200,6 +209,23 @@ index 0000000000..79c6bc9dff
 +	MX6_PAD_CSI_DATA02__USDHC2_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 +	MX6_PAD_CSI_DATA03__USDHC2_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 +};
++
++#ifdef CONFIG_SYS_I2C_MXC
++#define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
++/* I2C2 */
++struct i2c_pads_info i2c2_pad_info = {
++	.scl = {
++		.i2c_mode =  MX6_PAD_GPIO1_IO00__I2C2_SCL | PC,
++		.gpio_mode = MX6_PAD_GPIO1_IO00__GPIO1_IO00 | PC,
++		.gp = IMX_GPIO_NR(1, 0),
++	},
++	.sda = {
++		.i2c_mode = MX6_PAD_GPIO1_IO01__I2C2_SDA | PC,
++		.gpio_mode = MX6_PAD_GPIO1_IO01__GPIO1_IO01 | PC,
++		.gp = IMX_GPIO_NR(1, 1),
++	},
++};
++#endif
 +
 +#ifdef CONFIG_FEC_MXC
 +/*
@@ -217,29 +243,16 @@ index 0000000000..79c6bc9dff
 +	MX6_PAD_ENET1_RX_DATA1__ENET1_RDATA01 | MUX_PAD_CTRL(ENET_PAD_CTRL),
 +	MX6_PAD_ENET1_RX_ER__ENET1_RX_ER | MUX_PAD_CTRL(ENET_PAD_CTRL),
 +	MX6_PAD_ENET1_RX_EN__ENET1_RX_EN | MUX_PAD_CTRL(ENET_PAD_CTRL),
++	/*
++	 * GPIO3_IO2 is used as PHY reset in Starter Board v1 and as PHY power
++	 * enable on Starter Board v2
++	 */
++	MX6_PAD_LCD_HSYNC__GPIO3_IO02 | MUX_PAD_CTRL(NO_PAD_CTRL),
 +};
 +
-+static iomux_v3_cfg_t const fec2_pads[] = {
-+	MX6_PAD_GPIO1_IO06__ENET2_MDIO | MUX_PAD_CTRL(MDIO_PAD_CTRL),
-+	MX6_PAD_GPIO1_IO07__ENET2_MDC | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+
-+	MX6_PAD_ENET2_TX_DATA0__ENET2_TDATA00 | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+	MX6_PAD_ENET2_TX_DATA1__ENET2_TDATA01 | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+	MX6_PAD_ENET2_TX_CLK__ENET2_REF_CLK2 | MUX_PAD_CTRL(ENET_CLK_PAD_CTRL),
-+	MX6_PAD_ENET2_TX_EN__ENET2_TX_EN | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+
-+	MX6_PAD_ENET2_RX_DATA0__ENET2_RDATA00 | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+	MX6_PAD_ENET2_RX_DATA1__ENET2_RDATA01 | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+	MX6_PAD_ENET2_RX_EN__ENET2_RX_EN | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+	MX6_PAD_ENET2_RX_ER__ENET2_RX_ER | MUX_PAD_CTRL(ENET_PAD_CTRL),
-+};
-+
-+static void setup_iomux_fec(int fec_id)
++static void setup_iomux_fec(void)
 +{
-+	if (fec_id == 0)
-+		imx_iomux_v3_setup_multiple_pads(fec1_pads, ARRAY_SIZE(fec1_pads));
-+	else
-+		imx_iomux_v3_setup_multiple_pads(fec2_pads, ARRAY_SIZE(fec2_pads));
++	imx_iomux_v3_setup_multiple_pads(fec1_pads, ARRAY_SIZE(fec1_pads));
 +}
 +#endif
 +
@@ -313,19 +326,26 @@ index 0000000000..79c6bc9dff
 +#endif
 +
 +#ifdef CONFIG_FEC_MXC
-+void reset_phy(void)
++void reset_phy()
 +{
-+	int reset;
-+
 +	/*
 +	 * The reset line must be held low for a minimum of 100usec and cannot
 +	 * be deasserted before 25ms have passed since the power supply has
 +	 * reached 80% of the operating voltage. At this point of the code
 +	 * we can assume the second premise is already accomplished.
 +	 */
-+	if (CONFIG_FEC_ENET_DEV == 0) {
++	if (board_version == 1) {
++		int phy_reset_gpio = IMX_GPIO_NR(3, 2);
++
++		/* Assert PHY reset (low) */
++		gpio_direction_output(phy_reset_gpio , 0);
++		udelay(100);
++		/* Deassert PHY reset (high) */
++		gpio_set_value(phy_reset_gpio, 1);
++	} else {
 +		/* MCA_IO7 is connected to PHY reset */
-+		reset = (1 << 7);
++		int reset = (1 << 7);
++
 +		/* Configure as output */
 +		mca_update_bits(MCA_CC6UL_GPIO_DIR_0, reset, reset);
 +		/* Assert PHY reset (low) */
@@ -333,14 +353,6 @@ index 0000000000..79c6bc9dff
 +		udelay(100);
 +		/* Deassert PHY reset (high) */
 +		mca_update_bits(MCA_CC6UL_GPIO_DATA_0, reset, reset);
-+	} else if (CONFIG_FEC_ENET_DEV == 1) {
-+		/* CPU GPIO5_6 is connected to PHY reset */
-+		reset = IMX_GPIO_NR(5, 6);
-+		/* Assert PHY reset (low) */
-+		gpio_direction_output(reset, 0);
-+		udelay(100);
-+		/* Deassert PHY reset (high) */
-+		gpio_set_value(reset, 1);
 +	}
 +}
 +
@@ -348,7 +360,7 @@ index 0000000000..79c6bc9dff
 +{
 +	int ret;
 +
-+	setup_iomux_fec(CONFIG_FEC_ENET_DEV);
++	setup_iomux_fec();
 +
 +	ret = fecmxc_initialize_multi(bis, CONFIG_FEC_ENET_DEV,
 +		CONFIG_FEC_MXC_PHYADDR, IMX_FEC_BASE);
@@ -365,6 +377,13 @@ index 0000000000..79c6bc9dff
 +	struct iomuxc_gpr_base_regs *const iomuxc_gpr_regs
 +		= (struct iomuxc_gpr_base_regs *) IOMUXC_GPR_BASE_ADDR;
 +	int ret;
++
++	if (board_version != 1) {
++		/* Enable PHY power */
++		int phy_power_gpio = IMX_GPIO_NR(3, 2);
++
++		gpio_direction_output(phy_power_gpio , 1);
++	}
 +
 +	if (0 == fec_id) {
 +		if (check_module_fused(MX6_MODULE_ENET1))
@@ -455,9 +474,12 @@ index 0000000000..79c6bc9dff
 +{
 +#ifdef CONFIG_CONSOLE_ENABLE_GPIO
 +	int ext_gpios[] =  {
-+		IMX_GPIO_NR(1, 5),
-+		IMX_GPIO_NR(1, 3),
-+		IMX_GPIO_NR(1, 2),
++		IMX_GPIO_NR(1, 4),
++		IMX_GPIO_NR(1, 12),
++		IMX_GPIO_NR(1, 13),
++		IMX_GPIO_NR(1, 11),
++		IMX_GPIO_NR(1, 15),
++		IMX_GPIO_NR(1, 14),
 +	};
 +	int console_enable_gpio_nr = ext_gpios[CONFIG_CONSOLE_ENABLE_GPIO_NR];
 +
@@ -494,7 +516,15 @@ index 0000000000..79c6bc9dff
 +	ccimx6ul_init();
 +
 +	board_version = get_carrierboard_version();
++	/* Treat Starter Board version 1 (prototypes) as version 2 */
++	if (board_version == 1)
++		board_version = 2;
 +	board_id = get_carrierboard_id();
++
++#ifdef CONFIG_I2C_MULTI_BUS
++	/* Setup I2C2 (Groove connector) */
++	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c2_pad_info);
++#endif
 +
 +#ifdef	CONFIG_FEC_MXC
 +	setup_fec(CONFIG_FEC_ENET_DEV);
@@ -507,9 +537,11 @@ index 0000000000..79c6bc9dff
 +	return 0;
 +}
 +
-+int board_late_init(void)
++void platform_default_environment(void)
 +{
 +	char cmd[80];
++
++	som_default_environment();
 +
 +	/* Set $board_version variable if defined in OTP bits */
 +	if (board_version > 0) {
@@ -522,9 +554,15 @@ index 0000000000..79c6bc9dff
 +		sprintf(cmd, "setenv -f board_id %d", board_id);
 +		run_command(cmd, 0);
 +	}
++}
 +
++int board_late_init(void)
++{
 +	/* SOM late init */
 +	ccimx6ul_late_init();
++
++	/* Set default dynamic variables */
++	platform_default_environment();
 +
 +	set_wdog_reset((struct wdog_regs *)WDOG1_BASE_ADDR);
 +
@@ -658,20 +696,20 @@ index 0000000000..a23f37d211
 +CONFIG_DM_THERMAL=y
 diff --git a/include/configs/r1701.h b/include/configs/r1701.h
 new file mode 100644
-index 0000000000..b3e2b26499
+index 0000000000..e8f5547ff2
 --- /dev/null
 +++ b/include/configs/r1701.h
-@@ -0,0 +1,256 @@
+@@ -0,0 +1,259 @@
 +/*
 + * Copyright (C) 2016 Digi International, Inc.
 + * Copyright (C) 2015 Freescale Semiconductor, Inc.
 + *
-+ * Configuration settings for the Digi ConnecCore 6UL SBC board.
++ * Configuration settings for the Digi ConnecCore 6UL Starter board.
 + *
 + * SPDX-License-Identifier:	GPL-2.0+
 + */
-+#ifndef CCIMX6ULSBC_CONFIG_H
-+#define CCIMX6ULSBC_CONFIG_H
++#ifndef CCIMX6ULSTARTER_CONFIG_H
++#define CCIMX6ULSTARTER_CONFIG_H
 +
 +#include "ccimx6ul_common.h"
 +
@@ -729,7 +767,6 @@ index 0000000000..b3e2b26499
 +#define CONFIG_ENV_OFFSET		(8 * SZ_64K)
 +#elif defined(CONFIG_ENV_IS_IN_SPI_FLASH)
 +#define CONFIG_ENV_OFFSET		(768 * 1024)
-+#define CONFIG_ENV_SECT_SIZE		(64 * 1024)
 +#define CONFIG_ENV_SPI_BUS		CONFIG_SF_DEFAULT_BUS
 +#define CONFIG_ENV_SPI_CS		CONFIG_SF_DEFAULT_CS
 +#define CONFIG_ENV_SPI_MODE		CONFIG_SF_DEFAULT_MODE
@@ -737,12 +774,17 @@ index 0000000000..b3e2b26499
 +#elif defined(CONFIG_ENV_IS_IN_NAND)
 +#undef CONFIG_ENV_SIZE
 +#define CONFIG_ENV_OFFSET		(3 * SZ_1M)
-+#define CONFIG_ENV_SECT_SIZE		(128 << 10)
-+#define CONFIG_ENV_SIZE			CONFIG_ENV_SECT_SIZE
++#define CONFIG_ENV_SIZE			SZ_128K
 +#endif
 +#define CONFIG_SYS_REDUNDANT_ENVIRONMENT
-+#define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SECT_SIZE)
-+#define CONFIG_ENV_SIZE_REDUND		CONFIG_ENV_SIZE
++#define CONFIG_DYNAMIC_ENV_LOCATION
++#if (CONFIG_DDR_MB == 1024)
++# define CONFIG_ENV_PARTITION_SIZE	(3 * SZ_1M)
++#else
++# define CONFIG_ENV_PARTITION_SIZE	(1 * SZ_1M)
++#endif /* (CONFIG_DDR_MB == 1024) */
++/* The environment may use any good blocks within the "environment" partition */
++#define CONFIG_ENV_RANGE		CONFIG_ENV_PARTITION_SIZE
 +
 +/* Serial port */
 +#define CONFIG_MXC_UART
@@ -767,7 +809,6 @@ index 0000000000..b3e2b26499
 +#endif
 +
 +#define CONFIG_DEFAULT_FDT_FILE		"zImage-imx6ul-" CONFIG_SYS_BOARD ".dtb"
-+#define CONFIG_BOOTARGS_CMA_SIZE	"cma=96M "
 +
 +#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
 +
@@ -839,7 +880,7 @@ index 0000000000..b3e2b26499
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	CONFIG_COMMON_ENV \
 +	CONFIG_ENV_MTD_SETTINGS \
-+	"bootargs_linux=" CONFIG_BOOTARGS_CMA_SIZE " \0" \
++	"bootargs_linux=\0" \
 +	"bootargs_nand_linux=setenv bootargs console=${console},${baudrate} " \
 +		"${bootargs_linux} ${mtdparts} ubi.mtd=${mtdlinuxindex} " \
 +		"ubi.mtd=${mtdrootfsindex} root=ubi1_0 " \
@@ -848,7 +889,7 @@ index 0000000000..b3e2b26499
 +	"install_linux_fw_sd=if load mmc 0 ${loadaddr} install_linux_fw_sd.scr;then " \
 +			"source ${loadaddr};" \
 +		"fi;\0" \
-+	"linux_file=dey-image-qt-x11-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
++	"linux_file=core-image-base-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
 +	"loadscript=" \
 +		"if test -z \"${mtdbootpart}\"; then " \
 +			"setenv mtdbootpart " CONFIG_LINUX_PARTITION ";" \
@@ -866,7 +907,7 @@ index 0000000000..b3e2b26499
 +	"recoverycmd=" \
 +		"setenv mtdbootpart " CONFIG_RECOVERY_PARTITION ";" \
 +		"boot\0" \
-+	"rootfs_file=dey-image-qt-x11-" CONFIG_SYS_BOARD ".ubifs\0" \
++	"rootfs_file=core-image-base-" CONFIG_SYS_BOARD ".ubifs\0" \
 +	""	/* end line */
 +#else
 +#define CONFIG_EXTRA_ENV_SETTINGS \
@@ -877,7 +918,7 @@ index 0000000000..b3e2b26499
 +	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 +	"mmcautodetect=yes\0" \
 +	"mmcargs=setenv bootargs console=${console},${baudrate} " \
-+		"${mtdparts} " CONFIG_BOOTARGS_CMA_SIZE \
++		"${mtdparts} " \
 +		"root=${mmcroot}\0" \
 +	""	/* end line */
 +#endif
@@ -917,7 +958,7 @@ index 0000000000..b3e2b26499
 +#define CONFIG_LZO
 +#define CONFIG_DIGI_UBI
 +
-+#endif /* CCIMX6ULSBC_CONFIG_H */
++#endif /* CCIMX6ULSTARTER_CONFIG_H */
 -- 
 2.11.0
 

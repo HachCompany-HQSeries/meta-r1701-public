@@ -5,7 +5,7 @@
 #
 # Set device tree filename depending on the board ID (if defined)
 #
-if test "${board_id}" < "128"; then
+if test -n "${board_id}"; then
 	setenv fdt_file zImage-imx6ul-r1701-id${board_id}.dtb
 else
 	#
