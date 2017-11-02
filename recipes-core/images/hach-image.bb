@@ -5,7 +5,7 @@ LICENSE = "MIT"
 #   dey-bluetooth: adds “meta-digi-dey/recipes-connectivity/packagegroups/packagegroup-dey-bluetooth.bb”
 #   dey-qt: adds “meta-digi-dey/recipes-graphics/packagegroups/packagegroup-dey-qt.bb”
 #   etc.
-require recipes-core/images/dey-image-qt.bb
+require recipes-core/images/core-image-base.bb
 
 inherit populate_sdk_qt5
 
@@ -33,7 +33,8 @@ IMAGE_FEATURES += " \
     eclipse-debug \
     qtcreator-debug \
     ssh-server-openssh \
-    tools-debug  \
+    tools-debug \
+    dey-qt \
 "
 
 # Add a new filesystem
