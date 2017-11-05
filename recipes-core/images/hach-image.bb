@@ -1,1 +1,1 @@
-hach-dey-image-qt.bb
+hach-core-image-base-without-qt.bb

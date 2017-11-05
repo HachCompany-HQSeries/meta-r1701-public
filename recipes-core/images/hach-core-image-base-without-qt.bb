@@ -39,7 +39,6 @@ IMAGE_FEATURES += " \
     qtcreator-debug \
     ssh-server-openssh \
     tools-debug \
-    dey-qt \
 "
 
 # Add individual recipes.
@@ -62,7 +61,6 @@ BAD_RECOMMENDATIONS += "udev-cache"
 
 # Add a new filesystem
 IMAGE_FSTYPES_append = " sdcard"
-
 
 DISTRO_FEATURES_remove = "x11"
 
