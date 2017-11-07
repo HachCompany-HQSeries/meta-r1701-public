@@ -34,7 +34,6 @@ IMAGE_FEATURES += " \
     ssh-server-dropbear \
     ${@bb.utils.contains('MACHINE_FEATURES', 'bluetooth', 'dey-bluetooth', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
-    debug-tweaks \
     eclipse-debug \
     qtcreator-debug \
     ssh-server-openssh \
@@ -63,6 +62,11 @@ BAD_RECOMMENDATIONS += "udev-cache"
 # Add a new filesystem
 IMAGE_FSTYPES_append = " sdcard"
 
+# Assign a password to root account.
+inherit extrausers
+EXTRA_USERS_PARAMS = " \
+    useradd -P hqd123 root; \
+"
 
 DISTRO_FEATURES_remove = "x11"
 

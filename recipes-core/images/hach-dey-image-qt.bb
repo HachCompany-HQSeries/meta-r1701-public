@@ -29,7 +29,6 @@ KERNEL_MODULES_OOT = "\
 
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
-    debug-tweaks \
     eclipse-debug \
     qtcreator-debug \
     ssh-server-openssh \
@@ -44,6 +43,12 @@ IMAGE_INSTALL_append = " \
 
 # Add a new filesystem
 IMAGE_FSTYPES_append = " sdcard"
+
+# Assign a password to root account.
+inherit extrausers
+EXTRA_USERS_PARAMS = " \
+    useradd -P hqd123 root; \
+"
 
 DISTRO_FEATURES_remove = "x11"
 
