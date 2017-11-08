@@ -64,8 +64,9 @@ IMAGE_FSTYPES_append = " sdcard"
 
 # Assign a password to root account.
 inherit extrausers
+ROOT_PASSWORD = "hqd123"
 EXTRA_USERS_PARAMS = " \
-    useradd -P hqd123 root; \
+    usermod -p 'openssl passwd ${ROOT_PASSWORD}' root; \
 "
 
 DISTRO_FEATURES_remove = "x11"
