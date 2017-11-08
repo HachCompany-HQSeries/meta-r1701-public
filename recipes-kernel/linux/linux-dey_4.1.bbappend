@@ -3,5 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}-${PV}:"
 SRC_URI_append = " \
     file://0001-Add-r1701-device-trees-to-the-kernel-makefile.patch \
     file://0002-Adding-sharp-mip-display-support.patch \
+    file://0003-ccimx6ul-defconfig-configure-imx-sdhci-as-module.patch \
+    file://0004-ARM-dts-ccimx6ulstarter-remove-all-interfaces-except.patch \
 "
 

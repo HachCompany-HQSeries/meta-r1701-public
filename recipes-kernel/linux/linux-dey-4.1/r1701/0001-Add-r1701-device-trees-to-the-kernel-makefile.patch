@@ -1,7 +1,7 @@
 From 5c12d0422c088a54a35d09e52f4e32d66c1befb1 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
 Date: Sat, 26 Aug 2017 07:47:28 -0600
-Subject: [PATCH 1/2] Add r1701 device trees to the kernel makefile.
+Subject: [PATCH] Add r1701 device trees to the kernel makefile.
 
 ---
  arch/arm/boot/dts/Makefile            |   4 +-
