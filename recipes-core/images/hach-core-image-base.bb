@@ -20,6 +20,7 @@ R1701_INSTALL = " \
     lighttpd \
     fcgi \
     sqlite3 \
+    suspend-resume \
 "
 
 # Add predefined runtime package groups. 
