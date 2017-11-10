@@ -1,0 +1,35 @@
+From 69f5c81e66108df4146b9826fc63c9bd90b38b30 Mon Sep 17 00:00:00 2001
+From: Alex Gonzalez <alex.gonzalez@digi.com>
+Date: Thu, 9 Nov 2017 12:06:10 +0100
+Subject: [PATCH] dts: r1701: Configure usbotg1 as OTG instead of host
+
+Signed-off-by: Alex Gonzalez <alex.gonzalez@digi.com>
+---
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 1 +
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
+index aad2fd7a7e11..f4cdd58d7897 100644
+--- a/arch/arm/boot/dts/imx6ul-r1701-wb.dts
++++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
+@@ -115,6 +115,7 @@
+ };
+ 
+ &usbotg1 {
++	dr_mode = "peripheral";
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
+index 0a040a3c1f49..78046bae352f 100644
+--- a/arch/arm/boot/dts/imx6ul-r1701.dts
++++ b/arch/arm/boot/dts/imx6ul-r1701.dts
+@@ -115,6 +115,7 @@
+ };
+ 
+ &usbotg1 {
++	dr_mode = "peripheral";
+ 	status = "okay";
+ };
+ 
