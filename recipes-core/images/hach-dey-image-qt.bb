@@ -17,7 +17,6 @@ R1701_INSTALL = " \
     zeromq \
     boost \
     protobuf \
-    lighttpd \
     fcgi \
     sqlite3 \
     busybox-udhcpd \
