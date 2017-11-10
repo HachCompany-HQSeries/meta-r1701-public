@@ -21,6 +21,7 @@ R1701_INSTALL = " \
     fcgi \
     sqlite3 \
     suspend-resume \
+    busybox-udhcpd \
 "
 
 # Add predefined runtime package groups. 

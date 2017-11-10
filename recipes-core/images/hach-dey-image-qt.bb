@@ -20,6 +20,7 @@ R1701_INSTALL = " \
     lighttpd \
     fcgi \
     sqlite3 \
+    busybox-udhcpd \
 "
 
 # Custom kernel modules built out of tree
