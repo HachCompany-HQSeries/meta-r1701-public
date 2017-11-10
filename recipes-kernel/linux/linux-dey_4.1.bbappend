@@ -7,4 +7,6 @@ SRC_URI_append = " \
     file://0004-ARM-dts-ccimx6ulstarter-remove-all-interfaces-except.patch \
     file://0005-dts-r1701-Configure-usbotg1-as-OTG-instead-of-host.patch \
 "
-
+KERNEL_MODULE_AUTOLOAD += "g_ether"
+KERNEL_MODULE_PROBECONF += "g_ether"
+module_conf_g_ether = "options g_ether iProduct=ConnectCore-6UL iManufacturer=Digi"
