@@ -22,11 +22,6 @@ R1701_INSTALL = " \
     busybox-udhcpd \
 "
 
-# Custom kernel modules built out of tree
-KERNEL_MODULES_OOT = "\
-    hach-kernel-modules \
-"
-
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
     debug-tweaks \
@@ -39,7 +34,6 @@ IMAGE_FEATURES += " \
 # Add individual recipes.
 IMAGE_INSTALL_append = " \
     ${R1701_INSTALL} \
-    ${KERNEL_MODULES_OOT} \
 "
 
 # Add a new filesystem
