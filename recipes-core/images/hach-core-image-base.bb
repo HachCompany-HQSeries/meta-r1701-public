@@ -21,7 +21,6 @@ IMAGE_FEATURES += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'bluetooth', 'dey-bluetooth', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
     ssh-server-openssh \
-    dey-qt \
 "
 
 # From meta-digi/meta-digi-dey/recipes-core/images/core-image-base.bbappend:
