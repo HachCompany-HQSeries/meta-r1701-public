@@ -1,6 +1,5 @@
 Digi Embedded Yocto provides the following image recipes:
 
-  * core-image-base: A console-only image.
+  * hach-core-image-base: A busybox framebuffer image.
 
-    Expansion of native core-image-base by including all the support for the
-    target device hardware like firmware files, rootfs customizations, etc.
+  * hach-dey-image-qt: A QT5 busybox framebuffer image
