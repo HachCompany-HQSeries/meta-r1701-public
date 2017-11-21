@@ -11,6 +11,7 @@ IMAGE_INSTALL += " \
 "
 
 IMAGE_FEATURES += " \
+    package-management \
     eclipse-debug \
     qtcreator-debug \
     debug-tweaks \

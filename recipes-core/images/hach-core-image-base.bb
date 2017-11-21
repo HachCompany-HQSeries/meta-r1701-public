@@ -18,7 +18,6 @@ IMAGE_INSTALL += " \
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
     dey-network \
-    package-management \
     ${@bb.utils.contains('MACHINE_FEATURES', 'bluetooth', 'dey-bluetooth', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
     ssh-server-openssh \
