@@ -1,0 +1,2 @@
+QT5_EXAMPLES = ""
+QT5_DEMOS = ""
