@@ -1,50 +1,26 @@
 SUMMARY = "A QT5 image derived from core-image-base."
 LICENSE = "MIT"
 
-# dey-image-qt.bb is a good starting point for our custom r1701 image. For example, it includes the packagegroup
-#   dey-bluetooth: adds “meta-digi-dey/recipes-connectivity/packagegroups/packagegroup-dey-bluetooth.bb”
-#   dey-qt: adds “meta-digi-dey/recipes-graphics/packagegroups/packagegroup-dey-qt.bb”
-#   etc.
 require recipes-core/images/core-image-base.bb
 
 inherit populate_sdk_qt5
 
-R1701_INSTALL = " \
+IMAGE_INSTALL += " \
     rsync \
-    tmux \
-    devmem2 \
-    htop \
     zeromq \
     boost \
     protobuf \
-    lighttpd \
     fcgi \
     sqlite3 \
-"
-
-# Custom kernel modules built out of tree
-KERNEL_MODULES_OOT = "\
-    hach-kernel-modules \
+    busybox-udhcpd \
 "
 
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
     dey-network \
-    package-management \
-    ssh-server-dropbear \
     ${@bb.utils.contains('MACHINE_FEATURES', 'bluetooth', 'dey-bluetooth', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
-    eclipse-debug \
-    qtcreator-debug \
     ssh-server-openssh \
-    tools-debug \
-    dey-qt \
-"
-
-# Add individual recipes.
-IMAGE_INSTALL_append = " \
-    ${R1701_INSTALL} \
-    ${KERNEL_MODULES_OOT} \
 "
 
 # From meta-digi/meta-digi-dey/recipes-core/images/core-image-base.bbappend:
