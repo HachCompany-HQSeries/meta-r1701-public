@@ -8,6 +8,8 @@ IMAGE_INSTALL += " \
     rsync \
     htop \
     devmem2 \
+    mtd-utils \  
+    dey-examples-spidev \
 "
 
 IMAGE_FEATURES += " \
