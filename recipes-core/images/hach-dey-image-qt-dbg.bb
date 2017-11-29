@@ -1,7 +1,7 @@
 SUMMARY = "A QT5 debug image derived from dey-image-qt"
 LICENSE = "MIT"
 
-require recipes-core/images/dey-image-qt.bb
+require hach-dey-image-qt.bb
 
 IMAGE_INSTALL += " \
     suspend-resume \

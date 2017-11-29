@@ -1,1 +1,1 @@
-hach-dey-image-qt.bb
+hach-dey-image-qt-dbg.bb
