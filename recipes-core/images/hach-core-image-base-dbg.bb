@@ -18,7 +18,6 @@ IMAGE_FEATURES += " \
     qtcreator-debug \
     debug-tweaks \
     tools-debug \
-    ssh-server-openssh \
 "
 
-export IMAGE_BASENAME = "hach-core-image-base-dbg"
+#export IMAGE_BASENAME = "hach-core-image-base-dbg"
