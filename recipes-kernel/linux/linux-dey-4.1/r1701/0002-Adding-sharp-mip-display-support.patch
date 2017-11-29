@@ -1,7 +1,7 @@
-From 4ab6db4ee530c4ec8b368f18e7bd56415759f892 Mon Sep 17 00:00:00 2001
+From 43973af65735d9848781b0c529f89b1e3f085bc3 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 25 Oct 2017 14:24:27 -0600
-Subject: [PATCH] Adding sharp mip display support.
+Subject: [PATCH 2/3] Adding sharp mip display support.
 
 Signed-off-by: Devang Patel <dpatel@hach.com>
 ---
@@ -9,13 +9,14 @@ Signed-off-by: Devang Patel <dpatel@hach.com>
  1 file changed, 14 insertions(+)
 
 diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
-index 23a0c745d1f6..6455d226364f 100644
+index 0e1d4b186524..a75533f45468 100644
 --- a/drivers/video/fbdev/Kconfig
 +++ b/drivers/video/fbdev/Kconfig
-@@ -2485,6 +2485,20 @@ config FB_SSD1307
+@@ -2484,3 +2484,17 @@ config FB_SSD1307
+ 	help
  	  This driver implements support for the Solomon SSD1307
  	  OLED controller over I2C.
- 
++
 +config FB_LS0XXB7DXXX
 +	tristate "Sharp LS027B7DH01-2.7 inch and LS032B7DD02-3.2 inch mip monochrome LCD framebuffer support"
 +	depends on FB && SPI
@@ -29,7 +30,6 @@ index 23a0c745d1f6..6455d226364f 100644
 +	help
 +	  This driver implements support for the Sharp LS027B7DH01, LS032B7DD02
 +	  LCD controller over SPI.
-+
- config FB_RPISENSE
- 	tristate "Raspberry Pi Sense HAT framebuffer"
- 	depends on FB
+-- 
+2.11.0
+
