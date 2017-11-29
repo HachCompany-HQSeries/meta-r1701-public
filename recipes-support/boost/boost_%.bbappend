@@ -1,5 +1,4 @@
 BOOST_LIBS = "\
-	chrono \
-	system \
+    system \
     thread \
-	"
+"

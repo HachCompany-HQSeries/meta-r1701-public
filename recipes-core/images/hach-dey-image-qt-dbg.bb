@@ -4,16 +4,19 @@ LICENSE = "MIT"
 require recipes-core/images/dey-image-qt.bb
 
 IMAGE_INSTALL += " \
-    tmux \
-    devmem2 \
+    suspend-resume \
+    rsync \
     htop \
+    devmem2 \
 "
 
 # Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
-    debug-tweaks \
+    package-management \
     eclipse-debug \
     qtcreator-debug \
+    debug-tweaks \
     tools-debug \
     ssh-server-openssh \
-"
+
+export IMAGE_BASENAME = "hach-dey-image-qt-dbg"

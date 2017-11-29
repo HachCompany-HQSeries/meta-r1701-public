@@ -6,10 +6,8 @@ require recipes-core/images/core-image-base.bb
 inherit populate_sdk_qt5
 
 IMAGE_INSTALL += " \
-    rsync \
-    zeromq \
     boost \
-    protobuf \
+    zeromq \
     fcgi \
     sqlite3 \
     busybox-udhcpd \
@@ -35,9 +33,6 @@ inherit dey-image
 # Do not install udev-cache.
 BAD_RECOMMENDATIONS += "udev-cache"
 
-# Add a new filesystem
-IMAGE_FSTYPES_append = " sdcard"
-
 # Assign a password to root account.
 inherit extrausers
 EXTRA_USERS_PARAMS += " \
@@ -46,4 +41,4 @@ EXTRA_USERS_PARAMS += " \
 
 DISTRO_FEATURES_remove = "x11"
 
-export IMAGE_BASENAME = "hach-image"
+export IMAGE_BASENAME = "hach-core-image-base"

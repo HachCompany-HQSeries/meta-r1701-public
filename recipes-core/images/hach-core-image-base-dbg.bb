@@ -5,9 +5,9 @@ require hach-core-image-base.bb
 
 IMAGE_INSTALL += " \
     suspend-resume \
+    rsync \
     htop \
     devmem2 \
-    tmux \
 "
 
 IMAGE_FEATURES += " \
@@ -16,4 +16,7 @@ IMAGE_FEATURES += " \
     qtcreator-debug \
     debug-tweaks \
     tools-debug \
+    ssh-server-openssh \
 "
+
+export IMAGE_BASENAME = "hach-core-image-base-dbg"
