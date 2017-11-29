@@ -15,4 +15,5 @@ IMAGE_FEATURES += " \
     eclipse-debug \
     qtcreator-debug \
     tools-debug \
+    ssh-server-openssh \
 "
