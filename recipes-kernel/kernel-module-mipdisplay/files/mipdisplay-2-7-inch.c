@@ -3,7 +3,7 @@
 //!
 //! @brief Entry point into kernel module for Sharp memory display framebuffer driver
 //! @section DESCRIPTION
-//! The following file is responsible for initializing and setting up framebuffer driver framework for Sharp memory  
+//! The following file is responsible for initializing and setting up framebuffer driver framework for Sharp memory
 //! display. This driver exports the framebuffer character driver ex. "/dev/fb1" for user space to use.
 //! @copyright     Hach Confidential
 //!                Copyright(c) (2017)
@@ -42,7 +42,7 @@
 #define LOW			0
 
 /* Display Line Buffer structure  - 52 Bytes */
-struct LineBuffer {	
+struct LineBuffer {
 	__u8 linenum;
 	__u8 data[WIDTH/8];
 	__u8 trailer;
@@ -102,7 +102,7 @@ static __u8 reverseByte(__u8 f_byteIn)
 {
 	f_byteIn = (f_byteIn & 0xF0) >> 4 | (f_byteIn & 0x0F) << 4;
 	f_byteIn = (f_byteIn & 0xCC) >> 2 | (f_byteIn & 0x33) << 2;
-	f_byteIn = (f_byteIn & 0xAA) >> 1 | (f_byteIn & 0x55) << 1;  
+	f_byteIn = (f_byteIn & 0xAA) >> 1 | (f_byteIn & 0x55) << 1;
 	return f_byteIn;
 }
 
@@ -165,7 +165,7 @@ static void mipdisplay_invalidate(struct fb_info *info, int y, int height)
 
 static ssize_t mipdisplay_write(struct fb_info *info, const char __user *buf, size_t count, loff_t *ppos)
 {
-	ssize_t ret;	
+	ssize_t ret;
 	ret = fb_sys_write(info, buf, count, ppos);
 
 	/* TODO: only mark changed area update all for now */
@@ -278,14 +278,14 @@ static int mipdisplay_spi_probe(struct spi_device *spi)
 {
 	int ret;
 	struct mipdisplay_par *privdata;
-	struct device_node *np = spi->dev.of_node;	
+	struct device_node *np = spi->dev.of_node;
 
 	privdata = (struct mipdisplay_par*)kzalloc(sizeof(struct mipdisplay_par), GFP_KERNEL);
 	if(privdata == NULL){
 		pr_err(KERN_ERR "%s: MIP display private data allication failed!\n", __func__);
 		return -ENOMEM;
 	}
- 
+
 	privdata->info = framebuffer_alloc(sizeof(struct mipdisplay_par), &spi->dev);
 	if(privdata->info == NULL){
 		pr_err(KERN_ERR "%s: Framebuffer allocation failed!\n", __func__);
@@ -313,7 +313,7 @@ static int mipdisplay_spi_probe(struct spi_device *spi)
 	privdata->info->flags		= FBINFO_FLAG_DEFAULT | FBINFO_VIRTFB;
 
 	fb_deferred_io_init(privdata->info);
-	 
+
 	ret = register_framebuffer(privdata->info);
 	if(ret < 0){
 		pr_err(KERN_ERR "%s: FB registration failed!\n", __func__);
@@ -394,7 +394,7 @@ static int mipdisplay_spi_remove(struct spi_device *spi)
 	struct mipdisplay_par *privdata = (struct mipdisplay_par*)spi_get_drvdata(spi);
 	spi_set_drvdata(spi, NULL);
 
-	if(privdata){	
+	if(privdata){
 		fb_deferred_io_cleanup(privdata->info);
 
 		mipdisplay_Off(privdata);
@@ -413,7 +413,7 @@ static int mipdisplay_spi_remove(struct spi_device *spi)
 	}
 	else{
 		pr_warn(KERN_WARNING "%s - Private data structure pointer is NULL!!\n", __func__);
-	}	
+	}
 
 	pr_info("%s - MIP Display FB SYSFS driver removed!\n", __func__);
 	return 0;
@@ -422,19 +422,25 @@ static int mipdisplay_spi_remove(struct spi_device *spi)
 #ifdef CONFIG_PM_SLEEP
 static int mipdisplay_suspend(struct device *dev)
 {
+    /*
 	struct mipdisplay_par *par;
 	struct spi_device *spi = to_spi_device(dev);
 	par = (struct mipdisplay_par*)spi_get_drvdata(spi);
-	mipdisplay_Off(par);
+	//mipdisplay_Off(par);
+    gpio_set_value(par->disp, LOW);
+    */
 	return 0;
 }
 
 static int mipdisplay_resume(struct device *dev)
 {
+    /*
 	struct mipdisplay_par *par;
 	struct spi_device *spi = to_spi_device(dev);
 	par = (struct mipdisplay_par*)spi_get_drvdata(spi);
-	return mipdisplay_On(par);
+    gpio_set_value(par->disp, HIGH);
+    */
+	return 0;//mipdisplay_On(par);
 }
 
 static SIMPLE_DEV_PM_OPS(mipdisplay_pm_ops, mipdisplay_suspend, mipdisplay_resume);
