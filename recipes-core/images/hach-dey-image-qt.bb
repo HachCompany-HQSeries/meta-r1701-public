@@ -5,6 +5,8 @@ require recipes-core/images/dey-image-qt.bb
 
 inherit populate_sdk_qt5
 
+IMAGE_LINGUAS = "en-us"
+
 IMAGE_INSTALL += " \
     boost \
     zeromq \
