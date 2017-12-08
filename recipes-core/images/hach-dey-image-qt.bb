@@ -13,6 +13,7 @@ IMAGE_INSTALL += " \
     fcgi \
     sqlite3 \
     busybox-udhcpd \
+    r1701-apps \
 "
 
 # Add predefined runtime package groups. 

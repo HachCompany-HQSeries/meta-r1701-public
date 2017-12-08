@@ -1,11 +1,11 @@
 #!/bin/sh
 case "$1" in
   start)
-        start-stop-daemon -b -S -q -m -p /var/run/simpleserver.pid --exec /usr/bin/simpleserver
+        start-stop-daemon -S -q -m -p /var/run/sys_mgr.pid --exec /usr/bin/sys_mgr -- -d
         echo "OK"
         ;;
   stop)
-        start-stop-daemon -K -q -p /var/run/simpleserver.pid
+        start-stop-daemon -K -q -p /var/run/sys_mgr.pid
         echo "OK"
         ;;
   *)
