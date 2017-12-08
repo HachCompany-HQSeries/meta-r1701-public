@@ -27,14 +27,8 @@ EXTRA_OECMAKE += "-DUNIT_TEST=OFF \
                   -DCMAKE_CXX_EXTENSIONS=OFF \
                   -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE}/qt5 \
 "
-#fontdir = "${datadir}/fonts"
-#FILES_${PN} += "${fontdir}/*"
 
 do_install_append() {
-    # Install Noto font into /usr/share/fonts
-    #install -m 0755 -d ${D}${fontdir}
-    #install -m 0755 ${S}/fonts/NotoSansPlus.ttf ${D}${fontdir}
-
 	install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
 	install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
 }
