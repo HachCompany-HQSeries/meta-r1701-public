@@ -8,5 +8,6 @@ SRC_URI_append = " \
     file://0005-dts-r1701-Remove-all-unused-interfaces.patch \
     file://0006-dts-r1701-Configure-usbotg1-as-OTG-instead-of-host.patch \
     file://0007-Enable-the-ethernet-in-r1701-device-trees.patch \
+    file://0008-Adding-MIP-Display-support-to-device-tree.patch \
 "
 
