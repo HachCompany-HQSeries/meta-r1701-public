@@ -88,9 +88,10 @@ int sysfs_rtc_alrm_in_n_seconds(unsigned int nsec)
 		return -ENOMEM;
 	}
 
-	return sysfs_write(SYSFS_RTC_WAKEALARM,
-			   buf,
-			   strlen(buf));
+	ret = sysfs_write(SYSFS_RTC_WAKEALARM, buf, strlen(buf));
+    free(buf);
+
+	return ret;
 }
 
 int sysfs_gpio_export(unsigned int gpio)
@@ -246,6 +247,7 @@ int main(int argc, char **argv, char **envp)
 //		goto exit_1;
 
 	while (app_running) {
+        system("cat /dev/random > /dev/fb0");
 		ret = sysfs_rtc_alrm_in_n_seconds(1);
 		if (!ret) {
 			//sysfs_gpio_set_val(GPIO1, 0);
