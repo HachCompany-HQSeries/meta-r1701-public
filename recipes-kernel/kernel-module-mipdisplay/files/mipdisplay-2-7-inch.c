@@ -67,6 +67,7 @@ struct mipdisplay_par {
 	spinlock_t		dirty_lock;
 	int			dirty_line_start;
 	int			dirty_line_end;
+	int			oktosleep;
 };
 
 static struct fb_fix_screeninfo mipdisplay_fix = {
@@ -166,6 +167,9 @@ static void mipdisplay_invalidate(struct fb_info *info, int y, int height)
 static ssize_t mipdisplay_write(struct fb_info *info, const char __user *buf, size_t count, loff_t *ppos)
 {
 	ssize_t ret;
+
+	((struct mipdisplay_par*)info->par)->oktosleep = 1;
+
 	ret = fb_sys_write(info, buf, count, ppos);
 
 	/* TODO: only mark changed area update all for now */
@@ -176,18 +180,21 @@ static ssize_t mipdisplay_write(struct fb_info *info, const char __user *buf, si
 
 static void mipdisplay_fillrect(struct fb_info *info, const struct fb_fillrect *rect)
 {
+	((struct mipdisplay_par*)info->par)->oktosleep = 1;
 	sys_fillrect(info, rect);
 	mipdisplay_invalidate(info, rect->dy, rect->height);
 }
 
 static void mipdisplay_copyarea(struct fb_info *info, const struct fb_copyarea *area)
 {
+	((struct mipdisplay_par*)info->par)->oktosleep = 1;
 	sys_copyarea(info, area);
 	mipdisplay_invalidate(info, area->dy, area->height);
 }
 
 static void mipdisplay_imageblit(struct fb_info *info, const struct fb_image *image)
 {
+	((struct mipdisplay_par*)info->par)->oktosleep = 1;
 	sys_imageblit(info, image);
 	mipdisplay_invalidate(info, image->dy, image->height);
 }
@@ -258,6 +265,7 @@ static void mipdisplay_update(struct fb_info *info, struct list_head *pagelist)
 	// Write all Black
 	if(spi_write(par->spi, &par->spi_xfer_buf[0], totalXferBytes) < 0)
 		pr_err(KERN_ERR "%s:%s spi_write failed to update display buffer\n", __func__, par->info->fix.id);
+	((struct mipdisplay_par*)info->par)->oktosleep = 0;
 }
 
 static struct fb_ops mipdisplay_ops = {
@@ -422,13 +430,13 @@ static int mipdisplay_spi_remove(struct spi_device *spi)
 #ifdef CONFIG_PM_SLEEP
 static int mipdisplay_suspend(struct device *dev)
 {
-    /*
+
 	struct mipdisplay_par *par;
 	struct spi_device *spi = to_spi_device(dev);
 	par = (struct mipdisplay_par*)spi_get_drvdata(spi);
-	//mipdisplay_Off(par);
-    gpio_set_value(par->disp, LOW);
-    */
+	while(par->oktosleep){
+		msleep(25);
+	}
 	return 0;
 }
 
