@@ -204,6 +204,7 @@ static void mipdisplay_update(struct fb_info *info, struct list_head *pagelist)
 	struct page *page;
 	struct LineBuffer *line;
 	struct mipdisplay_par *par = info->par;
+	par->oktosleep = 1;
 	unsigned long index;
 	int width, height, dirty_line_start, dirty_line_end;
 	int y_low = 0, y_high = 0;
