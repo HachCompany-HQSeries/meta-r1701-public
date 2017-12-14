@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------------------------------------//
-//! @file mipdisplay-2-7-inch.c
+//! @file mipdisplay-3-2-inch.c
 //!
 //! @brief Entry point into kernel module for Sharp memory display framebuffer driver
 //! @section DESCRIPTION
@@ -23,8 +23,8 @@
 #include <linux/string.h>
 #include <asm/io.h>
 
-#define WIDTH			400
-#define HEIGHT			240
+#define WIDTH			336
+#define HEIGHT			536
 #define BPP			1
 #define SCREEN_SIZE 		((WIDTH * HEIGHT * BPP) / 8)
 
@@ -35,18 +35,17 @@
 #define HIGH			1
 #define LOW			0
 
-/* Display Line Buffer structure  - 52 Bytes */
+/* Display Line Buffer structure # 42 + 2 = 44 Bytes */
 struct LineBuffer {
-	__u8 linenum;
+	__u8 cmd;
+	__u8 addrline;
 	__u8 data[WIDTH/8];
-	__u8 trailer;
 }__attribute__((packed));
 
-/* Entire frame SPI transfer structure - 1 + (52 * 240) + 1 + 30 = 12512 Bytes */
+/* Entire frame SPI transfer structure - (44 * 536) + 32 = 23616 Bytes (32B aligned)*/
 struct EntireFrameXferBuffer {
-	__u8 cmd;
 	struct LineBuffer linebuf[HEIGHT];
-	__u8 trailer[31];
+	__u8 trailer[32];
 }__attribute__((packed));
 
 /* MIP display data structure, holds all relevant data to operate the display */
@@ -54,7 +53,7 @@ struct mipdisplay_par {
 	struct spi_device	*spi;
 	struct fb_info 		*info;
 	struct task_struct	*task;
-	__u8			*videomem;
+	__u8 			*videomem;
 	__u8			*spi_xfer_buf;
 	int			disp;
 	int			extcomin;
@@ -65,7 +64,7 @@ struct mipdisplay_par {
 };
 
 static struct fb_fix_screeninfo mipdisplay_fix = {
-	.id		= "LS027B7DH01",
+	.id		= "LS032B7DD02",
 	.type		= FB_TYPE_PACKED_PIXELS,
 	.visual		= FB_VISUAL_MONO10,
 	.xpanstep	= 0,
@@ -93,12 +92,19 @@ static struct fb_var_screeninfo mipdisplay_var = {
 	.vmode 		= FB_VMODE_NONINTERLACED,
 };
 
-static __u8 reverseByte(__u8 f_byteIn)
-{
-	f_byteIn = (f_byteIn & 0xF0) >> 4 | (f_byteIn & 0x0F) << 4;
-	f_byteIn = (f_byteIn & 0xCC) >> 2 | (f_byteIn & 0x33) << 2;
-	f_byteIn = (f_byteIn & 0xAA) >> 1 | (f_byteIn & 0x55) << 1;
-	return f_byteIn;
+static __u16 reverse_u16(__u16 value){
+
+	/* No need to convert entire 16 bit, we only care for A0-A9 line address bits */
+	return (((value & 0b0000000000000001) ? 0b0000001000000000 : 0 ) | \
+		((value & 0b0000000000000010) ? 0b0000000100000000 : 0 ) | \
+		((value & 0b0000000000000100) ? 0b0000000010000000 : 0 ) | \
+		((value & 0b0000000000001000) ? 0b0000000001000000 : 0 ) | \
+		((value & 0b0000000000010000) ? 0b0000000000100000 : 0 ) | \
+		((value & 0b0000000000100000) ? 0b0000000000010000 : 0 ) | \
+		((value & 0b0000000001000000) ? 0b0000000000001000 : 0 ) | \
+		((value & 0b0000000010000000) ? 0b0000000000000100 : 0 ) | \
+		((value & 0b0000000100000000) ? 0b0000000000000010 : 0 ) | \
+		((value & 0b0000001000000000) ? 0b0000000000000001 : 0 ));
 }
 
 static int mipdisplay_toggle_extcomin_sig(void* arg)
@@ -161,12 +167,8 @@ static void mipdisplay_invalidate(struct fb_info *info, int y, int height)
 static ssize_t mipdisplay_write(struct fb_info *info, const char __user *buf, size_t count, loff_t *ppos)
 {
 	ssize_t ret;
-
 	((struct mipdisplay_par*)info->par)->oktosleep = 1;
-
 	ret = fb_sys_write(info, buf, count, ppos);
-
-	/* TODO: only mark changed area update all for now */
 	mipdisplay_invalidate(info, -1, 0);
 
 	return ret;
@@ -202,15 +204,16 @@ static void mipdisplay_update(struct fb_info *info, struct list_head *pagelist)
 	int width, height, dirty_line_start, dirty_line_end;
 	int y_low = 0, y_high = 0;
 	size_t totalXferBytes;
+	__u16 revAddr;
 	par->oktosleep = 1;
 
 	spin_lock(&par->dirty_lock);
+
 	dirty_line_start = par->dirty_line_start;
 	dirty_line_end = par->dirty_line_end;
-
-	/* set display line markers as clean */
 	par->dirty_line_start = par->info->var.yres - 1;
 	par->dirty_line_end = 0;
+
 	spin_unlock(&par->dirty_lock);
 
 	/* walk the written page list and find out the memory change in lines */
@@ -218,6 +221,7 @@ static void mipdisplay_update(struct fb_info *info, struct list_head *pagelist)
 		index = page->index << PAGE_SHIFT;
 		y_low = index / info->fix.line_length;
 		y_high = (index + PAGE_SIZE - 1) / info->fix.line_length;
+		//pr_info("%s - page->index=%lu y_low=%d y_high=%d\n", __func__, page->index, y_low, y_high);
 		if (y_high > info->var.yres - 1)
 			y_high = info->var.yres - 1;
 		if (y_low < dirty_line_start)
@@ -241,23 +245,21 @@ static void mipdisplay_update(struct fb_info *info, struct list_head *pagelist)
 	}
 
 	// CMD + Total Lines to transfer + trailer and make total size 32 bytes align for proper SPI DMA transfer
-	totalXferBytes = sizeof(char) +
-			(sizeof(struct LineBuffer) * (dirty_line_end - dirty_line_start + 1)) +
-			sizeof(char);
+	totalXferBytes = sizeof(char) + (sizeof(struct LineBuffer) * (dirty_line_end - dirty_line_start + 1)) + sizeof(char);
 	if(totalXferBytes % 32)
 		totalXferBytes += (32 - (totalXferBytes % 32));
-
 	memset(par->spi_xfer_buf, 0, totalXferBytes);
-	par->spi_xfer_buf[0] = CMD_WR;
-	line = (struct LineBuffer*)&par->spi_xfer_buf[1];
+	line = (struct LineBuffer*)&par->spi_xfer_buf[0];
+	line->cmd = CMD_WR;
 	for(height = dirty_line_start; height <= dirty_line_end; height++){
-		line->linenum = reverseByte(height + 1);
+		revAddr = reverse_u16(height + 1);
+		line->cmd |= (__u8)(revAddr >> 8);
+		line->addrline = (__u8)(revAddr & 0xFF);
 		for(width = 0; width < par->info->fix.line_length; width++)
 			line->data[width] = (0xFF ^ par->videomem[(height * par->info->fix.line_length) + width]);
 		line++;
 	}
 
-	// Write all Black
 	if(spi_write(par->spi, &par->spi_xfer_buf[0], totalXferBytes) < 0)
 		pr_err(KERN_ERR "%s:%s spi_write failed to update display buffer\n", __func__, par->info->fix.id);
 	par->oktosleep = 0;
@@ -344,7 +346,7 @@ static int mipdisplay_spi_probe(struct spi_device *spi)
 		goto free_extcomin_pin;
 	}
 
-	privdata->spi_xfer_buf = (__u8*)kzalloc(sizeof(struct EntireFrameXferBuffer), GFP_DMA);
+	privdata->spi_xfer_buf = (unsigned char*)kzalloc(sizeof(struct EntireFrameXferBuffer), GFP_DMA);
 	if(privdata->spi_xfer_buf == NULL){
 		pr_err(KERN_ERR "%s: SPI transfer buffer allocation failed!\n", __func__);
 		goto spi_xfer_buf_failed;
@@ -448,14 +450,14 @@ static SIMPLE_DEV_PM_OPS(mipdisplay_pm_ops, mipdisplay_suspend, mipdisplay_resum
 #endif
 
 static const struct of_device_id dt_ids[] = {
-    { .compatible = "sharp,ls027b7dh01" },
+    { .compatible = "sharp,ls032b7dd02" },
     {},
 };
 MODULE_DEVICE_TABLE(of, dt_ids);
 
 static struct spi_driver mipdisplay_spi_driver = {
 	.driver = {
-		.name   = "Sharp-LS027B7DH01",
+		.name   = "Sharp-LS032B7DD02",
 		.owner  = THIS_MODULE,
 		.pm	= MIPDISPLAY_PM_OPS,
 		.of_match_table = of_match_ptr(dt_ids),
@@ -466,7 +468,7 @@ static struct spi_driver mipdisplay_spi_driver = {
 };
 module_spi_driver(mipdisplay_spi_driver);
 
-MODULE_ALIAS("spi:sharp,ls027b7dh01");
-MODULE_DESCRIPTION("Sharp 2.7 inch landscape Memory LCD Driver");
+MODULE_ALIAS("spi:sharp,ls032b7dd02");
+MODULE_DESCRIPTION("Sharp 3.2 inch portrait Memory LCD Driver");
 MODULE_AUTHOR("Devang Patel");
 MODULE_LICENSE("GPL v2");
