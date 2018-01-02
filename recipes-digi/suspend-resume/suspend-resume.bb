@@ -14,4 +14,4 @@ do_install() {
     install -m 0755 suspram ${D}${bindir}
 }
 
-COMPATIBLE_MACHINE = "(ccimx6ul)"
+COMPATIBLE_MACHINE = "(ccimx6ul | r1701)"

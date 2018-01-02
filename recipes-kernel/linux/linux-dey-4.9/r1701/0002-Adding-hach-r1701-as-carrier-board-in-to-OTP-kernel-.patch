@@ -1,0 +1,25 @@
+From a72d406be5af2bd28d67d53682dd745733edb3c7 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Wed, 27 Dec 2017 12:10:30 -0700
+Subject: [PATCH 2/3] Adding hach,r1701 as carrier board in to OTP kernel
+ driver (One time programmable) to match device tree files
+
+---
+ drivers/char/fsl_otp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/char/fsl_otp.c b/drivers/char/fsl_otp.c
+index ba04291..e0096f0 100644
+--- a/drivers/char/fsl_otp.c
++++ b/drivers/char/fsl_otp.c
+@@ -799,6 +799,7 @@ static int fsl_register_carrierboard(void) {
+ 		"digi,ccimx6sbc",
+ 		"digi,ccimx6ulstarter",
+ 		"digi,ccimx6ulsbc",
++		"hach,r1701",
+ 	};
+ 
+ 	for (i = 0; i < ARRAY_SIZE(compat_machines); i++) {
+-- 
+2.7.4
+
