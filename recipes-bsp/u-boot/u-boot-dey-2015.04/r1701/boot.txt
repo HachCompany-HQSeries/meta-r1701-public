@@ -11,6 +11,10 @@
 	#
 	# Set device tree filename depending on the hardware variant
 	#
+
+	# Set default file as non wireless DTB file.
+	setenv fdt_file zImage-imx6ul-r1701.dtb
+
 	if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
 		setenv fdt_file zImage-imx6ul-r1701-wb.dtb
 	elif test "${module_variant}" = "0x03"; then
