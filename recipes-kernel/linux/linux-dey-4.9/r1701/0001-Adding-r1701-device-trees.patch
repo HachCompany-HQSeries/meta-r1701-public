@@ -1,18 +1,18 @@
-From 04def29db2fd23c8b7ad5480cb0441bb8511c836 Mon Sep 17 00:00:00 2001
+From 1834f6c0d043465cb18193c7618fdb97c23822bc Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Wed, 27 Dec 2017 12:08:42 -0700
-Subject: [PATCH 1/3] Adding r1701 device trees
+Date: Wed, 3 Jan 2018 14:29:09 -0700
+Subject: [PATCH] Adding r1701 device trees
 
 ---
  arch/arm/boot/dts/Makefile            |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 316 ++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 306 ++++++++++++++++++++++++++++++++
- 3 files changed, 625 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 324 ++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 314 ++++++++++++++++++++++++++++++++
+ 3 files changed, 641 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index ff8eee5..2c1fb9a 100644
+index ff8eee5..f1d6a94 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
 @@ -530,7 +530,9 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
@@ -21,17 +21,17 @@ index ff8eee5..2c1fb9a 100644
  	imx6ul-ccimx6ulstarter-wb.dtb \
 -	imx6ul-ccimx6ulstarter-wb-mfg.dtb
 +	imx6ul-ccimx6ulstarter-wb-mfg.dtb \
-+	imx6ul-r1701-wb.dtb \
++   imx6ul-r1701-wb.dtb \
 +	imx6ul-r1701.dtb
  dtb-$(CONFIG_SOC_IMX6ULL) += \
  	imx6ull-14x14-ddr3-arm2.dtb \
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 0000000..a61c4eb
+index 0000000..3c6f829
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-@@ -0,0 +1,316 @@
+@@ -0,0 +1,324 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -53,7 +53,7 @@ index 0000000..a61c4eb
 +#include "imx6ul-ccimx6ul-wb.dtsi"
 +
 +/ {
-+	model = "HACH r1701";
++	model = "Hach r1701";
 +	compatible = "hach,r1701", "digi,ccimx6ul", "fsl,imx6ul";
 +	hach,machine,name = "r1701";
 +
@@ -78,18 +78,31 @@ index 0000000..a61c4eb
 +				&gpio1 15 GPIO_ACTIVE_HIGH
 +			    >;
 +
-+		/* Currenly all KEY_XYZ map are assigned for the sake of defining. We have to check actual MATRIX keys
-+		 * formation based on ROWS and COLUMNS on hardware to map actual key to below list.
++		/* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on NXL keypad hardware
++		 * 		COL_0		COL_1
++		 * --------------||--------------||--------
++		 * 		 ||
++		 * ROW_0 ----- Left Softkey --- Info Key --
++		 * 		 ||		 ||
++		 * ROW_1 ----- UP Key --------- Left Key --
++		 * 		 ||		 ||
++		 * ROW_2 ----- Right key ------ Down key --
++		 * 		 ||		 ||
++		 * ROW_3 ----- Right Softkey -- Menu Key --
++		 * 		 ||		 ||
++		 * --------------||--------------||--------
++		 *
++		 * key assignment MACRO definition - MATRIX_KEY(row, col, code)
 +		 */
 +		linux,keymap = <
-+				MATRIX_KEY(0, 0, KEY_UP)
-+				MATRIX_KEY(0, 1, KEY_DOWN)
-+				MATRIX_KEY(1, 0, KEY_LEFT)
-+				MATRIX_KEY(1, 1, KEY_RIGHT)
-+				MATRIX_KEY(2, 0, KEY_LEFTCTRL)
-+				MATRIX_KEY(2, 1, KEY_RIGHTCTRL)
-+				MATRIX_KEY(3, 0, KEY_MENU)
-+				MATRIX_KEY(3, 1, KEY_INFO)
++				MATRIX_KEY(0, 0, KEY_LEFTCTRL)
++				MATRIX_KEY(0, 1, KEY_INFO)
++				MATRIX_KEY(1, 0, KEY_UP)
++				MATRIX_KEY(1, 1, KEY_LEFT)
++				MATRIX_KEY(2, 0, KEY_RIGHT)
++				MATRIX_KEY(2, 1, KEY_DOWN)
++				MATRIX_KEY(3, 0, KEY_RIGHTCTRL)
++				MATRIX_KEY(3, 1, KEY_MENU)
 +			       >;
 +
 +		/* Debounce time and column scan time can be adjusted based on our need. These values are the defaults
@@ -132,7 +145,7 @@ index 0000000..a61c4eb
 +	phy-reset-gpios = <&mca_gpio 7 GPIO_ACTIVE_LOW>;
 +	phy-reset-duration = <26>;
 +	digi,phy-reset-in-suspend;
-+	status = "disabled";
++	status = "okay";
 +
 +	mdio {
 +		#address-cells = <1>;
@@ -322,11 +335,6 @@ index 0000000..a61c4eb
 +				// Expansion header pin 29 - GPIO1_5
 +				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0x10b0
 +
-+				/* NOTE - Somehow these below JTAG & I2C_2 lines as GPIOs are not working on starter
-+				 * 	  board inspite of I2C_2 bus is not defined as well as JTAG. Hence MATRIX KEYPAD
-+				 * 	  is not working.
-+				 */
-+
 +				// I2C_2 bus line used as GPIO on expansion header Pin 5
 +				MX6UL_PAD_GPIO1_IO00__GPIO1_IO00	0x10b0
 +
@@ -350,10 +358,10 @@ index 0000000..a61c4eb
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 0000000..3ae4aaa
+index 0000000..4595564
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,306 @@
+@@ -0,0 +1,314 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -375,7 +383,7 @@ index 0000000..3ae4aaa
 +#include "imx6ul-ccimx6ul.dtsi"
 +
 +/ {
-+	model = "HACH r1701";
++	model = "Hach r1701";
 +	compatible = "hach,r1701", "digi,ccimx6ul", "fsl,imx6ul";
 +	hach,machine,name = "r1701";
 +
@@ -400,18 +408,31 @@ index 0000000..3ae4aaa
 +				&gpio1 15 GPIO_ACTIVE_HIGH
 +			    >;
 +
-+		/* Currenly all KEY_XYZ map are assigned for the sake of defining. We have to check actual MATRIX keys
-+		 * formation based on ROWS and COLUMNS on hardware to map actual key to below list.
++		/* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on NXL keypad hardware
++		 * 		COL_0		COL_1
++		 * --------------||--------------||--------
++		 * 		 ||
++		 * ROW_0 ----- Left Softkey --- Info Key --
++		 * 		 ||		 ||
++		 * ROW_1 ----- UP Key --------- Left Key --
++		 * 		 ||		 ||
++		 * ROW_2 ----- Right key ------ Down key --
++		 * 		 ||		 ||
++		 * ROW_3 ----- Right Softkey -- Menu Key --
++		 * 		 ||		 ||
++		 * --------------||--------------||--------
++		 *
++		 * key assignment MACRO definition - MATRIX_KEY(row, col, code)
 +		 */
 +		linux,keymap = <
-+				MATRIX_KEY(0, 0, KEY_UP)
-+				MATRIX_KEY(0, 1, KEY_DOWN)
-+				MATRIX_KEY(1, 0, KEY_LEFT)
-+				MATRIX_KEY(1, 1, KEY_RIGHT)
-+				MATRIX_KEY(2, 0, KEY_LEFTCTRL)
-+				MATRIX_KEY(2, 1, KEY_RIGHTCTRL)
-+				MATRIX_KEY(3, 0, KEY_MENU)
-+				MATRIX_KEY(3, 1, KEY_INFO)
++				MATRIX_KEY(0, 0, KEY_LEFTCTRL)
++				MATRIX_KEY(0, 1, KEY_INFO)
++				MATRIX_KEY(1, 0, KEY_UP)
++				MATRIX_KEY(1, 1, KEY_LEFT)
++				MATRIX_KEY(2, 0, KEY_RIGHT)
++				MATRIX_KEY(2, 1, KEY_DOWN)
++				MATRIX_KEY(3, 0, KEY_RIGHTCTRL)
++				MATRIX_KEY(3, 1, KEY_MENU)
 +			       >;
 +
 +		/* Debounce time and column scan time can be adjusted based on our need. These values are the defaults
@@ -454,7 +475,7 @@ index 0000000..3ae4aaa
 +	phy-reset-gpios = <&mca_gpio 7 GPIO_ACTIVE_LOW>;
 +	phy-reset-duration = <26>;
 +	digi,phy-reset-in-suspend;
-+	status = "disabled";
++	status = "okay";
 +
 +	mdio {
 +		#address-cells = <1>;
@@ -633,11 +654,6 @@ index 0000000..3ae4aaa
 +
 +				// Expansion header pin 29 - GPIO1_5
 +				MX6UL_PAD_GPIO1_IO05__GPIO1_IO05	0x10b0
-+
-+				/* NOTE - Somehow these below JTAG & I2C_2 lines as GPIOs are not working on starter
-+				 * 	  board inspite of I2C_2 bus is not defined as well as JTAG. Hence MATRIX KEYPAD
-+				 * 	  is not working.
-+				 */
 +
 +				// I2C_2 bus line used as GPIO on expansion header Pin 5
 +				MX6UL_PAD_GPIO1_IO00__GPIO1_IO00	0x10b0
