@@ -15,13 +15,13 @@
 	# Set default file as non wireless DTB file.
 	setenv fdt_file zImage-imx6ul-r1701.dtb
 
-	if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
-		setenv fdt_file zImage-imx6ul-r1701-wb.dtb
-	elif test "${module_variant}" = "0x03"; then
-		setenv fdt_file zImage-imx6ul-r1701.dtb
-	else
-		echo "------ Using default fdt_file: $fdt_file"
-	fi
+	#if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
+		#setenv fdt_file zImage-imx6ul-r1701-wb.dtb
+	#elif test "${module_variant}" = "0x03"; then
+		#setenv fdt_file zImage-imx6ul-r1701.dtb
+	#else
+		#echo "------ Using default fdt_file: $fdt_file"
+	#fi
 #fi
 
 if test "${mtdbootpart}" = "recovery"; then
