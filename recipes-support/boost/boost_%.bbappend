@@ -3,4 +3,5 @@ BOOST_LIBS = "\
     thread \
     filesystem \
     program_options \
+    chrono \
 "
