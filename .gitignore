@@ -5,4 +5,4 @@
 *.order
 *.ko
 *.mod.c
-
+.directory
