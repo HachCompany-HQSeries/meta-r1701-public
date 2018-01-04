@@ -14,7 +14,6 @@ IMAGE_INSTALL += " \
     sqlite3 \
     busybox-udhcpd \
     u-boot-fw-utils \
-    r1701-apps \
 "
 
 # Add predefined runtime package groups.
@@ -22,12 +21,13 @@ IMAGE_FEATURES += " \
     ssh-server-openssh \
 "
 
-# Assign a password to root account.
+# Assign a password to root account.:q
 inherit extrausers
 EXTRA_USERS_PARAMS += " \
     usermod -P hqd123 root; \
 "
 
-DISTRO_FEATURES_remove = "x11"
+# Remove distribution feature.
+DISTRO_FEATURES_remove = "x11 wifi bluetooth"
 
 export IMAGE_BASENAME = "hach-dey-image-qt"
