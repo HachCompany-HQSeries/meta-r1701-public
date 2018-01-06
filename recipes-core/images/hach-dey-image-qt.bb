@@ -14,7 +14,6 @@ IMAGE_INSTALL += " \
     sqlite3 \
     busybox-udhcpd \
     u-boot-fw-utils \
-    r1701-apps \
 "
 
 # Add predefined runtime package groups.
