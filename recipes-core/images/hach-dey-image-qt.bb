@@ -14,6 +14,7 @@ IMAGE_INSTALL += " \
     sqlite3 \
     busybox-udhcpd \
     r1701-apps \
+    protobuf \
 "
 
 # Add predefined runtime package groups. 

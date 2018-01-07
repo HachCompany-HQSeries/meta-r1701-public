@@ -29,6 +29,7 @@ S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
 EXTRA_OECMAKE += "-DUNIT_TEST=OFF \
+                  -DENABLE_CLANG_FORMATTER=OFF \
                   -DCMAKE_CXX_STANDARD=11 \
                   -DCMAKE_CXX_STANDARD_REQUIRED=ON \
                   -DCMAKE_CXX_EXTENSIONS=OFF \
