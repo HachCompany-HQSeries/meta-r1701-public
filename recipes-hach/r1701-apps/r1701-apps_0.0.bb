@@ -8,7 +8,7 @@ DESCRIPTION = "A recipe for building the Hach r1701 target applications."
 LICENSE = "CLOSED"
 
 # Build time dependencies with other recipes.
-DEPENDS += "zeromq boost qtbase protobuf"
+DEPENDS += "zeromq boost qtbase"
 
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
@@ -28,8 +28,8 @@ INITSCRIPT_PARAMS = "defaults 99"
 S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
-EXTRA_OECMAKE += "-DENABLE_CLANG_FORMATTER=OFF \
-                  -DUNIT_TEST=OFF \
+EXTRA_OECMAKE += "-DUNIT_TEST=OFF \
+                  -DENABLE_CLANG_FORMATTER=OFF \
                   -DCMAKE_CXX_STANDARD=11 \
                   -DCMAKE_CXX_STANDARD_REQUIRED=ON \
                   -DCMAKE_CXX_EXTENSIONS=OFF \
