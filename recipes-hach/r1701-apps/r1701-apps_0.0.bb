@@ -8,7 +8,7 @@ DESCRIPTION = "A recipe for building the Hach r1701 target applications."
 LICENSE = "CLOSED"
 
 # Build time dependencies with other recipes.
-DEPENDS += "zeromq boost qtbase"
+DEPENDS += "zeromq boost qtbase protobuf"
 
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
