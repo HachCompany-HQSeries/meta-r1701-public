@@ -19,5 +19,6 @@ BBLAYERS ?= " \
   ##DIGIBASE##/meta-fsl-demos \
   ##DIGIBASE##/meta-digi/meta-digi-arm \
   ##DIGIBASE##/meta-digi/meta-digi-dey \
-  ##DIGIBASE##/meta-r1701 \
-  "
+  ##DIGIBASE##/meta-virtualization \
+  ##DIGIBASE##/meta-r1701 \  
+"
