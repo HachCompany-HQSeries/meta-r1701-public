@@ -1,21 +1,5 @@
-# Copyright (C) 2015-2017 Digi International
+# Copyright (C) 2018 HACH Company
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
-
-SRC_URI += " \
-    file://fw_env.config \
-"
-
-# We do not have a platform defconfig in this version of u-boot, so just use the generic
-# sandbox defconfig, which is enough to build the Linux user-space tool (fw_printenv)
-UBOOT_CONFIG = "sandbox"
-UBOOT_CONFIG[sandbox] = "sandbox_defconfig"
-
-do_install_append() {
-	install -d ${D}${includedir}/libubootenv
-	install -m 0644 ${S}/tools/env/ubootenv.h ${D}${includedir}/libubootenv/
-	install -m 0644 ${WORKDIR}/fw_env.config ${D}${sysconfdir}/
-}
 
 pkg_postinst_${PN}() {
 	# run the postinst script on first boot
@@ -44,9 +28,9 @@ pkg_postinst_${PN}() {
 			# - Both copies starting at the same offset
 			ENV_REDUND_OFFSET="${UBOOT_ENV_OFFSET}"
 			# - Calculated erase block size
-			ERASEBLOCK="$(grep "^${MTDINDEX}" ${PARTTABLE} | awk '{printf("0x%d",$3)}')"
+			ERASEBLOCK="$(grep "^${MTDINDEX}" ${PARTTABLE} | awk '{printf("0x%s",$3)}')"
 			# - Calculated number of blocks
-			MTDSIZE="$(grep "^${MTDINDEX}" ${PARTTABLE} | awk '{printf("0x%d",$2)}')"
+			MTDSIZE="$(grep "^${MTDINDEX}" ${PARTTABLE} | awk '{printf("0x%s",$2)}')"
 			NBLOCKS="$(((MTDSIZE - UBOOT_ENV_OFFSET) / ERASEBLOCK))"
 			# If a range was provided, calculate the number of
 			# blocks in the range and use that number, unless they
@@ -69,4 +53,3 @@ pkg_postinst_${PN}() {
 	fi
 }
 
-COMPATIBLE_MACHINE = "(r1701)"
