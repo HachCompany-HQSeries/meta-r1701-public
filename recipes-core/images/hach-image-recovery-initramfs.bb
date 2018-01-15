@@ -9,4 +9,4 @@ PACKAGE_INSTALL += " \
     kernel-modules \
 "
 
-export IMAGE_BASENAME = "hach-dey-image-recovery-initramfs"
+export IMAGE_BASENAME = "hach-image-recovery-initramfs"

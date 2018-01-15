@@ -1,7 +1,7 @@
 SUMMARY = "A QT5 debug image derived from dey-image-qt"
 LICENSE = "MIT"
 
-require hach-dey-image-qt.bb
+require hach-image.bb
 
 IMAGE_INSTALL += " \
     suspend-resume \
@@ -21,4 +21,4 @@ IMAGE_FEATURES += " \
     tools-debug \
 "
 
-export IMAGE_BASENAME = "hach-dey-image-qt-dbg"
+export IMAGE_BASENAME = "hach-image-dbg"
