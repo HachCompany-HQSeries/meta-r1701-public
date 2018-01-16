@@ -4,5 +4,4 @@ BOOST_LIBS = "\
     filesystem \
 	chrono \
     program_options \
-    chrono \
 "
