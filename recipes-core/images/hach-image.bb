@@ -13,6 +13,7 @@ IMAGE_INSTALL += " \
     fcgi \
     sqlite3 \
     busybox-udhcpd \
+    protobuf \
     r1701-apps \
 "
 
