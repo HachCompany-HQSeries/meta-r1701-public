@@ -1,5 +1,5 @@
 Digi Embedded Yocto provides the following image recipes:
 
-  * hach-core-image-base: A busybox framebuffer image.
+  * hach-image-base: A busybox framebuffer image.
 
-  * hach-dey-image-qt: A QT5 busybox framebuffer image
+  * hach-image: A QT5 busybox framebuffer image
