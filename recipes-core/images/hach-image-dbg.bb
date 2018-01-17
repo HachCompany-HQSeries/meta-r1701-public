@@ -1,7 +1,7 @@
 SUMMARY = "A QT5 debug image derived from dey-image-qt"
 LICENSE = "MIT"
 
-require hach-dey-image-qt.bb
+require hach-image.bb
 
 IMAGE_INSTALL += " \
     suspend-resume \
@@ -12,7 +12,7 @@ IMAGE_INSTALL += " \
     dey-examples-spidev \
 "
 
-# Add predefined runtime package groups.
+# Add predefined runtime package groups. 
 IMAGE_FEATURES += " \
     package-management \
     eclipse-debug \
@@ -32,4 +32,4 @@ IMAGE_FEATURES_remove += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
 "
 
-export IMAGE_BASENAME = "hach-dey-image-qt-dbg"
+export IMAGE_BASENAME = "hach-image-dbg"
