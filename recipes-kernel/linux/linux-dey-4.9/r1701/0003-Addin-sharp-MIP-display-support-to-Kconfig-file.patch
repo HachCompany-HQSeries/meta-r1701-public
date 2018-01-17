@@ -1,7 +1,7 @@
-From 5d7ef4fc481a02620ce4defa56e4ba545450e239 Mon Sep 17 00:00:00 2001
+From 119944c4eac932ec547a8fdd22b9a61da27286c8 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 10 Jan 2018 13:20:54 -0700
-Subject: [PATCH 3/3] Addin sharp MIP display support to Kconfig file
+Subject: [PATCH 3/4] Addin sharp MIP display support to Kconfig file
 
 ---
  drivers/video/fbdev/Kconfig | 14 ++++++++++++++
