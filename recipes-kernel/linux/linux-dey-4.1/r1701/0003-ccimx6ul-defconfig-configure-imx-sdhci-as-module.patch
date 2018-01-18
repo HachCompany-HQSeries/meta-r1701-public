@@ -1,7 +1,7 @@
-From 1b0693a3871015deb2ea76aedadedb57f2862c65 Mon Sep 17 00:00:00 2001
+From 4b895f34a50459b0dcc1aa50eaf316c7747dba9c Mon Sep 17 00:00:00 2001
 From: Pedro Perez de Heredia <pedro.perez@digi.com>
 Date: Tue, 30 May 2017 20:44:36 +0200
-Subject: [PATCH] ccimx6ul defconfig: configure imx sdhci as module
+Subject: [PATCH 03/10] ccimx6ul defconfig: configure imx sdhci as module
 
 This commit configures the sdhci driver for the imx platforms
 as module, to be loaded/unloaded on demmand.
@@ -15,7 +15,7 @@ Signed-off-by: Pedro Perez de Heredia <pedro.perez@digi.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/configs/ccimx6ul_defconfig b/arch/arm/configs/ccimx6ul_defconfig
-index 71f754fe4412..8b7b09e5503f 100644
+index 71f754f..8b7b09e 100644
 --- a/arch/arm/configs/ccimx6ul_defconfig
 +++ b/arch/arm/configs/ccimx6ul_defconfig
 @@ -278,7 +278,7 @@ CONFIG_USB_CDC_COMPOSITE=m
@@ -27,3 +27,6 @@ index 71f754fe4412..8b7b09e5503f 100644
  CONFIG_MXC_IPU=y
  CONFIG_MXC_SIM=y
  CONFIG_NEW_LEDS=y
+-- 
+2.7.4
+
