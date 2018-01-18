@@ -204,6 +204,7 @@ index 0000000..c8bca35
 +	status      = "okay";
 +
 +	/* 2.7" Landscape MIP Display */
++	/*
 +	mipDisplay: ecspi@0{
 +		compatible          = "sharp,ls027b7dh01";
 +		reg                 = <0>;
@@ -213,9 +214,9 @@ index 0000000..c8bca35
 +				      <&gpio3 10 GPIO_ACTIVE_HIGH>;  // EXTCOMIN PIN
 +		status = "okay";
 +	};
++	*/
 +
 +	/* 3.2" Portrait MIP Display */
-+	/*
 +	mipDisplay: ecspi@0{
 +		compatible 		= "sharp,ls032b7dd02";
 +		reg                 = <0>;
@@ -225,7 +226,6 @@ index 0000000..c8bca35
 +				      <&gpio3 10 GPIO_ACTIVE_HIGH>;  // EXTCOMIN PIN
 +		status = "okay";
 +	};
-+	*/
 +};
 +
 +/* All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here */
@@ -537,6 +537,7 @@ index 0000000..52ca11d
 +	status      = "okay";
 +
 +	/* 2.7" Landscape MIP Display */
++	/*
 +	mipDisplay: ecspi@0{
 +		compatible          = "sharp,ls027b7dh01";
 +		reg                 = <0>;
@@ -546,9 +547,9 @@ index 0000000..52ca11d
 +				      <&gpio3 10 GPIO_ACTIVE_HIGH>;  // EXTCOMIN PIN
 +		status = "okay";
 +	};
++	*/
 +
 +	/* 3.2" Portrait MIP Display */
-+	/*
 +	mipDisplay: ecspi@0{
 +		compatible 		= "sharp,ls032b7dd02";
 +		reg                 = <0>;
@@ -558,7 +559,6 @@ index 0000000..52ca11d
 +				      <&gpio3 10 GPIO_ACTIVE_HIGH>;  // EXTCOMIN PIN
 +		status = "okay";
 +	};
-+	*/
 +};
 +
 +/* All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here */
