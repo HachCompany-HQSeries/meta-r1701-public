@@ -1,7 +1,7 @@
-From 2ef2d3657c691f0e7e54fc5826880bbda128cbf1 Mon Sep 17 00:00:00 2001
+From 011b3455e4f4b7b41b3c801f7c4d48345253f211 Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
 Date: Wed, 29 Nov 2017 15:14:35 -0700
-Subject: [PATCH 7/7] Enable the ethernet in r1701 device trees
+Subject: [PATCH 07/10] Enable the ethernet in r1701 device trees
 
 ---
  arch/arm/boot/dts/imx6ul-r1701-wb.dts | 3 +++
@@ -9,7 +9,7 @@ Subject: [PATCH 7/7] Enable the ethernet in r1701 device trees
  2 files changed, 6 insertions(+)
 
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-index 3ce50fb700a0..dfdb1f4770dc 100644
+index 3ce50fb..dfdb1f4 100644
 --- a/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 @@ -127,6 +127,9 @@
@@ -23,7 +23,7 @@ index 3ce50fb700a0..dfdb1f4770dc 100644
  	dr_mode = "peripheral";
  	status = "okay";
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
-index 5d3ade35ac2d..7652eec67c2e 100644
+index 5d3ade3..7652eec 100644
 --- a/arch/arm/boot/dts/imx6ul-r1701.dts
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
 @@ -127,6 +127,9 @@
@@ -37,5 +37,5 @@ index 5d3ade35ac2d..7652eec67c2e 100644
  	dr_mode = "peripheral";
  	status = "okay";
 -- 
-2.11.0
+2.7.4
 

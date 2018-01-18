@@ -9,5 +9,6 @@ SRC_URI_append = " \
     file://0006-dts-r1701-Configure-usbotg1-as-OTG-instead-of-host.patch \
     file://0007-Enable-the-ethernet-in-r1701-device-trees.patch \
     file://0008-Adding-MIP-Display-support-to-device-tree.patch \
+    file://0009-Added-support-for-matrix-keypad-and-enabled-3.2-inch.patch \
+    file://0010-Fix-for-matrix-keypad-s-rows-and-columns-gpio-scanni.patch \
 "
-

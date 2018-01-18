@@ -1,7 +1,7 @@
-From 559a0b74bdd1bccd35684eb6d77c001a41e81a55 Mon Sep 17 00:00:00 2001
+From 762c305543d903f3ac97ccbc8f0ea60a226b2117 Mon Sep 17 00:00:00 2001
 From: Alex Gonzalez <alex.gonzalez@digi.com>
 Date: Thu, 9 Nov 2017 12:06:10 +0100
-Subject: [PATCH] dts: r1701: Configure usbotg1 as OTG instead of host
+Subject: [PATCH 06/10] dts: r1701: Configure usbotg1 as OTG instead of host
 
 Signed-off-by: Alex Gonzalez <alex.gonzalez@digi.com>
 ---
@@ -10,7 +10,7 @@ Signed-off-by: Alex Gonzalez <alex.gonzalez@digi.com>
  2 files changed, 2 insertions(+)
 
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-index c5b485715d9a..3ce50fb700a0 100644
+index c5b4857..3ce50fb 100644
 --- a/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 @@ -128,6 +128,7 @@
@@ -22,7 +22,7 @@ index c5b485715d9a..3ce50fb700a0 100644
  };
  
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
-index deec42c99f0b..5d3ade35ac2d 100644
+index deec42c..5d3ade3 100644
 --- a/arch/arm/boot/dts/imx6ul-r1701.dts
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
 @@ -128,6 +128,7 @@
@@ -33,3 +33,6 @@ index deec42c99f0b..5d3ade35ac2d 100644
  	status = "okay";
  };
  
+-- 
+2.7.4
+

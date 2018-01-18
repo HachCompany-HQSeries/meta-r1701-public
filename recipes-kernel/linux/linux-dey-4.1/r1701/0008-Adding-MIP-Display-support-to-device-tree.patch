@@ -1,7 +1,7 @@
-From d2ef0195995963bda03dfd551e1ad19d770d71c1 Mon Sep 17 00:00:00 2001
+From 3dd37f0b8b7821d3da6872320db90ddeb8732670 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Thu, 30 Nov 2017 08:32:58 -0700
-Subject: [PATCH 8/8] Adding MIP Display support to device tree
+Subject: [PATCH 08/10] Adding MIP Display support to device tree
 
 ---
  arch/arm/boot/dts/imx6ul-r1701-wb.dts | 52 +++++++++++++++++++++++++++++++++++
