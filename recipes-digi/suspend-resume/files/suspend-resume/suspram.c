@@ -241,11 +241,10 @@ int main(int argc, char **argv, char **envp)
 	int fbfd = -1;
 	int screensize = 0;
 	char* fbp = (char*)NULL;
-	//struct fb_var_screeninfo var_info;
 	struct fb_fix_screeninfo fix_info;
 
 	if(lcdAreaTest){
-		system("modprobe mipdisplay-2-7-inch");
+		system("modprobe mipdisplay-3-2-inch");
 		fbfd = open("/dev/fb0", O_RDWR);
 		if(fbfd < 0){
 			printf("Unable to open Framebuffer driver!\n");
@@ -257,14 +256,6 @@ int main(int argc, char **argv, char **envp)
 				printf("Unable to read fixed screen information!\n");
 				return -1;
 			}
-
-			/*
-			if(ioctl(fbfd, FBIOGET_VSCREENINFO, &var_info)){
-				close(fbfd);
-				printf("Unable to read variable screen information!\n");
-				return -1;
-			}
-			*/
 
 			// Map fb to user mem.
 			screensize = fix_info.smem_len;
@@ -314,7 +305,7 @@ int main(int argc, char **argv, char **envp)
 	if(lcdAreaTest){
 		munmap(fbp, screensize);
 		close(fbfd);
-		system("rmmod mipdisplay-2-7-inch");
+		system("rmmod mipdisplay-3-2-inch");
 	}
 
 	return ret;
