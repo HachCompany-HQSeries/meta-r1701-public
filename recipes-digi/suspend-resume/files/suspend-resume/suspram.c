@@ -245,7 +245,7 @@ int main(int argc, char **argv, char **envp)
 	struct fb_fix_screeninfo fix_info;
 
 	if(lcdAreaTest){
-		system("modprobe mipdisplay-2-7-inch");
+		system("modprobe mipdisplay-3-2-inch");
 		fbfd = open("/dev/fb0", O_RDWR);
 		if(fbfd < 0){
 			printf("Unable to open Framebuffer driver!\n");
@@ -314,7 +314,7 @@ int main(int argc, char **argv, char **envp)
 	if(lcdAreaTest){
 		munmap(fbp, screensize);
 		close(fbfd);
-		system("rmmod mipdisplay-2-7-inch");
+		system("rmmod mipdisplay-3-2-inch");
 	}
 
 	return ret;
