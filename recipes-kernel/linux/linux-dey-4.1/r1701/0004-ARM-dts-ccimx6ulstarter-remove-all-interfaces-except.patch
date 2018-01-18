@@ -1,0 +1,38 @@
+From 723dc599e1c8d9d15ebb29fc3de246778de0be86 Mon Sep 17 00:00:00 2001
+From: Pedro Perez de Heredia <pedro.perez@digi.com>
+Date: Tue, 30 May 2017 20:45:36 +0200
+Subject: [PATCH 04/10] ARM dts: ccimx6ulstarter: remove all interfaces except
+ the console
+
+Signed-off-by: Pedro Perez de Heredia <pedro.perez@digi.com>
+---
+ arch/arm/boot/dts/imx6ul-ccimx6ulstarter-id129.dts | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6ul-ccimx6ulstarter-id129.dts b/arch/arm/boot/dts/imx6ul-ccimx6ulstarter-id129.dts
+index aad2fd7a..1454be6 100644
+--- a/arch/arm/boot/dts/imx6ul-ccimx6ulstarter-id129.dts
++++ b/arch/arm/boot/dts/imx6ul-ccimx6ulstarter-id129.dts
+@@ -31,7 +31,7 @@
+ //	adc-ch-list = <4>;
+ //	status = "okay";
+ //};
+-
++#if 0
+ &caam_keyblob {
+ 	status = "okay";
+ };
+@@ -139,3 +139,9 @@
+ 		//};
+ 	};
+ };
++#else
++/* UART5 (Console) */
++&uart5 {
++	status = "okay";
++};
++#endif
+\ No newline at end of file
+-- 
+2.7.4
+

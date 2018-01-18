@@ -1,0 +1,41 @@
+From 011b3455e4f4b7b41b3c801f7c4d48345253f211 Mon Sep 17 00:00:00 2001
+From: ryang <ryang@hach.com>
+Date: Wed, 29 Nov 2017 15:14:35 -0700
+Subject: [PATCH 07/10] Enable the ethernet in r1701 device trees
+
+---
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 3 +++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
+index 3ce50fb..dfdb1f4 100644
+--- a/arch/arm/boot/dts/imx6ul-r1701-wb.dts
++++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
+@@ -127,6 +127,9 @@
+ 	};
+ };
+ #else
++&fec1 {
++	status = "okay";
++};
+ &usbotg1 {
+ 	dr_mode = "peripheral";
+ 	status = "okay";
+diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
+index 5d3ade3..7652eec 100644
+--- a/arch/arm/boot/dts/imx6ul-r1701.dts
++++ b/arch/arm/boot/dts/imx6ul-r1701.dts
+@@ -127,6 +127,9 @@
+ 	};
+ };
+ #else
++&fec1 {
++	status = "okay";
++};
+ &usbotg1 {
+ 	dr_mode = "peripheral";
+ 	status = "okay";
+-- 
+2.7.4
+
