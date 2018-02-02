@@ -16,6 +16,7 @@ IMAGE_INSTALL += " \
     u-boot-fw-utils \
     protobuf \
     r1701-apps \
+    tzdata \
 "
 
 # Add predefined runtime package groups.
