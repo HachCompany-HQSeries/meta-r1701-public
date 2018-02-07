@@ -20,7 +20,6 @@ IMAGE_INSTALL += " \
 # Add predefined runtime package groups.
 IMAGE_FEATURES += " \
     ssh-server-openssh \
-    tzdata \
 "
 
 # Assign a password to root account.
