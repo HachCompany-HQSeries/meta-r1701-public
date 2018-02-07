@@ -8,11 +8,11 @@ IMAGE_INSTALL += " \
     rsync \
     htop \
     devmem2 \
-    mtd-utils \  
+    mtd-utils \
     dey-examples-spidev \
 "
 
-# Add predefined runtime package groups. 
+# Add predefined runtime package groups.
 IMAGE_FEATURES += " \
     package-management \
     eclipse-debug \

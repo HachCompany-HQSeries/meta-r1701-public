@@ -1,5 +1,9 @@
 Digi Embedded Yocto provides the following image recipes:
 
-  * hach-image-base: A busybox framebuffer image.
+  * hach-image-dbg: r1701 image with Qt and Debug suppoort
 
   * hach-image: A QT5 busybox framebuffer image
+
+  * hach-image-recovery-initramfs: r1701 recovery image
+
+

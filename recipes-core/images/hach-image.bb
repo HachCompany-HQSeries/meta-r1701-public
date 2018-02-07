@@ -17,9 +17,10 @@ IMAGE_INSTALL += " \
     r1701-apps \
 "
 
-# Add predefined runtime package groups. 
+# Add predefined runtime package groups.
 IMAGE_FEATURES += " \
     ssh-server-openssh \
+    tzdata \
 "
 
 # Assign a password to root account.
