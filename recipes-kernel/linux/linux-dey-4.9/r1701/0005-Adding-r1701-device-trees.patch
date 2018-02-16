@@ -1,0 +1,1371 @@
+From 9c464a81b72212e38d7dc0febfb580e599ac31a2 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Fri, 16 Feb 2018 09:17:31 -0700
+Subject: [PATCH] Adding r1701 device trees
+
+---
+ arch/arm/boot/dts/Makefile            |   4 +-
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 664 ++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 664 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 1331 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
+ create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index ff8eee581a80..5714b10d09a3 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -530,7 +530,9 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+ 	imx6ul-ccimx6ulstarter.dtb \
+ 	imx6ul-ccimx6ulstarter-id129.dtb \
+ 	imx6ul-ccimx6ulstarter-wb.dtb \
+-	imx6ul-ccimx6ulstarter-wb-mfg.dtb
++	imx6ul-ccimx6ulstarter-wb-mfg.dtb \
++	imx6ul-r1701.dtb \
++	imx6ul-r1701-wb.dtb
+ dtb-$(CONFIG_SOC_IMX6ULL) += \
+ 	imx6ull-14x14-ddr3-arm2.dtb \
+ 	imx6ull-14x14-ddr3-arm2-adc.dtb \
+diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
+new file mode 100644
+index 000000000000..5c3bf9337f03
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
+@@ -0,0 +1,664 @@
++/*
++ * Copyright 2016, 2017 Digi International, Inc.
++ * Copyright 2017, 2018 HACH Company
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++/* i.MX6 UltraLite CPU */
++#include "imx6ul.dtsi"
++/* ConnectCore 6UL (wireless/bluetooth variant) */
++#include "imx6ul-ccimx6ul-wb.dtsi"
++
++/ {
++    model = "Hach r1701";
++    compatible = "hach,r1701", "digi,ccimx6ul", "fsl,imx6ul";
++    hach,machine,name = "r1701";
++
++    /* Set boot console output with a stdout-path property */
++    chosen {
++        /* serial4 = &uart5 for starter board hardware */
++        stdout-path = "serial4:115200n8";
++    };
++
++    /* USB 1 - OTG port bus power setting for HOST mode */
++    reg_usb_otg1_vbus: reg_usb_otg1:@0 {
++        compatible = "regulator-fixed";
++        regulator-name = "usb_otg1_vbus";
++        regulator-min-microvolt = <5000000>;
++        regulator-max-microvolt = <5000000>;
++        gpio = <&gpio2 12 GPIO_ACTIVE_HIGH>;
++        enable-active-high;
++    };
++
++    /* Color LCD backlight support. */
++    lcd_backlight: backlight {
++        compatible = "pwm-backlight";
++        pwms = <&pwm2 0 50000>;
++
++        /* 0 - 255 will be extrapolated to percentage duty cycle.
++         * 0% - OFF - 0 Count
++         * 100% - Full Brightness - 255 Count
++         */
++        /* % duty cycle -    0 10 20 30  40  50  60  70  80  90 100 */
++        brightness-levels = <0 25 51 76 102 127 153 178 204 229 255>;
++        default-brightness-level = <127>;
++        status = "disabled";
++    };
++
++    /* PXP system - MXC PxP V4L2 driver (CONFIG_VIDEO_MXC_PXP_V4L2) - Color LCD related property */
++    pxp_v4l2: pxp-v4l2 {
++        compatible = "fsl,imx6ul-pxp-v4l2", "fsl,imx6sx-pxp-v4l2", "fsl,imx6sl-pxp-v4l2";
++        status = "disabled";
++    };
++
++    /* Gpio based matrix Keyboard */
++    matrix_keypad: matrix-keypad@0 {
++        compatible = "gpio-matrix-keypad";
++        col-gpios = <
++                        &gpio1  0 GPIO_ACTIVE_LOW
++                        &gpio1  1 GPIO_ACTIVE_LOW
++                        &gpio1 10 GPIO_ACTIVE_LOW
++                    >;
++        row-gpios = <
++                        &gpio3 26 GPIO_ACTIVE_HIGH
++                        &gpio4 27 GPIO_ACTIVE_HIGH
++                        &gpio4 28 GPIO_ACTIVE_HIGH
++                    >;
++
++        /* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on NXL keypad hardware
++         *            COL_1           COL_2               COL_3
++         * --------------||--------------||------------------||------------
++         *       ||      ||              ||                  ||
++         * ROW_1 ------ HOME ---------- Left  ---------- <Not Assigned> ---
++         *       ||      ||              ||                  ||
++         * ROW_2 ------- UP  ---------- ENTER ------------- DOWN ----------
++         *       ||      ||              ||                  ||
++         * ROW_3 ------ BACK ---------- RIGHT ---------- <Not Assigned> ---
++         *       ||      ||              ||                  ||
++         * --------------||--------------||--------------------------------
++         *
++         * key assignment MACRO definition - MATRIX_KEY(row, col, code)
++        */
++        linux,keymap =  <
++                            MATRIX_KEY(0,   0,  KEY_HOME)
++                            MATRIX_KEY(0,   1,  KEY_LEFT)
++                            MATRIX_KEY(1,   0,  KEY_UP)
++                            MATRIX_KEY(1,   1,  KEY_ENTER)
++                            MATRIX_KEY(1,   2,  KEY_DOWN)
++                            MATRIX_KEY(2,   0,  KEY_BACK)
++                            MATRIX_KEY(2,   1,  KEY_RIGHT)
++                        >;
++
++        /* Debounce time and column scan time can be adjusted based on our need. */
++        debounce-delay-ms = <100>;
++        col-scan-delay-us = <50000>;
++    };
++};
++
++/* CAAM (Cryptographic Accelerator and Assurance Module), The i.MX6 processors offer hardware encryption through NXP's
++ * Cryptographic Accelerator and Assurance Module (CAAM, also known as SEC4). The CAAM combines functions to create a
++ * modular and scalable acceleration and assurance engine.
++ * See this link - "https://www.digi.com/resources/documentation/digidocs/90001546/reference/android/r_caam_android.htm"
++ * NOTE - Disable this module if not needed.
++ */
++&caam_keyblob {
++    status = "okay";
++};
++
++#if 0
++/* BLE_MOD_ID_RD - MCA IO0 connected as ADC, it is defined under i2c1 node in imx6ul-ccimx6ul.dtsi file.
++ * NOTE - If we do not want this ADC then we should delete this node by using "/delete-node/mca_adc;" under main '/'
++ * node OR see below example,
++ * &i2c1 {
++ *  // Remove unused drivers
++ *  /delete-node/mca_adc;
++ * }
++ */
++&mca_adc {
++    compatible = "digi,mca-cc6ul-adc";
++    digi,adc-ch-list = <0>;
++
++    /*
++     * ADC reference voltage. Use:
++     *   - digi,adc-vref: Value in uV that corresponds with the VCC_MCA voltage.
++     *   - digi,internal-vref: If present, the internal 1.2 V reference is used.
++     *     This forces MCA_IO2/EXT_VREF to be configured as a 1.2 V output, and a
++     *     100 nF capacitor must be placed between this line and GND.
++     *     If this property is set, the value in 'digi,adc-vref' is ignored.
++     */
++    digi,adc-vref = <3000000>;
++};
++#endif
++
++/* Ethernet */
++&fec1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_enet1>;
++    phy-mode = "rmii";
++    phy-handle = <&ethphy0>;
++    phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
++    phy-reset-duration = <26>;
++    digi,phy-reset-in-suspend;
++    status = "okay";
++
++    mdio {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethphy0: ethernet-phy@0 {
++            compatible = "ethernet-phy-ieee802.3-c22";
++            smsc,disable-energy-detect;
++            reg = <0>;
++        };
++    };
++};
++
++/* Probe - 1 */
++&uart1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart1>;
++    status = "okay";
++};
++
++/* BLE Module */
++&uart3 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart3>;
++    status = "disable";
++};
++
++/* UART5 (Console) */
++&uart5 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart5>;
++    status = "okay";
++};
++
++/* Probe - 2 */
++&uart6 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart6>;
++    status = "disable";
++};
++
++/* Probe - 3 */
++&uart7 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart7>;
++    status = "disable";
++};
++
++/* USB-1 (OTG) */
++&usbotg1 {
++    dr_mode = "otg";
++    vbus-supply = <&reg_usb_otg1_vbus>;
++    pinctrl-0 = <&pinctrl_usbotg1>;
++    digi,power-line-active-high;
++
++    /* We are not using over current. Line is NC on rev 1 board. */
++    disable-over-current;
++
++    /* Enable below mentioned lines if we want to detect over current and if it
++     * is an active high signal to system.
++     */
++    /* disable-over-current;    */
++    /* over-current-active-high;*/
++    status = "okay";
++};
++
++/* USDHC1 (microSD) */
++&usdhc1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_usdhc1>;
++    broken-cd;  /* no carrier detect line (use polling) */
++    no-1-8-v;
++    status = "okay";
++};
++
++/* SPI port for serial flash memory */
++&ecspi1 {
++    fsl,spi-num-chipselects = <1>;
++    cs-gpios = <&gpio5 7 GPIO_ACTIVE_LOW>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_ecspi1_master>;
++    status = "disable";
++
++    /*
++     * NOTE: Expect a harmless kernel warning if enabled spidev as slave.
++     */
++    mx25l12835fm2: ecspi@0 {
++        compatible = "spidev";
++        reg = <0>;
++        spi-max-frequency = <10000000>;
++    };
++};
++
++/* SPI port for MIP display */
++&ecspi2 {
++    fsl,spi-num-chipselects = <1>;
++    cs-gpios = <&gpio5 8 GPIO_ACTIVE_HIGH>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_ecspi2_master>;
++    status      = "okay";
++
++    /* 3.2" Portrait MIP Display */
++    mipDisplay: ecspi@0{
++        compatible        = "sharp,ls032b7dd02";
++        reg               = <0>;
++        spi-max-frequency = <2000000>;
++        spi-cs-high;
++        gpios             = <&gpio1 2 GPIO_ACTIVE_HIGH>,  /* SER_LCD_PWR_EN */
++                            <&gpio1 3 GPIO_ACTIVE_HIGH>,  /* SER_LCD_ON_OFF */
++                            <&gpio1 8 GPIO_ACTIVE_HIGH>;  /* SER_LCD_EXTCOM */
++        status = "okay";
++    };
++};
++
++/* Pressure chip */
++&ecspi3 {
++    fsl,spi-num-chipselects = <1>;
++    cs-gpios = <&gpio4 25 GPIO_ACTIVE_LOW>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_ecspi3_master>;
++    status = "disable";
++
++    /*
++     * NOTE: Expect a harmless kernel warning if enabled spidev as slave.
++     */
++    pressureSensor: ecspi@0 {
++        reg = <0>;
++        compatible = "spidev";
++        spi-max-frequency = <1000000>;
++    };
++};
++
++/* All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here */
++&pwm1 {
++    status = "disabled";
++};
++
++&pwm2 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_pwm2>;
++    clocks =    <&clks IMX6UL_CLK_PWM2>,
++                <&clks IMX6UL_CLK_PWM2>;
++    status = "okay";
++};
++
++/* FW_LED_01 - User LED */
++&pwm3 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_pwm3>;
++    clocks =    <&clks IMX6UL_CLK_PWM3>,
++                <&clks IMX6UL_CLK_PWM3>;
++    status = "okay";
++};
++
++&pwm4 {
++    status = "disabled";
++};
++
++&pwm5 {
++    status = "disabled";
++};
++
++&pwm6 {
++    status = "disabled";
++};
++
++&pwm7 {
++    status = "disabled";
++};
++
++&pwm8 {
++    status = "disabled";
++};
++
++/* Power Chip */
++&i2c2 {
++    clock-frequency = <100000>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_i2c2>;
++    status = "disable";
++};
++
++/* Parallel LCD */
++&lcdif {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_lcdif>;
++    gpios = <&gpio5 3  GPIO_ACTIVE_LOW>,    /* LCD_PWR_EN&  */
++            <&gpio3 4  GPIO_ACTIVE_LOW>,    /* LCD_RESET&   */
++            <&gpio1 5  GPIO_ACTIVE_LOW>,    /* LCD_STANDBY& */
++            <&gpio5 1  GPIO_ACTIVE_LOW>,    /* LCD_XLTR_EN& */
++            <&gpio5 2  GPIO_ACTIVE_HIGH>;   /* V2P5_PWR_EN  */
++    display = <&com35h3p29ulc>;
++    status = "disable";
++
++    /* 3.5 inch Ortustech - COM35H3P29ULC color VGA portrait display */
++    com35h3p29ulc: display@0 {
++
++        /* 16 Bit Color mode */
++        bits-per-pixel = <16>;
++
++        /* number of data lines.  Could be <8>, <16>, <18> or <24> */
++        bus-width = <16>;
++
++        display-timings {
++            native-mode = <&timing0>;
++
++            /* VGA - Ortustech Display (Portrait Mode) */
++            timing0: 480x640 {
++
++                /* Display Timing chart
++                    +----------+-------------------------------------+----------+-------+
++                    |          |        ↑                            |          |       |
++                    |          |        |vback_porch                 |          |       |
++                    |          |        ↓                            |          |       |
++                    +----------#######################################----------+-------+
++                    |          #        ↑                            #          |       |
++                    |          #        |                            #          |       |
++                    |  hback   #        |                            #  hfront  | hsync |
++                    |   porch  #        |       hactive              #  porch   |  len  |
++                    |<-------->#<-------+--------------------------->#<-------->|<----->|
++                    |          #        |                            #          |       |
++                    |          #        |vactive                     #          |       |
++                    |          #        |                            #          |       |
++                    |          #        ↓                            #          |       |
++                    +----------#######################################----------+-------+
++                    |          |        ↑                            |          |       |
++                    |          |        |vfront_porch                |          |       |
++                    |          |        ↓                            |          |       |
++                    +----------+-------------------------------------+----------+-------+
++                    |          |        ↑                            |          |       |
++                    |          |        |vsync_len                   |          |       |
++                    |          |        ↓                            |          |       |
++                    +----------+-------------------------------------+----------+-------+
++                */
++
++                /* Pixel clock in Hz 19.8 MHz Typical */
++                clock-frequency = <19800000>;
++
++                /* display resolution */
++                hactive = <480>;
++                vactive = <640>;
++
++                /* HSYNC Cycle (508) = HFP + HBP + HSYNC_LEN + 480 */
++                hfront-porch = <8>;
++                hback-porch = <10>;
++                hsync-len = <10>;
++
++                /* VSYNC Cycle (650) = VFP + VBP + VSYNC_LEN + 640 */
++                vback-porch = <3>;
++                vfront-porch = <4>;
++                vsync-len = <3>;
++
++                /* hsync/vsync pulse is active low/high/ignored */
++                /* Ortustech display expect HSYNC and VSYNC as active low for valid data transfer */
++                hsync-active = <0>;
++                vsync-active = <0>;
++
++                /* data-enable pulse is active low/high/ignored */
++                /* Ortustech display expect data valid signal as active HIGH */
++                de-active = <1>;
++
++                /* Pixel Clock,
++                 *  - active high = drive pixel data on rising edge sample data on falling edge
++                 *  - active low  = drive pixel data on falling edge sample data on rising edge
++                 *  - ignored     = ignored
++                 *
++                 * Ortustech display latch all LCD data on falling edge
++                 */
++                pixelclk-active = <1>;
++            };
++        };
++    };
++};
++
++/* PXP video module */
++&pxp_v4l2 {
++    status = "disable";
++};
++
++&pxp {
++    status = "disable";
++};
++
++/* Pin mux configuration */
++&iomuxc {
++
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_hog>;
++
++    imx6ul-ccimx6ul {
++
++        /* Ethernet pins */
++        pinctrl_enet1: enet1grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO07__ENET1_MDC         0x1b0b0
++                MX6UL_PAD_GPIO1_IO06__ENET1_MDIO        0x1b0b0
++                MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN      0x1b0b0
++                MX6UL_PAD_ENET1_RX_ER__ENET1_RX_ER      0x1b0b0
++                MX6UL_PAD_ENET1_RX_DATA0__ENET1_RDATA00 0x1b0b0
++                MX6UL_PAD_ENET1_RX_DATA1__ENET1_RDATA01 0x1b0b0
++                MX6UL_PAD_ENET1_TX_EN__ENET1_TX_EN      0x1b0b0
++                MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00 0x1b0b0
++                MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01 0x1b0b0
++                MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1  0x40017051
++            >;
++        };
++
++        /* Probe - 1 UART */
++        pinctrl_uart1: uart1grp {
++            fsl,pins = <
++                MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX   0x1b0b1
++                MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX   0x1b0b1
++            >;
++        };
++
++        /* BLE Module */
++        pinctrl_uart3: uart3grp {
++            fsl,pins = <
++                MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX   0x1b0b1
++                MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX   0x1b0b1
++            >;
++        };
++
++        /* Console UART pins */
++        pinctrl_uart5: uart5grp {
++            fsl,pins = <
++                MX6UL_PAD_UART5_TX_DATA__UART5_DCE_TX   0x1b0b1
++                MX6UL_PAD_UART5_RX_DATA__UART5_DCE_RX   0x1b0b1
++            >;
++        };
++
++        /* Probe - 2 UART */
++        pinctrl_uart6: uart6grp {
++            fsl,pins = <
++                MX6UL_PAD_CSI_PIXCLK__UART6_DCE_RX      0x1b0b1
++                MX6UL_PAD_CSI_MCLK__UART6_DCE_TX        0x1b0b1
++            >;
++        };
++
++        /* Probe - 3 UART */
++        pinctrl_uart7: uart7grp {
++            fsl,pins = <
++                MX6UL_PAD_ENET2_TX_DATA0__UART7_DCE_RX  0x1b0b1
++                MX6UL_PAD_ENET2_RX_EN__UART7_DCE_TX     0x1b0b1
++            >;
++        };
++
++        /* micro SD card peripheral port pins */
++        pinctrl_usdhc1: usdhc1grp {
++            fsl,pins = <
++                MX6UL_PAD_SD1_CLK__USDHC1_CLK           0x10039
++                MX6UL_PAD_SD1_CMD__USDHC1_CMD           0x17059
++                MX6UL_PAD_SD1_DATA0__USDHC1_DATA0       0x17059
++                MX6UL_PAD_SD1_DATA1__USDHC1_DATA1       0x17059
++                MX6UL_PAD_SD1_DATA2__USDHC1_DATA2       0x17059
++                MX6UL_PAD_SD1_DATA3__USDHC1_DATA3       0x17059
++            >;
++        };
++
++        /* SPI 1 - Serial Flash */
++        pinctrl_ecspi1_master: ecspi1grp1 {
++            fsl,pins = <
++                MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI       0x10b0
++                MX6UL_PAD_LCD_DATA23__ECSPI1_MISO       0x10b0
++                MX6UL_PAD_LCD_DATA20__ECSPI1_SCLK       0x10b0
++                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x10b0
++            >;
++        };
++
++        /* SPI 2 - MIP display */
++        pinctrl_ecspi2_master: ecspi2grp1 {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA02__ECSPI2_MOSI       0x10b0
++                MX6UL_PAD_CSI_DATA03__ECSPI2_MISO       0x10b0
++                MX6UL_PAD_CSI_DATA00__ECSPI2_SCLK       0x10b0
++                MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08      0x30b0
++            >;
++        };
++
++        /* SPI 3 - Pressure sensor chip */
++        pinctrl_ecspi3_master: ecspi3grp1 {
++            fsl,pins = <
++                MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI      0x10b0
++                MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO      0x10b0
++                MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK    0x10b0
++                MX6UL_PAD_CSI_DATA04__GPIO4_IO25        0x10b0
++            >;
++        };
++
++        /* USB 1 OTG port pins */
++        pinctrl_usbotg1: usbotg1grp {
++            fsl,pins = <
++                MX6UL_PAD_ENET2_TX_CLK__ANATOP_OTG2_ID  0x17059
++                MX6UL_PAD_ENET2_TX_EN__USB_OTG2_OC      0x17059
++                MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12    0x30b0
++            >;
++        };
++
++        /* Color LCD back light control signal */
++        pinctrl_pwm2: pwm2grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO09__PWM2_OUT          0x110b0
++            >;
++        };
++
++        /* FW_LED_01 PWM signal pin */
++        pinctrl_pwm3: pwm3grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO04__PWM3_OUT          0x110b0
++            >;
++        };
++
++        /* Power chip */
++        pinctrl_i2c2: i2c2grp {
++            fsl,pins = <
++                MX6UL_PAD_CSI_HSYNC__I2C2_SCL           0x4001b8b0
++                MX6UL_PAD_CSI_VSYNC__I2C2_SDA           0x4001b8b0
++            >;
++        };
++
++        /* Ortustech VGA LCD pins */
++        pinctrl_lcdif: lcdifdatactrlgrp {
++            fsl,pins = <
++                MX6UL_PAD_LCD_DATA00__LCDIF_DATA00  0x79
++                MX6UL_PAD_LCD_DATA01__LCDIF_DATA01  0x79
++                MX6UL_PAD_LCD_DATA02__LCDIF_DATA02  0x79
++                MX6UL_PAD_LCD_DATA03__LCDIF_DATA03  0x79
++                MX6UL_PAD_LCD_DATA04__LCDIF_DATA04  0x79
++                MX6UL_PAD_LCD_DATA05__LCDIF_DATA05  0x79
++                MX6UL_PAD_LCD_DATA06__LCDIF_DATA06  0x79
++                MX6UL_PAD_LCD_DATA07__LCDIF_DATA07  0x79
++                MX6UL_PAD_LCD_DATA08__LCDIF_DATA08  0x79
++                MX6UL_PAD_LCD_DATA09__LCDIF_DATA09  0x79
++                MX6UL_PAD_LCD_DATA10__LCDIF_DATA10  0x79
++                MX6UL_PAD_LCD_DATA11__LCDIF_DATA11  0x79
++                MX6UL_PAD_LCD_DATA12__LCDIF_DATA12  0x79
++                MX6UL_PAD_LCD_DATA13__LCDIF_DATA13  0x79
++                MX6UL_PAD_LCD_DATA14__LCDIF_DATA14  0x79
++                MX6UL_PAD_LCD_DATA15__LCDIF_DATA15  0x79
++                MX6UL_PAD_LCD_CLK__LCDIF_CLK        0x17050
++                MX6UL_PAD_LCD_ENABLE__LCDIF_ENABLE  0x79
++                MX6UL_PAD_LCD_HSYNC__LCDIF_HSYNC    0x79
++                MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x79
++            >;
++        };
++
++        /* General purpose pinctrl */
++        pinctrl_hog: hoggrp {
++            fsl,pins = <
++                /* Column (strobe) lines as outputs - Active low signals */
++                MX6UL_PAD_GPIO1_IO00__GPIO1_IO00    0x10b0  /* KEYPAD_COL1 */
++                MX6UL_PAD_GPIO1_IO01__GPIO1_IO01    0x10b0  /* KEYPAD_COL2 */
++                MX6UL_PAD_JTAG_MOD__GPIO1_IO10      0x10b0  /* KEYPAD_COL3 */
++
++                /* Row lines as inputs, active high signals */
++                MX6UL_PAD_LCD_DATA21__GPIO3_IO26    0x10b0  /* KEYPAD_ROW1 */
++                MX6UL_PAD_CSI_DATA06__GPIO4_IO27    0x10b0  /* KEYPAD_ROW2 */
++                MX6UL_PAD_CSI_DATA07__GPIO4_IO28    0x10b0  /* KEYPAD_ROW3 */
++
++                /* SD card control lines, Active low signals */
++                MX6UL_PAD_CSI_DATA01__GPIO4_IO22    0x10b0  /* SDCARD_PWR& */
++                MX6UL_PAD_LCD_DATA19__GPIO3_IO24    0x10b0  /* SDCARD_DET& */
++
++                /* User LED and Switches */
++                MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00  0x10b0  /* FW_SW_01  */
++                MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x10b0  /* FW_SW_02  */
++                MX6UL_PAD_CSI_DATA05__GPIO4_IO26    0x10b0  /* FW_LED_02 */
++
++                /* MIP Display, Active high signals */
++                MX6UL_PAD_GPIO1_IO02__GPIO1_IO02    0x10b0  /* SER_LCD_PWR_EN */
++                MX6UL_PAD_GPIO1_IO08__GPIO1_IO08    0x3031  /* SER_LCD_EXTCOM */
++                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03    0x3031  /* SER_LCD_ON_OFF */
++
++                /* Probe 1 - Control lines */
++                MX6UL_PAD_JTAG_TMS__GPIO1_IO11      0x10b0  /* PRB1_TE      */
++                MX6UL_PAD_JTAG_TDO__GPIO1_IO12      0x10b0  /* PRB1_DET&    */
++                MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20 0xf0b0  /* PRB1_OFF     */
++                MX6UL_PAD_UART3_CTS_B__GPIO1_IO26   0x10b0  /* PRB1_EN&     */
++
++                /* Probe 2 - Control lines */
++                MX6UL_PAD_JTAG_TDI__GPIO1_IO13      0x10b0  /* PRB2_TE      */
++                MX6UL_PAD_JTAG_TCK__GPIO1_IO14      0x10b0  /* PRB2_DET&    */
++                MX6UL_PAD_UART3_RTS_B__GPIO1_IO27   0xf0b0  /* PRB2_OFF     */
++                MX6UL_PAD_ENET2_RX_DATA0__GPIO2_IO08 0x10b0 /* PRB2_EN&     */
++
++                /* Probe 3 - Control lines */
++                MX6UL_PAD_JTAG_TRST_B__GPIO1_IO15   0x10b0  /* PRB3_TE      */
++                MX6UL_PAD_UART1_CTS_B__GPIO1_IO18   0x10b0  /* PRB3_DET&    */
++                MX6UL_PAD_ENET2_RX_DATA1__GPIO2_IO09 0xf0b0 /* PRB3_OFF     */
++                MX6UL_PAD_ENET2_RX_ER__GPIO2_IO15   0x10b0  /* PRB3_EN&     */
++
++                /* Ethernet control lines */
++                MX6UL_PAD_LCD_DATA16__GPIO3_IO21    0x10b0  /* ENET1_INT&   */
++                MX6UL_PAD_LCD_DATA17__GPIO3_IO22    0x10b0  /* ENET1_PWR&   */
++                MX6UL_PAD_LCD_DATA18__GPIO3_IO23    0x10b0  /* ENET1_RST    */
++
++                /* BLE Module */
++                MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05  0x10b0  /* BLEMOD_PWR&  */
++                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06  0x10b0  /* BLE_MOD_READ_ID */
++
++                MX6UL_PAD_LCD_RESET__GPIO3_IO04     0x10b0  /* LCD_RESET&   */
++                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05    0x10b0  /* LCD_STANDBY& */
++                MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01  0x10b0  /* LCD2_XLTR_EN& - Enables level shifter chips for all data
++                                                             * and control lines for LCD
++                                                             */
++                MX6UL_PAD_SNVS_TAMPER3__GPIO5_IO03  0x10b0  /* LCD2_PWR_EN& - Enables VDC to LCD */
++                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02  0x10b0  /* V2P5_PWR_EN - Enables power for the level shifters
++                                                             * associated with color LCD, Active low signal
++                                                             */
++            >;
++        };
++    };
++};
+diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
+new file mode 100644
+index 000000000000..ae468f693727
+--- /dev/null
++++ b/arch/arm/boot/dts/imx6ul-r1701.dts
+@@ -0,0 +1,664 @@
++/*
++ * Copyright 2016, 2017 Digi International, Inc.
++ * Copyright 2017, 2018 HACH Company
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++/* i.MX6 UltraLite CPU */
++#include "imx6ul.dtsi"
++/* ConnectCore 6UL (common) */
++#include "imx6ul-ccimx6ul.dtsi"
++
++/ {
++    model = "Hach r1701";
++    compatible = "hach,r1701", "digi,ccimx6ul", "fsl,imx6ul";
++    hach,machine,name = "r1701";
++
++    /* Set boot console output with a stdout-path property */
++    chosen {
++        /* serial4 = &uart5 for starter board hardware */
++        stdout-path = "serial4:115200n8";
++    };
++
++    /* USB 1 - OTG port bus power setting for HOST mode */
++    reg_usb_otg1_vbus: reg_usb_otg1:@0 {
++        compatible = "regulator-fixed";
++        regulator-name = "usb_otg1_vbus";
++        regulator-min-microvolt = <5000000>;
++        regulator-max-microvolt = <5000000>;
++        gpio = <&gpio2 12 GPIO_ACTIVE_HIGH>;
++        enable-active-high;
++    };
++
++    /* Color LCD backlight support. */
++    lcd_backlight: backlight {
++        compatible = "pwm-backlight";
++        pwms = <&pwm2 0 50000>;
++
++        /* 0 - 255 will be extrapolated to percentage duty cycle.
++         * 0% - OFF - 0 Count
++         * 100% - Full Brightness - 255 Count
++         */
++        /* % duty cycle -    0 10 20 30  40  50  60  70  80  90 100 */
++        brightness-levels = <0 25 51 76 102 127 153 178 204 229 255>;
++        default-brightness-level = <127>;
++        status = "disabled";
++    };
++
++    /* PXP system - MXC PxP V4L2 driver (CONFIG_VIDEO_MXC_PXP_V4L2) - Color LCD related property */
++    pxp_v4l2: pxp-v4l2 {
++        compatible = "fsl,imx6ul-pxp-v4l2", "fsl,imx6sx-pxp-v4l2", "fsl,imx6sl-pxp-v4l2";
++        status = "disabled";
++    };
++
++    /* Gpio based matrix Keyboard */
++    matrix_keypad: matrix-keypad@0 {
++        compatible = "gpio-matrix-keypad";
++        col-gpios = <
++                        &gpio1  0 GPIO_ACTIVE_LOW
++                        &gpio1  1 GPIO_ACTIVE_LOW
++                        &gpio1 10 GPIO_ACTIVE_LOW
++                    >;
++        row-gpios = <
++                        &gpio3 26 GPIO_ACTIVE_HIGH
++                        &gpio4 27 GPIO_ACTIVE_HIGH
++                        &gpio4 28 GPIO_ACTIVE_HIGH
++                    >;
++
++        /* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on NXL keypad hardware
++         *            COL_1           COL_2               COL_3
++         * --------------||--------------||------------------||------------
++         *       ||      ||              ||                  ||
++         * ROW_1 ------ HOME ---------- Left  ---------- <Not Assigned> ---
++         *       ||      ||              ||                  ||
++         * ROW_2 ------- UP  ---------- ENTER ------------- DOWN ----------
++         *       ||      ||              ||                  ||
++         * ROW_3 ------ BACK ---------- RIGHT ---------- <Not Assigned> ---
++         *       ||      ||              ||                  ||
++         * --------------||--------------||--------------------------------
++         *
++         * key assignment MACRO definition - MATRIX_KEY(row, col, code)
++        */
++        linux,keymap =  <
++                            MATRIX_KEY(0,   0,  KEY_HOME)
++                            MATRIX_KEY(0,   1,  KEY_LEFT)
++                            MATRIX_KEY(1,   0,  KEY_UP)
++                            MATRIX_KEY(1,   1,  KEY_ENTER)
++                            MATRIX_KEY(1,   2,  KEY_DOWN)
++                            MATRIX_KEY(2,   0,  KEY_BACK)
++                            MATRIX_KEY(2,   1,  KEY_RIGHT)
++                        >;
++
++        /* Debounce time and column scan time can be adjusted based on our need. */
++        debounce-delay-ms = <100>;
++        col-scan-delay-us = <50000>;
++    };
++};
++
++/* CAAM (Cryptographic Accelerator and Assurance Module), The i.MX6 processors offer hardware encryption through NXP's
++ * Cryptographic Accelerator and Assurance Module (CAAM, also known as SEC4). The CAAM combines functions to create a
++ * modular and scalable acceleration and assurance engine.
++ * See this link - "https://www.digi.com/resources/documentation/digidocs/90001546/reference/android/r_caam_android.htm"
++ * NOTE - Disable this module if not needed.
++ */
++&caam_keyblob {
++    status = "okay";
++};
++
++#if 0
++/* BLE_MOD_ID_RD - MCA IO0 connected as ADC, it is defined under i2c1 node in imx6ul-ccimx6ul.dtsi file.
++ * NOTE - If we do not want this ADC then we should delete this node by using "/delete-node/mca_adc;" under main '/'
++ * node OR see below example,
++ * &i2c1 {
++ *  // Remove unused drivers
++ *  /delete-node/mca_adc;
++ * }
++ */
++&mca_adc {
++    compatible = "digi,mca-cc6ul-adc";
++    digi,adc-ch-list = <0>;
++
++    /*
++     * ADC reference voltage. Use:
++     *   - digi,adc-vref: Value in uV that corresponds with the VCC_MCA voltage.
++     *   - digi,internal-vref: If present, the internal 1.2 V reference is used.
++     *     This forces MCA_IO2/EXT_VREF to be configured as a 1.2 V output, and a
++     *     100 nF capacitor must be placed between this line and GND.
++     *     If this property is set, the value in 'digi,adc-vref' is ignored.
++     */
++    digi,adc-vref = <3000000>;
++};
++#endif
++
++/* Ethernet */
++&fec1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_enet1>;
++    phy-mode = "rmii";
++    phy-handle = <&ethphy0>;
++    phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
++    phy-reset-duration = <26>;
++    digi,phy-reset-in-suspend;
++    status = "okay";
++
++    mdio {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ethphy0: ethernet-phy@0 {
++            compatible = "ethernet-phy-ieee802.3-c22";
++            smsc,disable-energy-detect;
++            reg = <0>;
++        };
++    };
++};
++
++/* Probe - 1 */
++&uart1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart1>;
++    status = "okay";
++};
++
++/* BLE Module */
++&uart3 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart3>;
++    status = "disable";
++};
++
++/* UART5 (Console) */
++&uart5 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart5>;
++    status = "okay";
++};
++
++/* Probe - 2 */
++&uart6 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart6>;
++    status = "disable";
++};
++
++/* Probe - 3 */
++&uart7 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_uart7>;
++    status = "disable";
++};
++
++/* USB-1 (OTG) */
++&usbotg1 {
++    dr_mode = "otg";
++    vbus-supply = <&reg_usb_otg1_vbus>;
++    pinctrl-0 = <&pinctrl_usbotg1>;
++    digi,power-line-active-high;
++
++    /* We are not using over current. Line is NC on rev 1 board. */
++    disable-over-current;
++
++    /* Enable below mentioned lines if we want to detect over current and if it
++     * is an active high signal to system.
++     */
++    /* disable-over-current;    */
++    /* over-current-active-high;*/
++    status = "okay";
++};
++
++/* USDHC1 (microSD) */
++&usdhc1 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_usdhc1>;
++    broken-cd;  /* no carrier detect line (use polling) */
++    no-1-8-v;
++    status = "okay";
++};
++
++/* SPI port for serial flash memory */
++&ecspi1 {
++    fsl,spi-num-chipselects = <1>;
++    cs-gpios = <&gpio5 7 GPIO_ACTIVE_LOW>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_ecspi1_master>;
++    status = "disable";
++
++    /*
++     * NOTE: Expect a harmless kernel warning if enabled spidev as slave.
++     */
++    mx25l12835fm2: ecspi@0 {
++        compatible = "spidev";
++        reg = <0>;
++        spi-max-frequency = <10000000>;
++    };
++};
++
++/* SPI port for MIP display */
++&ecspi2 {
++    fsl,spi-num-chipselects = <1>;
++    cs-gpios = <&gpio5 8 GPIO_ACTIVE_HIGH>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_ecspi2_master>;
++    status      = "okay";
++
++    /* 3.2" Portrait MIP Display */
++    mipDisplay: ecspi@0{
++        compatible        = "sharp,ls032b7dd02";
++        reg               = <0>;
++        spi-max-frequency = <2000000>;
++        spi-cs-high;
++        gpios             = <&gpio1 2 GPIO_ACTIVE_HIGH>,  /* SER_LCD_PWR_EN */
++                            <&gpio1 3 GPIO_ACTIVE_HIGH>,  /* SER_LCD_ON_OFF */
++                            <&gpio1 8 GPIO_ACTIVE_HIGH>;  /* SER_LCD_EXTCOM */
++        status = "okay";
++    };
++};
++
++/* Pressure chip */
++&ecspi3 {
++    fsl,spi-num-chipselects = <1>;
++    cs-gpios = <&gpio4 25 GPIO_ACTIVE_LOW>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_ecspi3_master>;
++    status = "disable";
++
++    /*
++     * NOTE: Expect a harmless kernel warning if enabled spidev as slave.
++     */
++    pressureSensor: ecspi@0 {
++        reg = <0>;
++        compatible = "spidev";
++        spi-max-frequency = <1000000>;
++    };
++};
++
++/* All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here */
++&pwm1 {
++    status = "disabled";
++};
++
++&pwm2 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_pwm2>;
++    clocks =    <&clks IMX6UL_CLK_PWM2>,
++                <&clks IMX6UL_CLK_PWM2>;
++    status = "okay";
++};
++
++/* FW_LED_01 - User LED */
++&pwm3 {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_pwm3>;
++    clocks =    <&clks IMX6UL_CLK_PWM3>,
++                <&clks IMX6UL_CLK_PWM3>;
++    status = "okay";
++};
++
++&pwm4 {
++    status = "disabled";
++};
++
++&pwm5 {
++    status = "disabled";
++};
++
++&pwm6 {
++    status = "disabled";
++};
++
++&pwm7 {
++    status = "disabled";
++};
++
++&pwm8 {
++    status = "disabled";
++};
++
++/* Power Chip */
++&i2c2 {
++    clock-frequency = <100000>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_i2c2>;
++    status = "disable";
++};
++
++/* Parallel LCD */
++&lcdif {
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_lcdif>;
++    gpios = <&gpio5 3  GPIO_ACTIVE_LOW>,    /* LCD_PWR_EN&  */
++            <&gpio3 4  GPIO_ACTIVE_LOW>,    /* LCD_RESET&   */
++            <&gpio1 5  GPIO_ACTIVE_LOW>,    /* LCD_STANDBY& */
++            <&gpio5 1  GPIO_ACTIVE_LOW>,    /* LCD_XLTR_EN& */
++            <&gpio5 2  GPIO_ACTIVE_HIGH>;   /* V2P5_PWR_EN  */
++    display = <&com35h3p29ulc>;
++    status = "disable";
++
++    /* 3.5 inch Ortustech - COM35H3P29ULC color VGA portrait display */
++    com35h3p29ulc: display@0 {
++
++        /* 16 Bit Color mode */
++        bits-per-pixel = <16>;
++
++        /* number of data lines.  Could be <8>, <16>, <18> or <24> */
++        bus-width = <16>;
++
++        display-timings {
++            native-mode = <&timing0>;
++
++            /* VGA - Ortustech Display (Portrait Mode) */
++            timing0: 480x640 {
++
++                /* Display Timing chart
++                    +----------+-------------------------------------+----------+-------+
++                    |          |        ↑                            |          |       |
++                    |          |        |vback_porch                 |          |       |
++                    |          |        ↓                            |          |       |
++                    +----------#######################################----------+-------+
++                    |          #        ↑                            #          |       |
++                    |          #        |                            #          |       |
++                    |  hback   #        |                            #  hfront  | hsync |
++                    |   porch  #        |       hactive              #  porch   |  len  |
++                    |<-------->#<-------+--------------------------->#<-------->|<----->|
++                    |          #        |                            #          |       |
++                    |          #        |vactive                     #          |       |
++                    |          #        |                            #          |       |
++                    |          #        ↓                            #          |       |
++                    +----------#######################################----------+-------+
++                    |          |        ↑                            |          |       |
++                    |          |        |vfront_porch                |          |       |
++                    |          |        ↓                            |          |       |
++                    +----------+-------------------------------------+----------+-------+
++                    |          |        ↑                            |          |       |
++                    |          |        |vsync_len                   |          |       |
++                    |          |        ↓                            |          |       |
++                    +----------+-------------------------------------+----------+-------+
++                */
++
++                /* Pixel clock in Hz 19.8 MHz Typical */
++                clock-frequency = <19800000>;
++
++                /* display resolution */
++                hactive = <480>;
++                vactive = <640>;
++
++                /* HSYNC Cycle (508) = HFP + HBP + HSYNC_LEN + 480 */
++                hfront-porch = <8>;
++                hback-porch = <10>;
++                hsync-len = <10>;
++
++                /* VSYNC Cycle (650) = VFP + VBP + VSYNC_LEN + 640 */
++                vback-porch = <3>;
++                vfront-porch = <4>;
++                vsync-len = <3>;
++
++                /* hsync/vsync pulse is active low/high/ignored */
++                /* Ortustech display expect HSYNC and VSYNC as active low for valid data transfer */
++                hsync-active = <0>;
++                vsync-active = <0>;
++
++                /* data-enable pulse is active low/high/ignored */
++                /* Ortustech display expect data valid signal as active HIGH */
++                de-active = <1>;
++
++                /* Pixel Clock,
++                 *  - active high = drive pixel data on rising edge sample data on falling edge
++                 *  - active low  = drive pixel data on falling edge sample data on rising edge
++                 *  - ignored     = ignored
++                 *
++                 * Ortustech display latch all LCD data on falling edge
++                 */
++                pixelclk-active = <1>;
++            };
++        };
++    };
++};
++
++/* PXP video module */
++&pxp_v4l2 {
++    status = "disable";
++};
++
++&pxp {
++    status = "disable";
++};
++
++/* Pin mux configuration */
++&iomuxc {
++
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_hog>;
++
++    imx6ul-ccimx6ul {
++
++        /* Ethernet pins */
++        pinctrl_enet1: enet1grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO07__ENET1_MDC         0x1b0b0
++                MX6UL_PAD_GPIO1_IO06__ENET1_MDIO        0x1b0b0
++                MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN      0x1b0b0
++                MX6UL_PAD_ENET1_RX_ER__ENET1_RX_ER      0x1b0b0
++                MX6UL_PAD_ENET1_RX_DATA0__ENET1_RDATA00 0x1b0b0
++                MX6UL_PAD_ENET1_RX_DATA1__ENET1_RDATA01 0x1b0b0
++                MX6UL_PAD_ENET1_TX_EN__ENET1_TX_EN      0x1b0b0
++                MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00 0x1b0b0
++                MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01 0x1b0b0
++                MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1  0x40017051
++            >;
++        };
++
++        /* Probe - 1 UART */
++        pinctrl_uart1: uart1grp {
++            fsl,pins = <
++                MX6UL_PAD_UART1_RX_DATA__UART1_DCE_RX   0x1b0b1
++                MX6UL_PAD_UART1_TX_DATA__UART1_DCE_TX   0x1b0b1
++            >;
++        };
++
++        /* BLE Module */
++        pinctrl_uart3: uart3grp {
++            fsl,pins = <
++                MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX   0x1b0b1
++                MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX   0x1b0b1
++            >;
++        };
++
++        /* Console UART pins */
++        pinctrl_uart5: uart5grp {
++            fsl,pins = <
++                MX6UL_PAD_UART5_TX_DATA__UART5_DCE_TX   0x1b0b1
++                MX6UL_PAD_UART5_RX_DATA__UART5_DCE_RX   0x1b0b1
++            >;
++        };
++
++        /* Probe - 2 UART */
++        pinctrl_uart6: uart6grp {
++            fsl,pins = <
++                MX6UL_PAD_CSI_PIXCLK__UART6_DCE_RX      0x1b0b1
++                MX6UL_PAD_CSI_MCLK__UART6_DCE_TX        0x1b0b1
++            >;
++        };
++
++        /* Probe - 3 UART */
++        pinctrl_uart7: uart7grp {
++            fsl,pins = <
++                MX6UL_PAD_ENET2_TX_DATA0__UART7_DCE_RX  0x1b0b1
++                MX6UL_PAD_ENET2_RX_EN__UART7_DCE_TX     0x1b0b1
++            >;
++        };
++
++        /* micro SD card peripheral port pins */
++        pinctrl_usdhc1: usdhc1grp {
++            fsl,pins = <
++                MX6UL_PAD_SD1_CLK__USDHC1_CLK           0x10039
++                MX6UL_PAD_SD1_CMD__USDHC1_CMD           0x17059
++                MX6UL_PAD_SD1_DATA0__USDHC1_DATA0       0x17059
++                MX6UL_PAD_SD1_DATA1__USDHC1_DATA1       0x17059
++                MX6UL_PAD_SD1_DATA2__USDHC1_DATA2       0x17059
++                MX6UL_PAD_SD1_DATA3__USDHC1_DATA3       0x17059
++            >;
++        };
++
++        /* SPI 1 - Serial Flash */
++        pinctrl_ecspi1_master: ecspi1grp1 {
++            fsl,pins = <
++                MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI       0x10b0
++                MX6UL_PAD_LCD_DATA23__ECSPI1_MISO       0x10b0
++                MX6UL_PAD_LCD_DATA20__ECSPI1_SCLK       0x10b0
++                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x10b0
++            >;
++        };
++
++        /* SPI 2 - MIP display */
++        pinctrl_ecspi2_master: ecspi2grp1 {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA02__ECSPI2_MOSI       0x10b0
++                MX6UL_PAD_CSI_DATA03__ECSPI2_MISO       0x10b0
++                MX6UL_PAD_CSI_DATA00__ECSPI2_SCLK       0x10b0
++                MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08      0x30b0
++            >;
++        };
++
++        /* SPI 3 - Pressure sensor chip */
++        pinctrl_ecspi3_master: ecspi3grp1 {
++            fsl,pins = <
++                MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI      0x10b0
++                MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO      0x10b0
++                MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK    0x10b0
++                MX6UL_PAD_CSI_DATA04__GPIO4_IO25        0x10b0
++            >;
++        };
++
++        /* USB 1 OTG port pins */
++        pinctrl_usbotg1: usbotg1grp {
++            fsl,pins = <
++                MX6UL_PAD_ENET2_TX_CLK__ANATOP_OTG2_ID  0x17059
++                MX6UL_PAD_ENET2_TX_EN__USB_OTG2_OC      0x17059
++                MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12    0x30b0
++            >;
++        };
++
++        /* Color LCD back light control signal */
++        pinctrl_pwm2: pwm2grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO09__PWM2_OUT          0x110b0
++            >;
++        };
++
++        /* FW_LED_01 PWM signal pin */
++        pinctrl_pwm3: pwm3grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO04__PWM3_OUT          0x110b0
++            >;
++        };
++
++        /* Power chip */
++        pinctrl_i2c2: i2c2grp {
++            fsl,pins = <
++                MX6UL_PAD_CSI_HSYNC__I2C2_SCL           0x4001b8b0
++                MX6UL_PAD_CSI_VSYNC__I2C2_SDA           0x4001b8b0
++            >;
++        };
++
++        /* Ortustech VGA LCD pins */
++        pinctrl_lcdif: lcdifdatactrlgrp {
++            fsl,pins = <
++                MX6UL_PAD_LCD_DATA00__LCDIF_DATA00  0x79
++                MX6UL_PAD_LCD_DATA01__LCDIF_DATA01  0x79
++                MX6UL_PAD_LCD_DATA02__LCDIF_DATA02  0x79
++                MX6UL_PAD_LCD_DATA03__LCDIF_DATA03  0x79
++                MX6UL_PAD_LCD_DATA04__LCDIF_DATA04  0x79
++                MX6UL_PAD_LCD_DATA05__LCDIF_DATA05  0x79
++                MX6UL_PAD_LCD_DATA06__LCDIF_DATA06  0x79
++                MX6UL_PAD_LCD_DATA07__LCDIF_DATA07  0x79
++                MX6UL_PAD_LCD_DATA08__LCDIF_DATA08  0x79
++                MX6UL_PAD_LCD_DATA09__LCDIF_DATA09  0x79
++                MX6UL_PAD_LCD_DATA10__LCDIF_DATA10  0x79
++                MX6UL_PAD_LCD_DATA11__LCDIF_DATA11  0x79
++                MX6UL_PAD_LCD_DATA12__LCDIF_DATA12  0x79
++                MX6UL_PAD_LCD_DATA13__LCDIF_DATA13  0x79
++                MX6UL_PAD_LCD_DATA14__LCDIF_DATA14  0x79
++                MX6UL_PAD_LCD_DATA15__LCDIF_DATA15  0x79
++                MX6UL_PAD_LCD_CLK__LCDIF_CLK        0x17050
++                MX6UL_PAD_LCD_ENABLE__LCDIF_ENABLE  0x79
++                MX6UL_PAD_LCD_HSYNC__LCDIF_HSYNC    0x79
++                MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x79
++            >;
++        };
++
++        /* General purpose pinctrl */
++        pinctrl_hog: hoggrp {
++            fsl,pins = <
++                /* Column (strobe) lines as outputs - Active low signals */
++                MX6UL_PAD_GPIO1_IO00__GPIO1_IO00    0x10b0  /* KEYPAD_COL1 */
++                MX6UL_PAD_GPIO1_IO01__GPIO1_IO01    0x10b0  /* KEYPAD_COL2 */
++                MX6UL_PAD_JTAG_MOD__GPIO1_IO10      0x10b0  /* KEYPAD_COL3 */
++
++                /* Row lines as inputs, active high signals */
++                MX6UL_PAD_LCD_DATA21__GPIO3_IO26    0x10b0  /* KEYPAD_ROW1 */
++                MX6UL_PAD_CSI_DATA06__GPIO4_IO27    0x10b0  /* KEYPAD_ROW2 */
++                MX6UL_PAD_CSI_DATA07__GPIO4_IO28    0x10b0  /* KEYPAD_ROW3 */
++
++                /* SD card control lines, Active low signals */
++                MX6UL_PAD_CSI_DATA01__GPIO4_IO22    0x10b0  /* SDCARD_PWR& */
++                MX6UL_PAD_LCD_DATA19__GPIO3_IO24    0x10b0  /* SDCARD_DET& */
++
++                /* User LED and Switches */
++                MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00  0x10b0  /* FW_SW_01  */
++                MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x10b0  /* FW_SW_02  */
++                MX6UL_PAD_CSI_DATA05__GPIO4_IO26    0x10b0  /* FW_LED_02 */
++
++                /* MIP Display, Active high signals */
++                MX6UL_PAD_GPIO1_IO02__GPIO1_IO02    0x10b0  /* SER_LCD_PWR_EN */
++                MX6UL_PAD_GPIO1_IO08__GPIO1_IO08    0x3031  /* SER_LCD_EXTCOM */
++                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03    0x3031  /* SER_LCD_ON_OFF */
++
++                /* Probe 1 - Control lines */
++                MX6UL_PAD_JTAG_TMS__GPIO1_IO11      0x10b0  /* PRB1_TE      */
++                MX6UL_PAD_JTAG_TDO__GPIO1_IO12      0x10b0  /* PRB1_DET&    */
++                MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20 0xf0b0  /* PRB1_OFF     */
++                MX6UL_PAD_UART3_CTS_B__GPIO1_IO26   0x10b0  /* PRB1_EN&     */
++
++                /* Probe 2 - Control lines */
++                MX6UL_PAD_JTAG_TDI__GPIO1_IO13      0x10b0  /* PRB2_TE      */
++                MX6UL_PAD_JTAG_TCK__GPIO1_IO14      0x10b0  /* PRB2_DET&    */
++                MX6UL_PAD_UART3_RTS_B__GPIO1_IO27   0xf0b0  /* PRB2_OFF     */
++                MX6UL_PAD_ENET2_RX_DATA0__GPIO2_IO08 0x10b0 /* PRB2_EN&     */
++
++                /* Probe 3 - Control lines */
++                MX6UL_PAD_JTAG_TRST_B__GPIO1_IO15   0x10b0  /* PRB3_TE      */
++                MX6UL_PAD_UART1_CTS_B__GPIO1_IO18   0x10b0  /* PRB3_DET&    */
++                MX6UL_PAD_ENET2_RX_DATA1__GPIO2_IO09 0xf0b0 /* PRB3_OFF     */
++                MX6UL_PAD_ENET2_RX_ER__GPIO2_IO15   0x10b0  /* PRB3_EN&     */
++
++                /* Ethernet control lines */
++                MX6UL_PAD_LCD_DATA16__GPIO3_IO21    0x10b0  /* ENET1_INT&   */
++                MX6UL_PAD_LCD_DATA17__GPIO3_IO22    0x10b0  /* ENET1_PWR&   */
++                MX6UL_PAD_LCD_DATA18__GPIO3_IO23    0x10b0  /* ENET1_RST    */
++
++                /* BLE Module */
++                MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05  0x10b0  /* BLEMOD_PWR&  */
++                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06  0x10b0  /* BLE_MOD_READ_ID */
++
++                MX6UL_PAD_LCD_RESET__GPIO3_IO04     0x10b0  /* LCD_RESET&   */
++                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05    0x10b0  /* LCD_STANDBY& */
++                MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01  0x10b0  /* LCD2_XLTR_EN& - Enables level shifter chips for all data
++                                                             * and control lines for LCD
++                                                             */
++                MX6UL_PAD_SNVS_TAMPER3__GPIO5_IO03  0x10b0  /* LCD2_PWR_EN& - Enables VDC to LCD */
++                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02  0x10b0  /* V2P5_PWR_EN - Enables power for the level shifters
++                                                             * associated with color LCD, Active low signal
++                                                             */
++            >;
++        };
++    };
++};
+-- 
+2.11.0
+

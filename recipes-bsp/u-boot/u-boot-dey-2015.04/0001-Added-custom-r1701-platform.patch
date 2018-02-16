@@ -1,7 +1,7 @@
-From 3a4a9bc356577eacf52f32fdd4fc7a9b26ad516c Mon Sep 17 00:00:00 2001
+From b291dc16aa33c395dc1a3d1eb17c3bf4774e1e15 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
 Date: Thu, 2 Nov 2017 15:11:37 -0600
-Subject: [PATCH] Added custom r1701 platform.
+Subject: [PATCH 1/2] Added custom r1701 platform.
 
 ---
  arch/arm/Kconfig             |   5 +
