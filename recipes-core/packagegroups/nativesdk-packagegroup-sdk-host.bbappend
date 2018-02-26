@@ -2,5 +2,5 @@
 
 RDEPENDS_${PN} += " \
     nativesdk-protobuf \
+    nativesdk-flatbuffers \
 "
-
