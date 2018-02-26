@@ -42,4 +42,7 @@ IMAGE_FEATURES_remove += " \
 # Remove distribution feature.
 DISTRO_FEATURES_remove = "x11 wifi bluetooth"
 
+# This saves ~4MB of space and is not required
+BAD_RECOMMENDATIONS += "eudev-hwdb"
+
 export IMAGE_BASENAME = "hach-image"

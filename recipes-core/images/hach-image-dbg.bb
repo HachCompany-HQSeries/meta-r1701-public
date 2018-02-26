@@ -9,7 +9,6 @@ IMAGE_INSTALL += " \
     htop \
     devmem2 \
     mtd-utils \
-    dey-examples-spidev \
 "
 
 # Add predefined runtime package groups.
