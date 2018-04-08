@@ -1,6 +1,5 @@
 # Copyright (C) 2018 HACH Company
 
-
 pkg_postinst_${PN}() {
 	# run the postinst script on first boot
 	if [ x"$D" != "x" ]; then
@@ -52,4 +51,3 @@ pkg_postinst_${PN}() {
 			${CONFIG_FILE}
 	fi
 }
-

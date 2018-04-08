@@ -7,5 +7,6 @@ PACKAGECONFIG_append = " accessibility examples fontconfig sql-sqlite"
 
 PACKAGECONFIG_append_r1701 = " linuxfb"
 
-COMPATIBLE_MACHINE = "(r1701)"
+QT_CONFIG_FLAGS += " -optimize-size"
 
+COMPATIBLE_MACHINE = "(r1701)"

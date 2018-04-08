@@ -37,7 +37,6 @@
 # This sets the default machine to be qemux86 if no other machine is selected:
 #MACHINE ??= "qemux86"
 
-# HACH r1701 machine type
 MACHINE = "r1701"
 
 #
@@ -56,7 +55,7 @@ MACHINE = "r1701"
 #
 # The default is a downloads directory under TOPDIR which is the build directory.
 #
-#DL_DIR ?= "${TOPDIR}/../downloads"
+#DL_DIR ?= "${TOPDIR}/downloads"
 
 #
 # Where to place shared-state files
@@ -72,7 +71,7 @@ MACHINE = "r1701"
 #
 # The default is a sstate-cache directory under TOPDIR.
 #
-#SSTATE_DIR ?= "${TOPDIR}/../sstate-cache"
+#SSTATE_DIR ?= "${TOPDIR}/sstate-cache"
 
 #
 # Where to place the build output
@@ -146,7 +145,7 @@ PACKAGE_CLASSES ?= "package_rpm"
 # There are other application targets that can be used here too, see
 # meta/classes/image.bbclass and meta/classes/core-image.bbclass for more details.
 # We default to enabling the debugging tweaks.
-EXTRA_IMAGE_FEATURES ?= "debug-tweaks "
+EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
 
 #
 # Additional image features
@@ -157,7 +156,6 @@ EXTRA_IMAGE_FEATURES ?= "debug-tweaks "
 #   - 'buildstats' collect build statistics
 #   - 'image-mklibs' to reduce shared library files size for an image
 #   - 'image-prelink' in order to prelink the filesystem image
-#   - 'image-swab' to perform host system intrusion detection
 # NOTE: if listing mklibs & prelink both, then make sure mklibs is before prelink
 # NOTE: mklibs also needs to be explicitly enabled for a given image, see local.conf.extended
 USER_CLASSES ?= "buildstats image-mklibs image-prelink"
