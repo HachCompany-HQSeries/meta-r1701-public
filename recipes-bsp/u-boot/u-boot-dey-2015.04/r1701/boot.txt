@@ -4,7 +4,11 @@
 
 #
 # Set device tree filename depending on the board ID (if defined)
+# HACH (r1701) - For this project we are only using non wireless
+#                SOM. Hence we do not need to check for ID. Just
+#                set correct device tree name as default to load.
 #
+
 #if test -n "${board_id}"; then
 #	setenv fdt_file zImage-imx6ul-r1701-id${board_id}.dtb
 #else
