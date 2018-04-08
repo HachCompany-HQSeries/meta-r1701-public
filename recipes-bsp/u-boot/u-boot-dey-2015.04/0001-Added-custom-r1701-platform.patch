@@ -1,7 +1,7 @@
-From b291dc16aa33c395dc1a3d1eb17c3bf4774e1e15 Mon Sep 17 00:00:00 2001
-From: Tim Higgins <thiggins@hach.com>
-Date: Thu, 2 Nov 2017 15:11:37 -0600
-Subject: [PATCH 1/2] Added custom r1701 platform.
+From 85a63c68e4d55c88e89647de05da452511893e68 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Fri, 6 Apr 2018 16:15:11 -0600
+Subject: [PATCH] Added custom r1701 platform
 
 ---
  arch/arm/Kconfig             |   5 +
@@ -10,8 +10,8 @@ Subject: [PATCH 1/2] Added custom r1701 platform.
  board/digi/r1701/Makefile    |  10 +
  board/digi/r1701/r1701.c     | 584 +++++++++++++++++++++++++++++++++++++++++++
  configs/r1701_defconfig      |   7 +
- include/configs/r1701.h      | 259 +++++++++++++++++++
- 7 files changed, 886 insertions(+)
+ include/configs/r1701.h      | 260 +++++++++++++++++++
+ 7 files changed, 887 insertions(+)
  create mode 100644 board/digi/r1701/Kconfig
  create mode 100644 board/digi/r1701/MAINTAINERS
  create mode 100644 board/digi/r1701/Makefile
@@ -65,19 +65,19 @@ index 0000000000..caa2456cce
 +endif
 diff --git a/board/digi/r1701/MAINTAINERS b/board/digi/r1701/MAINTAINERS
 new file mode 100644
-index 0000000000..8e4c57f6fc
+index 0000000000..89f3fb9e4f
 --- /dev/null
 +++ b/board/digi/r1701/MAINTAINERS
 @@ -0,0 +1,6 @@
 +CCIMX6ULSTARTER BOARD
-+M:	Tim Higgins <thiggins@hach.com>
++M:	Devang Patel <dpatel@hach.com>
 +S:	Supported
 +F:	board/digi/r1701/
 +F:	include/configs/r1701.h
 +F:	configs/r1701_defconfig
 diff --git a/board/digi/r1701/Makefile b/board/digi/r1701/Makefile
 new file mode 100644
-index 0000000000..be50bf5b9e
+index 0000000000..d052d508bc
 --- /dev/null
 +++ b/board/digi/r1701/Makefile
 @@ -0,0 +1,10 @@
@@ -86,7 +86,7 @@ index 0000000000..be50bf5b9e
 +# SPDX-License-Identifier:	GPL-2.0+
 +#
 +
-+obj-y  := r1701.o ../ccimx6ul/ccimx6ul.o
++obj-y  := ccimx6ulstarter.o ../ccimx6ul/ccimx6ul.o
 +
 +extra-$(CONFIG_USE_PLUGIN) :=  ../ccimx6ul/plugin.bin
 +$(obj)/../ccimx6ul/plugin.bin: $(obj)/../ccimx6ul/plugin.o
@@ -696,12 +696,12 @@ index 0000000000..a23f37d211
 +CONFIG_DM_THERMAL=y
 diff --git a/include/configs/r1701.h b/include/configs/r1701.h
 new file mode 100644
-index 0000000000..8a8727408c
+index 0000000000..6c155a3227
 --- /dev/null
 +++ b/include/configs/r1701.h
-@@ -0,0 +1,259 @@
+@@ -0,0 +1,260 @@
 +/*
-+ * Copyright (C) 2016 Digi International, Inc.
++ * Copyright (C) 2016, 2017 Digi International, Inc.
 + * Copyright (C) 2015 Freescale Semiconductor, Inc.
 + *
 + * Configuration settings for the Digi ConnecCore 6UL Starter board.
@@ -713,7 +713,7 @@ index 0000000000..8a8727408c
 +
 +#include "ccimx6ul_common.h"
 +
-+#define CONFIG_BOARD_DESCRIPTION	"R1701 Board"
++#define CONFIG_BOARD_DESCRIPTION	"SBC Express"
 +
 +/* uncomment for PLUGIN mode support */
 +/* #define CONFIG_USE_PLUGIN */
@@ -865,6 +865,7 @@ index 0000000000..8a8727408c
 +		"${bootargs_ip} nfsroot=${serverip}:${rootpath},v3,tcp " \
 +		"${mtdparts} ${bootargs_once} ${extra_bootargs}\0" \
 +	"console=" CONFIG_CONSOLE_PORT "\0" \
++	"dboot_kernel_var=zimage\0" \
 +	"fdt_addr=0x83000000\0" \
 +	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
 +	"fdt_high=0xffffffff\0"	  \
@@ -889,7 +890,7 @@ index 0000000000..8a8727408c
 +	"install_linux_fw_sd=if load mmc 0 ${loadaddr} install_linux_fw_sd.scr;then " \
 +			"source ${loadaddr};" \
 +		"fi;\0" \
-+	"linux_file=hach-image-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
++	"linux_file=core-image-base-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
 +	"loadscript=" \
 +		"if test -z \"${mtdbootpart}\"; then " \
 +			"setenv mtdbootpart " CONFIG_LINUX_PARTITION ";" \
@@ -907,7 +908,7 @@ index 0000000000..8a8727408c
 +	"recoverycmd=" \
 +		"setenv mtdbootpart " CONFIG_RECOVERY_PARTITION ";" \
 +		"boot\0" \
-+	"rootfs_file=hach-image-" CONFIG_SYS_BOARD ".ubifs\0" \
++	"rootfs_file=core-image-base-" CONFIG_SYS_BOARD ".ubifs\0" \
 +	""	/* end line */
 +#else
 +#define CONFIG_EXTRA_ENV_SETTINGS \
