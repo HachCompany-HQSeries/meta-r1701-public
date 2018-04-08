@@ -251,4 +251,4 @@ PRSERV_HOST = "localhost:0"
 #
 # Some libraries and packages are covered by NXP EULA
 #
-#ACCEPT_FSL_EULA = "1"
+ACCEPT_FSL_EULA = "1"
