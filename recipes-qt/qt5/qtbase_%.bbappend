@@ -10,3 +10,4 @@ PACKAGECONFIG_append_r1701 = " linuxfb"
 QT_CONFIG_FLAGS += " -optimize-size"
 
 COMPATIBLE_MACHINE = "(r1701)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"

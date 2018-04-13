@@ -4,6 +4,7 @@ LICENSE = "MIT"
 require recipes-core/images/dey-image-qt.bb
 
 inherit populate_sdk_qt5
+inherit populate_sdk_qt5_base
 
 IMAGE_LINGUAS = "en-us"
 
@@ -14,6 +15,7 @@ IMAGE_INSTALL += " \
     sqlite3 \
     busybox-udhcpd \
     protobuf \
+    recovery-utils \
     r1701-apps \
 "
 
