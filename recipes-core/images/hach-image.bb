@@ -39,7 +39,7 @@ IMAGE_FEATURES_remove += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'alsa', 'dey-audio', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'bluetooth', 'dey-bluetooth', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
-    ${@bb.utils.contains("MACHINE_FEATURES", "touchscreen", "${VIRTUAL-RUNTIME_touchscreen}", "",d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'touchscreen', '${VIRTUAL-RUNTIME_touchscreen}', '', d)} \
     awsiotsdk-c \
     cloudconnector \
     libdigiapix \
