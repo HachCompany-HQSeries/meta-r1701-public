@@ -4,6 +4,7 @@ LICENSE = "MIT"
 require recipes-core/images/dey-image-qt.bb
 
 inherit populate_sdk_qt5
+inherit populate_sdk_qt5_base
 
 IMAGE_LINGUAS = "en-us"
 
@@ -14,6 +15,7 @@ IMAGE_INSTALL += " \
     sqlite3 \
     busybox-udhcpd \
     protobuf \
+    recovery-utils \
     r1701-apps \
 "
 
@@ -37,12 +39,23 @@ IMAGE_FEATURES_remove += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'alsa', 'dey-audio', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'bluetooth', 'dey-bluetooth', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'wifi', 'dey-wireless', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'touchscreen', '${VIRTUAL-RUNTIME_touchscreen}', '', d)} \
+    awsiotsdk-c \
+    cloudconnector \
+    libdigiapix \
+    evtest \
+    fbtest \
+    i2c-tools \
+    memwatch \
+    dey-examples \
+    tcpdump \
 "
 
 # Remove distribution feature.
 DISTRO_FEATURES_remove = "x11 wifi bluetooth"
 
-# This saves ~4MB of space and is not required
+# Do not install udev-cache
+BAD_RECOMMENDATIONS += "udev-cache"
 BAD_RECOMMENDATIONS += "eudev-hwdb"
 
 export IMAGE_BASENAME = "hach-image"

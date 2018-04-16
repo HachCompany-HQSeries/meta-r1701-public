@@ -1,2 +1,5 @@
+QT5_PKS_append_ccimx6ul = " qtdeclarative-tools"
+QT5_PKS_append_r1701 = " qtdeclarative-tools"
 QT5_EXAMPLES = ""
 QT5_DEMOS = ""
+MACHINE_QT5_EXTRA_INSTALL = ""
