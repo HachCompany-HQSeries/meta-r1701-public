@@ -14,7 +14,7 @@ DEPENDS += "zeromq boost qtbase protobuf"
 inherit cmake pkgconfig
 
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "git://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=feature/HQDFW-326-implement-rootfs-file-structure;protocol=ssh \
+SRC_URI = "git://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=develop;protocol=ssh \
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
