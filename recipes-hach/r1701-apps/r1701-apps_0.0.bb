@@ -39,10 +39,10 @@ EXTRA_OECMAKE += "-DUNIT_TEST=OFF \
                   -DCMAKE_INSTALL_BINDIR=bin \
 "
 
-# Install the SysV init script to the rootfs.
 do_install_append() {
+    # Install the SysV init script to the rootfs.
     install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
-	install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
+    install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
 }
 
 # Create /opt directory for r1701 apps installation.
