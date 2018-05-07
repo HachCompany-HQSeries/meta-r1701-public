@@ -34,10 +34,18 @@ EXTRA_OECMAKE += "-DUNIT_TEST=OFF \
                   -DCMAKE_CXX_STANDARD_REQUIRED=ON \
                   -DCMAKE_CXX_EXTENSIONS=OFF \
                   -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE}/qt5 \
+                  -DCMAKE_INSTALL_PREFIX=${base_prefix}/opt/hach \
+                  -DCMAKE_INSTALL_SYSCONFDIR=${base_prefix}/opt/hach/ \
+                  -DCMAKE_INSTALL_BINDIR=bin \
 "
 
 do_install_append() {
     # Install the SysV init script to the rootfs.
-	install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
-	install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
+    install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
+    install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
 }
+
+# Create /opt directory for r1701 apps installation.
+FILES_${PN} += " \
+    ${base_prefix}/opt \
+"
