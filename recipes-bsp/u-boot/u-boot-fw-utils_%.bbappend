@@ -1,5 +1,6 @@
 # Copyright (C) 2018 HACH Company
 
+
 pkg_postinst_${PN}() {
 	# run the postinst script on first boot
 	if [ x"$D" != "x" ]; then
@@ -12,6 +13,13 @@ pkg_postinst_${PN}() {
 	fi
 
 	PARTTABLE="/proc/mtd"
+    # create update partition ubifs
+	update_mtd="$(sed -ne "s/\(^mtd[0-9]\+\):.*\<update\>.*/\1/g;T;p" ${PARTTABLE} 2>/dev/null)"
+	ubidetach -p /dev/${update_mtd} 2>/dev/null
+	dev_number="$(ubiattach -p /dev/${update_mtd} 2>/dev/null | sed -ne 's,.*device number \([0-9]\).*,\1,g;T;p' 2>/dev/null)"
+	ubimkvol "/dev/ubi${dev_number}" -N "update" -m 2>/dev/null
+
+
 	MTDINDEX="$(sed -ne "s/\(^mtd[0-9]\+\):.*\<environment\>.*/\1/g;T;p" ${PARTTABLE} 2>/dev/null)"
 	if [ -n "${MTDINDEX}" ]; then
 		# Initialize variables for fixed offset values
