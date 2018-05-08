@@ -56,7 +56,6 @@ struct mipdisplay_par {
     struct task_struct  *task;
     __u8                *videomem;
     __u8                *spi_xfer_buf;
-    int                 power_en;
     int                 disp;
     int                 extcomin;
     spinlock_t          dirty_lock;
@@ -125,10 +124,6 @@ static int mipdisplay_toggle_extcomin_sig(void* arg)
 
 static int mipdisplay_On(struct mipdisplay_par *par)
 {
-    /* Power on the 5 VDC to LCD and let it stabilize */
-    gpio_set_value(par->power_en, HIGH);
-    usleep_range(PWR_ON_DELAY_USEC, PWR_ON_DELAY_USEC+10);
-
     // Enable LCD and EXTCOM signal.
     gpio_set_value(par->disp, HIGH);
     usleep_range(PWRUP_DISP_DELAY_USEC, PWRUP_DISP_DELAY_USEC+10);
@@ -147,7 +142,6 @@ static int mipdisplay_On(struct mipdisplay_par *par)
 static void mipdisplay_Off(struct mipdisplay_par *par)
 {
     kthread_stop(par->task);
-    gpio_set_value(par->power_en, LOW);
     gpio_set_value(par->extcomin, LOW);
     gpio_set_value(par->disp, LOW);
 }
@@ -335,20 +329,15 @@ static int mipdisplay_spi_probe(struct spi_device *spi)
 
     spin_lock_init(&privdata->dirty_lock);
 
-    privdata->power_en = of_get_named_gpio(np, "gpios", 0);
-    privdata->disp     = of_get_named_gpio(np, "gpios", 1);
-    privdata->extcomin = of_get_named_gpio(np, "gpios", 2);
-    ret = gpio_request_one(of_get_named_gpio(np, "gpios", 0), GPIOF_OUT_INIT_LOW, "SER_LCD_PWR_EN");
-    if(ret < 0){
-        pr_err(KERN_ERR "%s: Failed to request GPIO for SER_LCD_PWR_EN control pin, return code # %d\n", __func__, ret);
-        goto free_unreg_fb;
-    }
-    ret = gpio_request_one(of_get_named_gpio(np, "gpios", 1), GPIOF_OUT_INIT_LOW, "SER_LCD_ON_OFF");
+    privdata->disp     = of_get_named_gpio(np, "gpios", 0);
+    privdata->extcomin = of_get_named_gpio(np, "gpios", 1);
+    ret = gpio_request_one(of_get_named_gpio(np, "gpios", 0), GPIOF_OUT_INIT_LOW, "SER_LCD_ON_OFF");
     if(ret < 0){
         pr_err(KERN_ERR "%s: Failed to request GPIO for DISP control pin, return code # %d\n", __func__, ret);
-        goto free_pwr_pin;
+        goto free_unreg_fb;
     }
-    ret = gpio_request_one(of_get_named_gpio(np, "gpios", 2), GPIOF_OUT_INIT_LOW, "SER_LCD_EXTCOM");
+
+    ret = gpio_request_one(of_get_named_gpio(np, "gpios", 1), GPIOF_OUT_INIT_LOW, "SER_LCD_EXTCOM");
     if(ret < 0){
         pr_err(KERN_ERR "%s: Failed to request GPIO for EXTCOMIN control pin, return code # %d\n", __func__, ret);
         goto free_disp_pin;
@@ -392,9 +381,6 @@ free_extcomin_pin:
 free_disp_pin:
     gpio_free(privdata->disp);
 
-free_pwr_pin:
-    gpio_free(privdata->power_en);
-
 free_unreg_fb:
     unregister_framebuffer(privdata->info);
 
@@ -421,7 +407,6 @@ static int mipdisplay_spi_remove(struct spi_device *spi)
 
         mipdisplay_Off(privdata);
 
-        gpio_free(privdata->power_en);
         gpio_free(privdata->disp);
         gpio_free(privdata->extcomin);
 
@@ -450,7 +435,7 @@ static int mipdisplay_suspend(struct device *dev)
     struct spi_device *spi = to_spi_device(dev);
     par = (struct mipdisplay_par*)spi_get_drvdata(spi);
     while(par->oktosleep){
-        msleep(25);
+        msleep(10);
     }
     return 0;
 }
