@@ -1,14 +1,14 @@
-From 119944c4eac932ec547a8fdd22b9a61da27286c8 Mon Sep 17 00:00:00 2001
+From 9f80fdf95120b83e30085e5a163892f7551fb9d2 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 10 Jan 2018 13:20:54 -0700
-Subject: [PATCH 3/4] Addin sharp MIP display support to Kconfig file
+Subject: [PATCH 2/6] Addin sharp MIP display support to Kconfig file
 
 ---
  drivers/video/fbdev/Kconfig | 14 ++++++++++++++
  1 file changed, 14 insertions(+)
 
 diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
-index 1e34792f..66c49b5 100644
+index 1e34792f2017..9958c50b6e87 100644
 --- a/drivers/video/fbdev/Kconfig
 +++ b/drivers/video/fbdev/Kconfig
 @@ -2507,3 +2507,17 @@ config FB_RPISENSE
@@ -17,7 +17,7 @@ index 1e34792f..66c49b5 100644
  	  This is the framebuffer driver for the Raspberry Pi Sense HAT
 +
 +config FB_LS0XXB7DXXX
-+    tristate "Sharp LS027B7DH01-2.7 inch and LS032B7DD02-3.2 inch mip monochrome LCD framebuffer support"
++    tristate "LS032B7DD02-3.2 inch MIP monochrome LCD framebuffer support"
 +    depends on FB && SPI
 +    depends on OF
 +    depends on GPIOLIB
@@ -30,5 +30,5 @@ index 1e34792f..66c49b5 100644
 +      This driver implements support for the Sharp LS027B7DH01, LS032B7DD02
 +      LCD controller over SPI.
 -- 
-2.7.4
+2.11.0
 
