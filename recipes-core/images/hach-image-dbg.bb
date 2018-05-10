@@ -14,7 +14,6 @@ IMAGE_INSTALL += " \
 # Add predefined runtime package groups.
 # qtcreator-debug
 IMAGE_FEATURES += " \
-    package-management \
     eclipse-debug \
     debug-tweaks \
     tools-debug \
