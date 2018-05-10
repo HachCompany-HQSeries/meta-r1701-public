@@ -20,9 +20,6 @@ FEATURE_PACKAGES_dey-qt = "packagegroup-dey-qt"
 FEATURE_PACKAGES_dey-trustfence = ""
 FEATURE_PACKAGES_dey-wireless = ""
 
-# Point SDK path to "/opt/hachdev/sdk/r1701"
-SDKPATH = "/opt/hachdev/sdk/r1701"
-
 QEMU_TARGETS = "arm x86_64"
 DISTRO_EXTRA_RDEPENDS_append_qemuarm = " ${POKYQEMUDEPS}"
 DISTRO_EXTRA_RDEPENDS_append_qemuarm64 = " "
