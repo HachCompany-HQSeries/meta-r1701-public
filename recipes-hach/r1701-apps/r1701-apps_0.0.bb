@@ -14,7 +14,7 @@ DEPENDS += "zeromq boost sqlite3 protobuf protobuf-native qtbase qtbase-native r
 inherit cmake pkgconfig
 
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "git://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=feature/Rocko-yocto-support;protocol=ssh \
+SRC_URI = "git://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=develop;protocol=ssh \
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
