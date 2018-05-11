@@ -8,13 +8,13 @@ DESCRIPTION = "A recipe for building the Hach r1701 target applications."
 LICENSE = "CLOSED"
 
 # Build time dependencies with other recipes.
-DEPENDS += "zeromq boost qtbase protobuf"
+DEPENDS += "zeromq boost sqlite3 protobuf protobuf-native qtbase qtbase-native recovery-utils"
 
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
 
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "git://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=develop;protocol=ssh \
+SRC_URI = "git://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=feature/Rocko-yocto-support;protocol=ssh \
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
@@ -39,10 +39,10 @@ EXTRA_OECMAKE += "-DUNIT_TEST=OFF \
                   -DCMAKE_INSTALL_BINDIR=bin \
 "
 
-# Install the SysV init script to the rootfs.
 do_install_append() {
+    # Install the SysV init script to the rootfs.
     install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
-	install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
+    install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
 }
 
 # Create /opt directory for r1701 apps installation.

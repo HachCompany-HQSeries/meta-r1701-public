@@ -1,14 +1,14 @@
-From 303e351854b921824e191ccbb2b14cffe6198690 Mon Sep 17 00:00:00 2001
+From e91279c8e9b1bbf75c7b4db66c5cac7913fbc60f Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Tue, 16 Jan 2018 10:50:02 -0700
-Subject: [PATCH 4/4] Fix for matrix keypad column gpio scanning issue.
+Subject: [PATCH 3/6] Fix for matrix keypad column gpio scanning issue.
 
 ---
  drivers/input/keyboard/matrix_keypad.c | 16 ++++++++++++----
  1 file changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/input/keyboard/matrix_keypad.c b/drivers/input/keyboard/matrix_keypad.c
-index 7f12b65..b8cd5a2 100644
+index 7f12b6579f82..b8cd5a2a65af 100644
 --- a/drivers/input/keyboard/matrix_keypad.c
 +++ b/drivers/input/keyboard/matrix_keypad.c
 @@ -52,10 +52,14 @@ static void __activate_col(const struct matrix_keypad_platform_data *pdata,
@@ -43,5 +43,5 @@ index 7f12b65..b8cd5a2 100644
  }
  
 -- 
-2.7.4
+2.11.0
 

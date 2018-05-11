@@ -3,9 +3,12 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
 SRC_URI_append = " file://qt5.sh"
-PACKAGECONFIG_append = " accessibility examples fontconfig sql-sqlite"
+
+PACKAGECONFIG_append = " fontconfig"
 
 PACKAGECONFIG_append_r1701 = " linuxfb"
 
-COMPATIBLE_MACHINE = "(r1701)"
+QT_CONFIG_FLAGS += " -optimize-size"
 
+COMPATIBLE_MACHINE = "(r1701)"
+PACKAGE_ARCH = "${MACHINE_ARCH}"

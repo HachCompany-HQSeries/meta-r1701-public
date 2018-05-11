@@ -12,5 +12,6 @@ SRC_URI_append = " \
     file://0002-Addin-sharp-MIP-display-support-to-Kconfig-file.patch \
     file://0003-Fix-for-matrix-keypad-column-gpio-scanning-issue.patch \
     file://0004-Color-LCD-driver-patch.patch \
-    file://0005-Adding-r1701-device-trees.patch \
+    file://0005-Add-HACH-log-image.patch \
+    file://0006-Adding-r1701-device-trees.patch \
 "

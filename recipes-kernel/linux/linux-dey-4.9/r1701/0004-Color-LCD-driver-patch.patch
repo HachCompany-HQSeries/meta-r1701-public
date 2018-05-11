@@ -1,26 +1,27 @@
-From a1a2438ec7a67ae0c87acb463ab6cdf4e6ac6647 Mon Sep 17 00:00:00 2001
+From 3719d98ae01e6297b19b2d03bc56928137c62f85 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Fri, 16 Feb 2018 09:21:45 -0700
-Subject: [PATCH] Color LCD driver patch
+Date: Tue, 17 Apr 2018 15:22:36 -0600
+Subject: [PATCH 4/6] Color LCD driver patch
 
 ---
- drivers/video/fbdev/mxsfb.c | 75 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
+ drivers/video/fbdev/mxsfb.c | 79 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 78 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/video/fbdev/mxsfb.c b/drivers/video/fbdev/mxsfb.c
-index 52ee3e5163bc..742211278fed 100644
+index 52ee3e5163bc..c2385a9fbee1 100644
 --- a/drivers/video/fbdev/mxsfb.c
 +++ b/drivers/video/fbdev/mxsfb.c
-@@ -64,6 +64,8 @@
+@@ -62,7 +62,8 @@
+ #include <video/of_display_timing.h>
+ #include <video/videomode.h>
  #include <linux/uaccess.h>
- 
- #include "mxc/mxc_dispdrv.h"
+-
 +#include <linux/gpio.h>
 +#include <linux/delay.h>
+ #include "mxc/mxc_dispdrv.h"
  
  #define REG_SET	4
- #define REG_CLR	8
-@@ -268,6 +270,14 @@ struct mxsfb_info {
+@@ -268,6 +269,12 @@ struct mxsfb_info {
  #ifdef CONFIG_FB_MXC_OVERLAY
  	struct mxsfb_layer overlay;
  #endif
@@ -29,77 +30,54 @@ index 52ee3e5163bc..742211278fed 100644
 +    int lcd_pwr_en;
 +    int lcd_standby;
 +    int lcd_reset;
-+    int lcd_lvl_sftr_en;
-+    int lcd_lvl_sftr_V2P5_pwr_en;
 +    /* r1701 - end */
  };
  
  #define mxsfb_is_v3(host) (host->devdata->ipversion == 3)
-@@ -2195,6 +2205,71 @@ static int mxsfb_probe(struct platform_device *pdev)
+@@ -2195,6 +2202,50 @@ static int mxsfb_probe(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
-+	/* r1701 start */
++	/* r1701 start - Initialize control lines */
++
 +    /* LCD Initialization routine */
 +    host->lcd_pwr_en                = of_get_named_gpio(pdev->dev.of_node, "gpios", 0);    /* LCD_PWR_EN&  */
 +    host->lcd_reset                 = of_get_named_gpio(pdev->dev.of_node, "gpios", 1);    /* LCD_RESET&   */
 +    host->lcd_standby               = of_get_named_gpio(pdev->dev.of_node, "gpios", 2);    /* LCD_STANDBY& */
-+    host->lcd_lvl_sftr_en           = of_get_named_gpio(pdev->dev.of_node, "gpios", 3);    /* LCD_XLTR_EN& */
-+    host->lcd_lvl_sftr_V2P5_pwr_en  = of_get_named_gpio(pdev->dev.of_node, "gpios", 4);    /* V2P5_PWR_EN  */
 +
-+    // Request all GPIOs.
-+    ret = devm_gpio_request_one(&pdev->dev, host->lcd_lvl_sftr_V2P5_pwr_en, GPIOF_OUT_INIT_HIGH, "V2P5_PWR_EN");
-+    if(ret < 0){
-+        dev_err(&pdev->dev, "Failed to request V2P5_PWR_EN gpio pin\n");
-+        return -ENODEV;
-+    }
-+    else{
-+        gpio_export(host->lcd_lvl_sftr_V2P5_pwr_en, 0);
-+        gpio_set_value(host->lcd_lvl_sftr_V2P5_pwr_en, 1);
-+        mdelay(10);
-+    }
-+
-+    ret = devm_gpio_request_one(&pdev->dev, host->lcd_lvl_sftr_en, GPIOF_OUT_INIT_LOW, "LCD_XLTR_EN");
-+    if(ret < 0){
-+        dev_err(&pdev->dev, "Failed to request LCD_XLTR_EN gpio pin\n");
-+        return -ENODEV;
-+    }
-+    else{
-+        gpio_export(host->lcd_lvl_sftr_en, 0);
-+        gpio_set_value(host->lcd_lvl_sftr_en, 0);
-+        mdelay(50);
-+    }
-+
++    /* Enable all level shifter and turn on power to them */
 +    ret = devm_gpio_request_one(&pdev->dev, host->lcd_pwr_en, GPIOF_OUT_INIT_LOW, "LCD_PWR_EN");
 +    if(ret < 0){
 +        dev_err(&pdev->dev, "Failed to request LCD_PWR_EN gpio pin\n");
 +        return -ENODEV;
 +    }
 +    else{
-+        gpio_export(host->lcd_pwr_en, 0);
++        //gpio_export(host->lcd_pwr_en, 0);
 +        mdelay(50);
 +    }
 +
++    /* configure and generate reset */
++    ret = devm_gpio_request_one(&pdev->dev, host->lcd_reset, GPIOF_OUT_INIT_LOW, "LCD_RESET");
++    if(ret < 0){
++        dev_err(&pdev->dev, "Failed to request LCD_RESET gpio pin\n");
++        return -ENODEV;
++    }
++    else{
++        //gpio_export(host->lcd_reset, 0);
++        mdelay(20);
++        gpio_set_value(host->lcd_reset, 1);
++        mdelay(10);
++    }
++
++    /* Configure and take LCD out of standby */
 +    ret = devm_gpio_request_one(&pdev->dev, host->lcd_standby, GPIOF_OUT_INIT_HIGH, "LCD_STANDBY");
 +    if(ret < 0){
 +        dev_err(&pdev->dev, "Failed to request LCD_STANDBY gpio pin\n");
 +        return -ENODEV;
 +    }
 +    else{
-+        gpio_export(host->lcd_standby, 0);
++        //gpio_export(host->lcd_standby, 1);
 +        gpio_set_value(host->lcd_standby, 1);
-+    }
-+
-+    ret = devm_gpio_request_one(&pdev->dev, host->lcd_reset, GPIOF_OUT_INIT_HIGH, "LCD_RESET");
-+    if(ret < 0){
-+        dev_err(&pdev->dev, "Failed to request LCD_RESET gpio pin\n");
-+        return -ENODEV;
-+    }
-+    else{
-+        gpio_export(host->lcd_reset, 0);
-+        gpio_set_value(host->lcd_reset, 1);
-+        mdelay(50);
-+        gpio_set_value(host->lcd_reset, 0);
 +    }
 +
 +    /* r1701 end */
@@ -107,6 +85,67 @@ index 52ee3e5163bc..742211278fed 100644
  	fb_info = framebuffer_alloc(0, &pdev->dev);
  	if (!fb_info) {
  		dev_err(&pdev->dev, "Failed to allocate fbdev\n");
+@@ -2347,6 +2398,16 @@ static int mxsfb_remove(struct platform_device *pdev)
+ 	unregister_framebuffer(fb_info);
+ 	mxsfb_free_videomem(host);
+ 
++    /* r1701 - start */
++    gpio_set_value(host->lcd_standby, 0);
++    mdelay(10);
++    gpio_set_value(host->lcd_reset, 0);
++    gpio_set_value(host->lcd_pwr_en, 1);
++    devm_gpio_free(&pdev->dev, host->lcd_standby);
++    devm_gpio_free(&pdev->dev, host->lcd_reset);
++    devm_gpio_free(&pdev->dev, host->lcd_pwr_en);
++    /* r1701 - end */
++
+ 	platform_set_drvdata(pdev, NULL);
+ 
+ 	devm_kfree(&pdev->dev, fb_info->pseudo_palette);
+@@ -2375,6 +2436,10 @@ static int mxsfb_runtime_suspend(struct device *dev)
+ {
+ 	struct mxsfb_info *host = dev_get_drvdata(dev);
+ 
++    /* r1701 - start */
++    gpio_set_value(host->lcd_standby, 0);
++    /* r1701 - end */
++
+ 	if (host->devdata->flags & MXSFB_FLAG_BUSFREQ)
+ 		release_bus_freq(BUS_FREQ_HIGH);
+ 
+@@ -2390,6 +2455,10 @@ static int mxsfb_runtime_resume(struct device *dev)
+ {
+ 	struct mxsfb_info *host = dev_get_drvdata(dev);
+ 
++    /* r1701 - start */
++    gpio_set_value(host->lcd_standby, 1);
++    /* r1701 - end */
++
+ 	if (host->devdata->flags & MXSFB_FLAG_BUSFREQ)
+ 		request_bus_freq(BUS_FREQ_HIGH);
+ 
+@@ -2408,6 +2477,10 @@ static int mxsfb_suspend(struct device *pdev)
+ 	struct fb_info *fb_info = host->fb_info;
+ 	int saved_blank;
+ 
++    /* r1701 - start */
++    gpio_set_value(host->lcd_standby, 0);
++    /* r1701 - end */
++
+ 	console_lock();
+ 	mxsfb_overlay_suspend(host);
+ 	fb_set_suspend(fb_info, 1);
+@@ -2428,6 +2501,10 @@ static int mxsfb_resume(struct device *pdev)
+ 
+ 	pinctrl_pm_select_default_state(pdev);
+ 
++    /* r1701 - start */
++    gpio_set_value(host->lcd_standby, 1);
++    /* r1701 - end */
++
+ 	console_lock();
+ 	mxsfb_blank(host->restore_blank, fb_info);
+ 	fb_set_suspend(fb_info, 0);
 -- 
 2.11.0
 
