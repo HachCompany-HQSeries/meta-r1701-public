@@ -55,7 +55,7 @@ IMAGE_FEATURES_remove += " \
     cloudconnector \
     libdigiapix \
     evtest \
-    fbtest \
+	fbtest \
     i2c-tools \
     memwatch \
     dey-examples \
@@ -73,6 +73,7 @@ IMAGE_INSTALL += " \
     busybox-udhcpd \
     protobuf \
     recovery-utils \
+	cpio \
     r1701-apps \
 "
 
