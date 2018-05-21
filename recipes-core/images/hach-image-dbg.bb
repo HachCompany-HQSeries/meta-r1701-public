@@ -9,6 +9,7 @@ IMAGE_INSTALL += " \
     htop \
     devmem2 \
     mtd-utils \
+	tzdata \
 "
 
 # Add predefined runtime package groups.
