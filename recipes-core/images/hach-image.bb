@@ -63,6 +63,7 @@ IMAGE_FEATURES_remove += " \
     sysinfo \
     ethtool \
     modemmanager \
+    libdrm \
 "
 
 IMAGE_INSTALL += " \
@@ -73,7 +74,8 @@ IMAGE_INSTALL += " \
     busybox-udhcpd \
     protobuf \
     recovery-utils \
-	cpio \
+    cpio \
+    cppzmq \
     r1701-apps \
 "
 
@@ -87,7 +89,5 @@ inherit extrausers
 EXTRA_USERS_PARAMS += " \
     usermod -P hqd123 root; \
 "
-
-IMAGE_INSTALL_remove += "${SOC_PACKAGES} awsiotsdk-c cloudconnector libdigiapix evtest fbtest i2c-tools memwatch dey-examples tcpdump sysinfo ethtool x11 x11-base x11-sato dey-gstreamer dey-audio dey-bluetooth dey-wireless touchscreen modemmanager"
 
 export IMAGE_BASENAME = "hach-image"
