@@ -3,19 +3,17 @@ LICENSE = "MIT"
 
 require hach-image.bb
 
+# devmem2
 IMAGE_INSTALL += " \
-    suspend-resume \
-    rsync \
     htop \
-    devmem2 \
     mtd-utils \
-	tzdata \
+    tzdata \
 "
 
 # Add predefined runtime package groups.
 # qtcreator-debug
+# eclipse-debug
 IMAGE_FEATURES += " \
-    eclipse-debug \
     debug-tweaks \
     tools-debug \
 "
