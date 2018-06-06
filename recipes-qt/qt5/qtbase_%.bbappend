@@ -8,7 +8,7 @@ PACKAGECONFIG_append = " fontconfig"
 
 PACKAGECONFIG_append_r1701 = " linuxfb"
 
-QT_CONFIG_FLAGS += " -optimize-size"
+QT_CONFIG_FLAGS += " -optimize-size -gif"
 
 COMPATIBLE_MACHINE = "(r1701)"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
