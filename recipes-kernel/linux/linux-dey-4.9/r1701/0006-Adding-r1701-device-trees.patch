@@ -222,10 +222,10 @@ index 000000000000..aba9cbc2c180
 +            compatible = "ethernet-phy-ieee802.3-c22";
 +            smsc,disable-energy-detect;
 +            reg = <0>;
-+            pinctrl-names = "default";
-+            pinctrl-0 = <&pinctrl_etnphy0_int>;
-+            interrupt-parent = <&gpio4>;
-+            interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++            //pinctrl-names = "default";
++            //pinctrl-0 = <&pinctrl_etnphy0_int>;
++            //interrupt-parent = <&gpio4>;
++            //interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
 +        };
 +    };
 +};
@@ -751,11 +751,11 @@ index 000000000000..aba9cbc2c180
 +        };
 +
 +        /* Ethernet PHY interrupt, Active low signal */
-+        pinctrl_etnphy0_int: phyInterrupt {
-+            fsl,pins = <
-+                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
-+            >;
-+        };
++        //pinctrl_etnphy0_int: phyInterrupt {
++        //    fsl,pins = <
++        //        MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
++        //    >;
++        //};
 +
 +        /*ethernet PHY power pin, active low output pin */
 +        pinctrl_etnphy_power: phyPower {
@@ -826,8 +826,8 @@ index 000000000000..aba9cbc2c180
 +                MX6UL_PAD_SD1_DATA2__GPIO2_IO20         0x10b0  /* BLE_MOD_READ_ID */
 +
 +                /* BLE UART TX/RX as GPIO for testing */
-+                MX6UL_PAD_CSI_PIXCLK__GPIO4_IO18        0x10b0  // RX
-+                MX6UL_PAD_CSI_MCLK__GPIO4_IO17          0x10b0  // TX
++                //MX6UL_PAD_CSI_PIXCLK__GPIO4_IO18        0x10b0  // RX
++                //MX6UL_PAD_CSI_MCLK__GPIO4_IO17          0x10b0  // TX
 +
 +                /* AUDIO (Beeper) Module */
 +                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06      0x10b0  /* AUDIO_EN */
@@ -852,10 +852,10 @@ index 000000000000..aba9cbc2c180
 +
 +                /* Ethernet control lines */
 +                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0  /* ENET1_INT& */
-+                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
++                //MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
 +
 +                /* Charger IRQ line - Active low signal */
-+                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  /* CHARGER-IRQ */
++                //MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  /* CHARGER-IRQ */
 +            >;
 +        };
 +    };
@@ -1056,10 +1056,10 @@ index 000000000000..b3b763ad713a
 +            compatible = "ethernet-phy-ieee802.3-c22";
 +            smsc,disable-energy-detect;
 +            reg = <0>;
-+            pinctrl-names = "default";
-+            pinctrl-0 = <&pinctrl_etnphy0_int>;
-+            interrupt-parent = <&gpio4>;
-+            interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++            //pinctrl-names = "default";
++            //pinctrl-0 = <&pinctrl_etnphy0_int>;
++            //interrupt-parent = <&gpio4>;
++            //interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
 +        };
 +    };
 +};
@@ -1585,11 +1585,11 @@ index 000000000000..b3b763ad713a
 +        };
 +
 +        /* Ethernet PHY interrupt, Active low signal */
-+        pinctrl_etnphy0_int: phyInterrupt {
-+            fsl,pins = <
-+                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
-+            >;
-+        };
++        //pinctrl_etnphy0_int: phyInterrupt {
++        //    fsl,pins = <
++        //        MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
++        //    >;
++        //};
 +
 +        /*ethernet PHY power pin, active low output pin */
 +        pinctrl_etnphy_power: phyPower {
@@ -1660,8 +1660,8 @@ index 000000000000..b3b763ad713a
 +                MX6UL_PAD_SD1_DATA2__GPIO2_IO20         0x10b0  /* BLE_MOD_READ_ID */
 +
 +                /* BLE UART TX/RX as GPIO for testing */
-+                MX6UL_PAD_CSI_PIXCLK__GPIO4_IO18        0x10b0  // RX
-+                MX6UL_PAD_CSI_MCLK__GPIO4_IO17          0x10b0  // TX
++                //MX6UL_PAD_CSI_PIXCLK__GPIO4_IO18        0x10b0  // RX
++                //MX6UL_PAD_CSI_MCLK__GPIO4_IO17          0x10b0  // TX
 +
 +                /* AUDIO (Beeper) Module */
 +                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06      0x10b0  /* AUDIO_EN */
@@ -1686,14 +1686,14 @@ index 000000000000..b3b763ad713a
 +
 +                /* Ethernet control lines */
 +                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0  /* ENET1_INT& */
-+                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
++                //MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
 +
 +                /* Charger IRQ line - Active low signal */
-+                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  /* CHARGER-IRQ */
++                //MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  /* CHARGER-IRQ */
 +            >;
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
