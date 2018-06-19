@@ -83,16 +83,16 @@ index 000000000000..aba9cbc2c180
 +    };
 +
 +    /* PHY Power regulator */
-+    reg_3v3_etn: regulator-3v3etn {
-+        compatible = "regulator-fixed";
-+        regulator-name = "3V3_ETN";
-+        regulator-min-microvolt = <3300000>;
-+        regulator-max-microvolt = <3300000>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_etnphy_power>;
-+        gpio = <&gpio5 2 GPIO_ACTIVE_LOW>;
-+        enable-active-low;
-+    };
++    //reg_3v3_etn: regulator-3v3etn {
++    //    compatible = "regulator-fixed";
++    //    regulator-name = "3V3_ETN";
++    //    regulator-min-microvolt = <3300000>;
++    //    regulator-max-microvolt = <3300000>;
++    //    pinctrl-names = "default";
++    //    pinctrl-0 = <&pinctrl_etnphy_power>;
++    //    gpio = <&gpio5 2 GPIO_ACTIVE_LOW>;
++    //    enable-active-low;
++    //};
 +
 +    /* Color LCD backlight support. */
 +    lcd_backlight: backlight {
@@ -208,7 +208,7 @@ index 000000000000..aba9cbc2c180
 +    phy-reset-gpios = <&mca_gpio 7 GPIO_ACTIVE_LOW>;
 +    phy-reset-duration = <50>;
 +    phy-handle = <&ethphy0>;
-+    phy-supply = <&reg_3v3_etn>;
++    //phy-supply = <&reg_3v3_etn>;
 +
 +    /* keeps the phy in reset during suspend mode to avoid back-drives through the reset line. */
 +    digi,phy-reset-in-suspend;
@@ -398,7 +398,7 @@ index 000000000000..aba9cbc2c180
 +         * disable above IRQ definition.
 +         */
 +        //interrupt-parent = <&mca_gpio>;
-+        //interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++        //interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
 +
 +        /* maximum charging voltage (in uV) - 4.1 VDC */
 +        ti,battery-regulation-voltage = <4100000>;
@@ -758,11 +758,11 @@ index 000000000000..aba9cbc2c180
 +        //};
 +
 +        /*ethernet PHY power pin, active low output pin */
-+        pinctrl_etnphy_power: phyPower {
-+            fsl,pins = <
-+                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02        0x10b0
-+            >;
-+        };
++        //pinctrl_etnphy_power: phyPower {
++        //    fsl,pins = <
++        //        MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02        0x10b0
++        //    >;
++        //};
 +
 +        /* General purpose pinctrl */
 +        pinctrl_hog: hoggrp {
@@ -852,7 +852,7 @@ index 000000000000..aba9cbc2c180
 +
 +                /* Ethernet control lines */
 +                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0  /* ENET1_INT& */
-+                //MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
++                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
 +
 +                /* Charger IRQ line - Active low signal */
 +                //MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  /* CHARGER-IRQ */
@@ -917,16 +917,16 @@ index 000000000000..b3b763ad713a
 +    };
 +
 +    /* PHY Power regulator */
-+    reg_3v3_etn: regulator-3v3etn {
-+        compatible = "regulator-fixed";
-+        regulator-name = "3V3_ETN";
-+        regulator-min-microvolt = <3300000>;
-+        regulator-max-microvolt = <3300000>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_etnphy_power>;
-+        gpio = <&gpio5 2 GPIO_ACTIVE_LOW>;
-+        enable-active-low;
-+    };
++    //reg_3v3_etn: regulator-3v3etn {
++    //    compatible = "regulator-fixed";
++    //    regulator-name = "3V3_ETN";
++    //    regulator-min-microvolt = <3300000>;
++    //    regulator-max-microvolt = <3300000>;
++    //    pinctrl-names = "default";
++    //    pinctrl-0 = <&pinctrl_etnphy_power>;
++    //    gpio = <&gpio5 2 GPIO_ACTIVE_LOW>;
++    //    enable-active-low;
++    //};
 +
 +    /* Color LCD backlight support. */
 +    lcd_backlight: backlight {
@@ -1042,7 +1042,7 @@ index 000000000000..b3b763ad713a
 +    phy-reset-gpios = <&mca_gpio 7 GPIO_ACTIVE_LOW>;
 +    phy-reset-duration = <50>;
 +    phy-handle = <&ethphy0>;
-+    phy-supply = <&reg_3v3_etn>;
++    //phy-supply = <&reg_3v3_etn>;
 +
 +    /* keeps the phy in reset during suspend mode to avoid back-drives through the reset line. */
 +    digi,phy-reset-in-suspend;
@@ -1232,7 +1232,7 @@ index 000000000000..b3b763ad713a
 +         * disable above IRQ definition.
 +         */
 +        //interrupt-parent = <&mca_gpio>;
-+        //interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++        //interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
 +
 +        /* maximum charging voltage (in uV) - 4.1 VDC */
 +        ti,battery-regulation-voltage = <4100000>;
@@ -1592,11 +1592,11 @@ index 000000000000..b3b763ad713a
 +        //};
 +
 +        /*ethernet PHY power pin, active low output pin */
-+        pinctrl_etnphy_power: phyPower {
-+            fsl,pins = <
-+                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02        0x10b0
-+            >;
-+        };
++        //pinctrl_etnphy_power: phyPower {
++        //    fsl,pins = <
++        //        MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02        0x10b0
++        //    >;
++        //};
 +
 +        /* General purpose pinctrl */
 +        pinctrl_hog: hoggrp {
@@ -1686,7 +1686,7 @@ index 000000000000..b3b763ad713a
 +
 +                /* Ethernet control lines */
 +                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0  /* ENET1_INT& */
-+                //MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
++                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
 +
 +                /* Charger IRQ line - Active low signal */
 +                //MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  /* CHARGER-IRQ */
