@@ -181,16 +181,16 @@ index 000000000000..69fba3744741
 +        digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
-+        //digi,key-sleep;
++        digi,key-sleep;
 +
 +        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
-+        digi,debounce-ms = <50>;
++        digi,debounce-ms = <100>;
 +
 +        /* number of seconds that the Power Key must be pressed to generate a KEY_POWER event. */
-+        digi,pwroff-delay-sec = <2>;
++        digi,pwroff-delay-sec = <6>;
 +
 +        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
-+        digi,pwroff-guard-sec = <20>;
++        digi,pwroff-guard-sec = <30>;
 +    };
 +};
 +
@@ -1040,16 +1040,16 @@ index 000000000000..233049642e14
 +        digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
-+        //digi,key-sleep;
++        digi,key-sleep;
 +
 +        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
-+        digi,debounce-ms = <50>;
++        digi,debounce-ms = <100>;
 +
 +        /* number of seconds that the Power Key must be pressed to generate a KEY_POWER event. */
-+        digi,pwroff-delay-sec = <2>;
++        digi,pwroff-delay-sec = <6>;
 +
 +        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
-+        digi,pwroff-guard-sec = <20>;
++        digi,pwroff-guard-sec = <30>;
 +    };
 +};
 +
@@ -1744,6 +1744,6 @@ index 000000000000..233049642e14
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
