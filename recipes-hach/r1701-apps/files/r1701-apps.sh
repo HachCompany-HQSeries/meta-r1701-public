@@ -1,10 +1,9 @@
 #!/bin/sh
 case "$1" in
   start)
-		uboot-model-type="model-type"
-		model-type="HPP"
- 		eval "${model-type}=\"$(fw_printenv -n ${uboot-model-type} 2>/dev/null)\"" 
-		if [ "${model-type}" = "MPP" ]; then
+
+		modeltype=$(fw_printenv -n "model-type" 2>/dev/null) 
+		if [ "${modeltype}" = "MPP" ]; then
 			modprobe -r mxsfb
 			export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb1
 		else

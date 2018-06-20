@@ -371,13 +371,13 @@ fi
 
 
 # Read the model type variable.
-read_uboot_var model-type model-type
+read_uboot_var model-type modeltype
 
 # Check if it exists
-if [ -z "${model-type}" ]; then
+if [ -z "${modeltype}" ]; then
 	export FRAMEBUFFER=/dev/fb0
 else
-	if [ "${model-type}" = "MPP" ]; then
+	if [ "${modeltype}" = "MPP" ]; then
 		modprobe mipdisplay-3-2-inch
 		export FRAMEBUFFER=/dev/fb1
 	else
