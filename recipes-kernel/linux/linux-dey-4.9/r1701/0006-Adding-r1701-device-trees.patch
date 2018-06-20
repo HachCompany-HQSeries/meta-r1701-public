@@ -1,13 +1,13 @@
-From ccf761af5f64048d9e88abf792071e0dccb842cf Mon Sep 17 00:00:00 2001
+From 3dd334311aadc18f25ddd34faceba8c85c7766d4 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Thu, 7 Jun 2018 09:40:16 -0600
+Date: Wed, 20 Jun 2018 10:36:00 -0600
 Subject: [PATCH 6/6] Adding r1701 device trees
 
 ---
  arch/arm/boot/dts/Makefile            |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 828 ++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 828 ++++++++++++++++++++++++++++++++++
- 3 files changed, 1659 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 853 ++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 853 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 1709 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
@@ -28,10 +28,10 @@ index ff8eee581a80..5714b10d09a3 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 000000000000..aba9cbc2c180
+index 000000000000..69fba3744741
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-@@ -0,0 +1,828 @@
+@@ -0,0 +1,853 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -166,6 +166,31 @@ index 000000000000..aba9cbc2c180
 +        /* Debounce time and column scan time can be adjusted based on our need. */
 +        debounce-delay-ms = <100>;
 +        col-scan-delay-us = <50000>;
++    };
++};
++
++/*
++ * Power key - This node defines settings for the power key associated with the MCA. Refer to binding at,
++ * "Documentation/devicetree/bindings/input/digi,mca-cc6ul-powerkey.txt"
++ */
++&mca_cc6ul{
++    pwrkey {
++        compatible = "digi,mca-cc6ul-pwrkey";
++
++        /* enable the KEY_POWER events */
++        digi,key-power;
++
++        /* enable the KEY_SLEEP events */
++        //digi,key-sleep;
++
++        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
++        digi,debounce-ms = <50>;
++
++        /* number of seconds that the Power Key must be pressed to generate a KEY_POWER event. */
++        digi,pwroff-delay-sec = <2>;
++
++        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
++        digi,pwroff-guard-sec = <20>;
 +    };
 +};
 +
@@ -862,10 +887,10 @@ index 000000000000..aba9cbc2c180
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..b3b763ad713a
+index 000000000000..233049642e14
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,828 @@
+@@ -0,0 +1,853 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1000,6 +1025,31 @@ index 000000000000..b3b763ad713a
 +        /* Debounce time and column scan time can be adjusted based on our need. */
 +        debounce-delay-ms = <100>;
 +        col-scan-delay-us = <50000>;
++    };
++};
++
++/*
++ * Power key - This node defines settings for the power key associated with the MCA. Refer to binding at,
++ * "Documentation/devicetree/bindings/input/digi,mca-cc6ul-powerkey.txt"
++ */
++&mca_cc6ul{
++    pwrkey {
++        compatible = "digi,mca-cc6ul-pwrkey";
++
++        /* enable the KEY_POWER events */
++        digi,key-power;
++
++        /* enable the KEY_SLEEP events */
++        //digi,key-sleep;
++
++        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
++        digi,debounce-ms = <50>;
++
++        /* number of seconds that the Power Key must be pressed to generate a KEY_POWER event. */
++        digi,pwroff-delay-sec = <2>;
++
++        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
++        digi,pwroff-guard-sec = <20>;
 +    };
 +};
 +
@@ -1694,6 +1744,6 @@ index 000000000000..b3b763ad713a
 +        };
 +    };
 +};
---
+-- 
 2.11.0
 
