@@ -370,6 +370,19 @@ if [ -f /proc/sys/kernel/hotplug ]; then
 fi
 
 
+# Run all shell scripts in postinstall folder
+run-parts /etc/*-postinsts
+
+# Setup fw_printenv.
+mkdir -p /var/lock
+
+# Set kernel console loglevel.
+sysctl -q -w kernel.printk=4
+
+if [ "$(is_nand)" = "no" ]; then
+	# Launch 'rngd' to feed random data to kernel entropy pool
+	mkdir -p /var/run && rngd
+fi
 # Read the model type variable.
 read_uboot_var model-type modeltype
 
@@ -394,21 +407,7 @@ fi
 modprobe sdhci_esdhc_imx
 
 # Give some time for the devices to settle down
-sleep 5
-
-# Run all shell scripts in postinstall folder
-run-parts /etc/*-postinsts
-
-# Setup fw_printenv.
-mkdir -p /var/lock
-
-# Set kernel console loglevel.
-sysctl -q -w kernel.printk=4
-
-if [ "$(is_nand)" = "no" ]; then
-	# Launch 'rngd' to feed random data to kernel entropy pool
-	mkdir -p /var/run && rngd
-fi
+sleep 2
 
 # Start xsplash.
 xsplash &
