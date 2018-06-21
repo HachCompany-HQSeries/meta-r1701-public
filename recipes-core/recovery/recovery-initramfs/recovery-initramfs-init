@@ -393,7 +393,7 @@ if [ -z "${modeltype}" ]; then
 else
 	if [ "${modeltype}" = "MPP" ]; then
 		modprobe mipdisplay-3-2-inch
-		export FRAMEBUFFER=/dev/fb1
+		export FRAMEBUFFER=/dev/fb0
 	else
 		modprobe mxsfb
 		export FRAMEBUFFER=/dev/fb0
@@ -409,7 +409,7 @@ fi
 modprobe sdhci_esdhc_imx
 
 # Give some time for the devices to settle down
-sleep 2
+sleep 5
 
 # Start xsplash.
 xsplash &
