@@ -26,7 +26,7 @@ index 6be5d26878..57fe8a8a59 100644
 @@ -589,6 +589,10 @@ config TARGET_CCIMX6ULSTARTER
          bool "Support ccimx6ulstarter"
          select CPU_V7
- 
+
 +config TARGET_R1701
 +        bool "Support for the r1701"
 +        select CPU_V7
@@ -874,7 +874,7 @@ index 0000000000..8a8727408c
 +	"recovery_file=recovery.img\0" \
 +	"script=boot.scr\0" \
 +	"uboot_file=u-boot.imx\0" \
-+	"zimage=zImage-" CONFIG_SYS_BOARD ".bin\0"
++	"zimage=zImage-" CONFIG_SYS_BOARD ".bin\0" "model-type=MPP\0"
 +
 +#if defined(CONFIG_SYS_BOOT_NAND)
 +#define CONFIG_EXTRA_ENV_SETTINGS \
@@ -959,6 +959,6 @@ index 0000000000..8a8727408c
 +#define CONFIG_DIGI_UBI
 +
 +#endif /* CCIMX6ULSTARTER_CONFIG_H */
--- 
+--
 2.11.0
 
