@@ -1,4 +1,4 @@
-From cf35be0e32f088c8fb339fd1a9e143d354f80402 Mon Sep 17 00:00:00 2001
+From dd3d44972af72ee19f2fcf93d01293e0ce42391b Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 27 Jun 2018 10:34:54 -0600
 Subject: [PATCH 7/7] NAND suspend-resume timing issue patch
