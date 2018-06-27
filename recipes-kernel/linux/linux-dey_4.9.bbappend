@@ -14,4 +14,5 @@ SRC_URI_append = " \
     file://0004-Color-LCD-driver-patch.patch \
     file://0005-Add-HACH-log-image.patch \
     file://0006-Adding-r1701-device-trees.patch \
+    file://0007-NAND-suspend-resume-timing-issue-patch.patch \
 "

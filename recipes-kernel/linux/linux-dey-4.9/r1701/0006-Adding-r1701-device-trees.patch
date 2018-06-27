@@ -1,7 +1,7 @@
-From 3dd334311aadc18f25ddd34faceba8c85c7766d4 Mon Sep 17 00:00:00 2001
+From 04c69e8e3cc90e4556a6e54bd5b1bd9959765434 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 20 Jun 2018 10:36:00 -0600
-Subject: [PATCH 6/6] Adding r1701 device trees
+Subject: [PATCH 6/7] Adding r1701 device trees
 
 ---
  arch/arm/boot/dts/Makefile            |   4 +-
@@ -28,7 +28,7 @@ index ff8eee581a80..5714b10d09a3 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 000000000000..69fba3744741
+index 000000000000..c8ee6e5a2bc7
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 @@ -0,0 +1,853 @@
@@ -887,7 +887,7 @@ index 000000000000..69fba3744741
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..233049642e14
+index 000000000000..0ff7640c3f3a
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
 @@ -0,0 +1,853 @@
@@ -1744,6 +1744,6 @@ index 000000000000..233049642e14
 +        };
 +    };
 +};
---
+-- 
 2.11.0
 

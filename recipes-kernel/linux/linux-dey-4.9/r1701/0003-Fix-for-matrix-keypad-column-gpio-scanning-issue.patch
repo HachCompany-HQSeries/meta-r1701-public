@@ -1,7 +1,7 @@
-From dfa0ec5855b68fea143efa091baae441d425d0bd Mon Sep 17 00:00:00 2001
+From c55ea900c6b3f2ecb5596c30c1e1f499a193bed5 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Tue, 16 Jan 2018 10:50:02 -0700
-Subject: [PATCH 3/6] Fix for matrix keypad column gpio scanning issue.
+Subject: [PATCH 3/7] Fix for matrix keypad column gpio scanning issue.
 
 ---
  drivers/input/keyboard/matrix_keypad.c | 16 ++++++++++++----
