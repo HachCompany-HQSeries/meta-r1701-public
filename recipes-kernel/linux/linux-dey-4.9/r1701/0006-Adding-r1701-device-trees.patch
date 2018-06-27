@@ -1,13 +1,13 @@
-From f30df05c7eeb54a000e5984429877f73f48ce9f4 Mon Sep 17 00:00:00 2001
+From 1ac103b79b20c576eca2b791236c64d1227a249b Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Wed, 27 Jun 2018 13:13:19 -0600
+Date: Wed, 27 Jun 2018 16:20:19 -0600
 Subject: [PATCH 6/7] Adding r1701 device trees
 
 ---
- arch/arm/boot/dts/Makefile            |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 894 ++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 894 ++++++++++++++++++++++++++++++++++
- 3 files changed, 1791 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/Makefile            |    4 +-
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 1018 +++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 1018 +++++++++++++++++++++++++++++++++
+ 3 files changed, 2039 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
@@ -28,10 +28,10 @@ index ff8eee581a80..5714b10d09a3 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 000000000000..3935908c75e4
+index 000000000000..aac70472abb5
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-@@ -0,0 +1,894 @@
+@@ -0,0 +1,1018 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -211,6 +211,130 @@ index 000000000000..3935908c75e4
 +        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
 +        digi,pwroff-guard-sec = <30>;
 +    };
++};
++
++/* PMIC - SW1A --> Powers several interfaces inside the module */
++&int_3v3 {
++    regulator-min-microvolt = <700000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-ramp-delay = <6250>;
++    regulator-boot-on;
++    regulator-always-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - SW1B --> Internal CPU power supply */
++&vdd_arm_soc_in {
++    regulator-min-microvolt = <700000>;
++    regulator-max-microvolt = <1475000>;
++    regulator-ramp-delay = <6250>;
++    regulator-boot-on;
++    regulator-always-on;
++    regulator-state-mem {
++        regulator-on-in-suspend;
++        regulator-suspend-microvolt = <925000>;
++    };
++};
++
++/* PMIC - SW2 --> DBuck regulator, Default 3.3 VDC, SOM_3V3_EXT */
++&ext_3v3 {
++    regulator-min-microvolt = <2500000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-ramp-delay = <6250>;
++    regulator-always-on;
++    regulator-boot-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - SW3 --> DDR3 power supply */
++&vcc_ddr3 {
++    regulator-min-microvolt = <900000>;
++    regulator-max-microvolt = <1650000>;
++    regulator-always-on;
++    regulator-boot-on;
++    regulator-state-mem {
++        regulator-on-in-suspend;
++        regulator-suspend-microvolt = <1300000>;
++    };
++};
++
++/* PMIC - SWBST --> Boost regulator, default 5VDC */
++&swbst_reg {
++    regulator-min-microvolt = <5000000>;
++    regulator-max-microvolt = <5150000>;
++};
++
++/* PMIC - VSNVS --> Internal CPU power supply */
++&vdd_snvs_3v3 {
++    regulator-min-microvolt = <1000000>;
++    regulator-max-microvolt = <3000000>;
++    regulator-boot-on;
++    regulator-always-on;
++};
++
++/* PMIC - VREFDDR --> DDR reference voltage */
++&vrefddr {
++    regulator-boot-on;
++    regulator-always-on;
++};
++
++/* PMIC - LDO1 --> CPU ADC reference voltage */
++&vdda_adc_3v3 {
++    compatible = "regulator-fixed";
++    regulator-name = "vref-adc-3v3";
++    regulator-min-microvolt = <3300000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-always-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - LDO2 --> LDO regulator, 1.5VDC */
++&ldo2_ext {
++    regulator-min-microvolt = <800000>;
++    regulator-max-microvolt = <1550000>;
++};
++
++/* PMIC - VCC_SD --> Wireless chip power supply */
++&vdda_wlan {
++    regulator-min-microvolt = <2850000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-always-on;
++    regulator-boot-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - V33 --> Internal CPU power supply */
++&vdd_high_in {
++    regulator-min-microvolt = <2850000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-boot-on;
++    regulator-always-on;
++};
++
++/* Internal to SOM, Do not change any property in this node */
++&ldo3_int {
++    regulator-min-microvolt = <1800000>;
++    regulator-max-microvolt = <3300000>;
++};
++
++/* PMIC - LDO4 --> LDO regulator, 1.8 VDC */
++&ldo4_ext {
++    regulator-min-microvolt = <1800000>;
++    regulator-max-microvolt = <3300000>;
++};
++
++/* PMIC - VCOIN --> Coin cell charger, 3 VDC */
++&vcoin_chg {
++    regulator-min-microvolt = <2500000>;
++    regulator-max-microvolt = <3300000>;
 +};
 +
 +/* CAAM (Cryptographic Accelerator and Assurance Module), The i.MX6 processors offer hardware encryption through NXP's
@@ -928,10 +1052,10 @@ index 000000000000..3935908c75e4
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..830dcdc4d61a
+index 000000000000..4ab876376997
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,894 @@
+@@ -0,0 +1,1018 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1111,6 +1235,130 @@ index 000000000000..830dcdc4d61a
 +        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
 +        digi,pwroff-guard-sec = <30>;
 +    };
++};
++
++/* PMIC - SW1A --> Powers several interfaces inside the module */
++&int_3v3 {
++    regulator-min-microvolt = <700000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-ramp-delay = <6250>;
++    regulator-boot-on;
++    regulator-always-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - SW1B --> Internal CPU power supply */
++&vdd_arm_soc_in {
++    regulator-min-microvolt = <700000>;
++    regulator-max-microvolt = <1475000>;
++    regulator-ramp-delay = <6250>;
++    regulator-boot-on;
++    regulator-always-on;
++    regulator-state-mem {
++        regulator-on-in-suspend;
++        regulator-suspend-microvolt = <925000>;
++    };
++};
++
++/* PMIC - SW2 --> DBuck regulator, Default 3.3 VDC, SOM_3V3_EXT */
++&ext_3v3 {
++    regulator-min-microvolt = <2500000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-ramp-delay = <6250>;
++    regulator-always-on;
++    regulator-boot-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - SW3 --> DDR3 power supply */
++&vcc_ddr3 {
++    regulator-min-microvolt = <900000>;
++    regulator-max-microvolt = <1650000>;
++    regulator-always-on;
++    regulator-boot-on;
++    regulator-state-mem {
++        regulator-on-in-suspend;
++        regulator-suspend-microvolt = <1300000>;
++    };
++};
++
++/* PMIC - SWBST --> Boost regulator, default 5VDC */
++&swbst_reg {
++    regulator-min-microvolt = <5000000>;
++    regulator-max-microvolt = <5150000>;
++};
++
++/* PMIC - VSNVS --> Internal CPU power supply */
++&vdd_snvs_3v3 {
++    regulator-min-microvolt = <1000000>;
++    regulator-max-microvolt = <3000000>;
++    regulator-boot-on;
++    regulator-always-on;
++};
++
++/* PMIC - VREFDDR --> DDR reference voltage */
++&vrefddr {
++    regulator-boot-on;
++    regulator-always-on;
++};
++
++/* PMIC - LDO1 --> CPU ADC reference voltage */
++&vdda_adc_3v3 {
++    compatible = "regulator-fixed";
++    regulator-name = "vref-adc-3v3";
++    regulator-min-microvolt = <3300000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-always-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - LDO2 --> LDO regulator, 1.5VDC */
++&ldo2_ext {
++    regulator-min-microvolt = <800000>;
++    regulator-max-microvolt = <1550000>;
++};
++
++/* PMIC - VCC_SD --> Wireless chip power supply */
++&vdda_wlan {
++    regulator-min-microvolt = <2850000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-always-on;
++    regulator-boot-on;
++    regulator-state-mem {
++        regulator-off-in-suspend;
++    };
++};
++
++/* PMIC - V33 --> Internal CPU power supply */
++&vdd_high_in {
++    regulator-min-microvolt = <2850000>;
++    regulator-max-microvolt = <3300000>;
++    regulator-boot-on;
++    regulator-always-on;
++};
++
++/* Internal to SOM, Do not change any property in this node */
++&ldo3_int {
++    regulator-min-microvolt = <1800000>;
++    regulator-max-microvolt = <3300000>;
++};
++
++/* PMIC - LDO4 --> LDO regulator, 1.8 VDC */
++&ldo4_ext {
++    regulator-min-microvolt = <1800000>;
++    regulator-max-microvolt = <3300000>;
++};
++
++/* PMIC - VCOIN --> Coin cell charger, 3 VDC */
++&vcoin_chg {
++    regulator-min-microvolt = <2500000>;
++    regulator-max-microvolt = <3300000>;
 +};
 +
 +/* CAAM (Cryptographic Accelerator and Assurance Module), The i.MX6 processors offer hardware encryption through NXP's
