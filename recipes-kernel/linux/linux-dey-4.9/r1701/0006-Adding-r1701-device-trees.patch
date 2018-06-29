@@ -127,7 +127,7 @@ index 000000000000..aac70472abb5
 +
 +    /* Gpio based matrix Keyboard */
 +    matrix_keypad: matrix-keypad@0 {
-+        compatible = "gpio-matrix-keypad";
++        compatible = "gpio-matrix-keypad";linux,no-autorepeat;
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -139,7 +139,7 @@ index 000000000000..aac70472abb5
 +                        &gpio1 14 GPIO_ACTIVE_HIGH
 +                    >;
 +
-+        /* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on NXL keypad hardware
++        /* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on r1701 keypad hardware
 +         *            COL_1           COL_2               COL_3
 +         * --------------||--------------||------------------||------------
 +         *       ||      ||              ||                  ||
@@ -164,8 +164,8 @@ index 000000000000..aac70472abb5
 +                        >;
 +
 +        /* Debounce time and column scan time can be adjusted based on our need. */
-+        debounce-delay-ms = <100>;
-+        col-scan-delay-us = <50000>;
++        debounce-delay-ms = <10>;
++        col-scan-delay-us = <100>;
 +    };
 +};
 +
@@ -1151,7 +1151,7 @@ index 000000000000..4ab876376997
 +
 +    /* Gpio based matrix Keyboard */
 +    matrix_keypad: matrix-keypad@0 {
-+        compatible = "gpio-matrix-keypad";
++        compatible = "gpio-matrix-keypad";linux,no-autorepeat;
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -1163,7 +1163,7 @@ index 000000000000..4ab876376997
 +                        &gpio1 14 GPIO_ACTIVE_HIGH
 +                    >;
 +
-+        /* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on NXL keypad hardware
++        /* Actual MATRIX keys MAP formation based on ROWS and COLUMNS on r1701 keypad hardware
 +         *            COL_1           COL_2               COL_3
 +         * --------------||--------------||------------------||------------
 +         *       ||      ||              ||                  ||
@@ -1188,8 +1188,8 @@ index 000000000000..4ab876376997
 +                        >;
 +
 +        /* Debounce time and column scan time can be adjusted based on our need. */
-+        debounce-delay-ms = <100>;
-+        col-scan-delay-us = <50000>;
++        debounce-delay-ms = <10>;
++        col-scan-delay-us = <100>;
 +    };
 +};
 +
@@ -2074,6 +2074,6 @@ index 000000000000..4ab876376997
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
