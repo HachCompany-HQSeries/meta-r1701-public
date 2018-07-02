@@ -1,2 +1,0 @@
-#s_type	n_type(hex)	s_code		n_code	value	description
-EV_KEY	0x01		KEY_POWER	116	0	pswitch-poweroff

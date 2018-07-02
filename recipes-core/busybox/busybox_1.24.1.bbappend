@@ -4,7 +4,8 @@ SRC_URI_append = " file://udhcpd.conf"
 
 FILES_${PN}-udhcpd = "${sysconfdir}/udhcpd.conf"
 
-do_install_append() {
+do_install_append_r1701() {
+
     # Install USB RNDIS related static IP address information.
     install -m 0644 ${WORKDIR}/udhcpd.conf ${D}/${sysconfdir}/udhcpd.conf
 
