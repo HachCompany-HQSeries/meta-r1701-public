@@ -177,7 +177,7 @@ index 000000000000..aac70472abb5
 +    /* boolean to enable on flash bbt (bad block table) option if not present false */
 +    nand-on-flash-bbt;
 +
-+    /* ECC mode - operation mode of the NAND ecc mode. Supported values are: "no*ne", "soft", "hw", "hw_syndrome",
++    /* ECC mode - operation mode of the NAND ecc mode. Supported values are: "none", "soft", "hw", "hw_syndrome",
 +     * "hw_oob_first", "on-die".
 +     */
 +    nand-ecc-mode = "hw";
@@ -200,13 +200,13 @@ index 000000000000..aac70472abb5
 +        digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
-+        digi,key-sleep;
++        //digi,key-sleep;
 +
 +        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
 +        digi,debounce-ms = <100>;
 +
 +        /* number of seconds that the Power Key must be pressed to generate a KEY_POWER event. */
-+        digi,pwroff-delay-sec = <6>;
++        digi,pwroff-delay-sec = <2>;
 +
 +        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
 +        digi,pwroff-guard-sec = <30>;
@@ -1201,7 +1201,7 @@ index 000000000000..4ab876376997
 +    /* boolean to enable on flash bbt (bad block table) option if not present false */
 +    nand-on-flash-bbt;
 +
-+    /* ECC mode - operation mode of the NAND ecc mode. Supported values are: "no*ne", "soft", "hw", "hw_syndrome",
++    /* ECC mode - operation mode of the NAND ecc mode. Supported values are: "none", "soft", "hw", "hw_syndrome",
 +     * "hw_oob_first", "on-die".
 +     */
 +    nand-ecc-mode = "hw";
@@ -1224,13 +1224,13 @@ index 000000000000..4ab876376997
 +        digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
-+        digi,key-sleep;
++        //digi,key-sleep;
 +
 +        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
 +        digi,debounce-ms = <100>;
 +
 +        /* number of seconds that the Power Key must be pressed to generate a KEY_POWER event. */
-+        digi,pwroff-delay-sec = <6>;
++        digi,pwroff-delay-sec = <2>;
 +
 +        /* time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off. */
 +        digi,pwroff-guard-sec = <30>;
