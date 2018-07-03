@@ -200,7 +200,7 @@ index 000000000000..aac70472abb5
 +        digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
-+        /delete-property/ digi,key-sleep;
++        digi,key-sleep; ///delete-property/ digi,key-sleep;
 +
 +        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
 +        digi,debounce-ms = <100>;
@@ -1224,7 +1224,7 @@ index 000000000000..4ab876376997
 +        digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
-+        /delete-property/ digi,key-sleep;
++        digi,key-sleep; ///delete-property/ digi,key-sleep;
 +
 +        /* Number of ms that the input/Key must be stable (low level) in order to be considered valid. */
 +        digi,debounce-ms = <100>;
@@ -2074,6 +2074,6 @@ index 000000000000..4ab876376997
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
