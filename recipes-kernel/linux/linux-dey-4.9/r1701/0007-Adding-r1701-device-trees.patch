@@ -197,7 +197,7 @@ index 000000000000..aac70472abb5
 +        compatible = "digi,mca-cc6ul-pwrkey";
 +
 +        /* enable the KEY_POWER events */
-+        digi,key-power;
++        /delete-property/digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
 +        digi,key-sleep;
@@ -1221,7 +1221,7 @@ index 000000000000..4ab876376997
 +        compatible = "digi,mca-cc6ul-pwrkey";
 +
 +        /* enable the KEY_POWER events */
-+        digi,key-power;
++        /delete-property/digi,key-power;
 +
 +        /* enable the KEY_SLEEP events */
 +        digi,key-sleep;
