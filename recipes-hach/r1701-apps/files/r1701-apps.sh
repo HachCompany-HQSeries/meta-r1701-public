@@ -1,6 +1,15 @@
 #!/bin/sh
 case "$1" in
   start)
+        modeltype=$(fw_printenv -n "model-type" 2>/dev/null)
+        if [ "${modeltype}" = "HQ_MPP" ]; then
+            modprobe -r mipdisplay-3-2-inch
+            modprobe -r mxsfb
+            modprobe mipdisplay-3-2-inch
+        else
+            modprobe -r mipdisplay-3-2-inch
+        fi
+        echo "Model Type: ${modeltype}"
         export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
         export QT_QPA_FB_DISABLE_INPUT=1
         export QMLSCENE_DEVICE=softwarecontext

@@ -1,0 +1,51 @@
+From 9b7d893716c045fdd3586ab2d70aa2b86148d0b9 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Wed, 27 Jun 2018 10:34:54 -0600
+Subject: [PATCH 7/7] NAND suspend-resume timing issue patch
+
+---
+ drivers/mtd/nand/gpmi-nand/gpmi-lib.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/mtd/nand/gpmi-nand/gpmi-lib.c b/drivers/mtd/nand/gpmi-nand/gpmi-lib.c
+index c5a7cffac153..c9dcbccdf9b6 100644
+--- a/drivers/mtd/nand/gpmi-nand/gpmi-lib.c
++++ b/drivers/mtd/nand/gpmi-nand/gpmi-lib.c
+@@ -29,6 +29,10 @@
+ #include "gpmi-regs.h"
+ #include "bch-regs.h"
+ 
++// HACH
++//#include <linux/delay.h>
++// HACH
++
+ /* export the bch geometry to dbgfs */
+ static struct debugfs_blob_wrapper dbg_bch_geo;
+ 
+@@ -988,12 +992,18 @@ static int enable_edo_mode(struct gpmi_nand_data *this, int mode)
+ 	if (ret)
+ 		goto err_out;
+ 
++    // HACH - Try some delay before reading feature to verify.
++    //mdelay(25);
++
+ 	/* [2] send GET FEATURE command to double-check the timing mode */
+-	memset(feature, 0, ONFI_SUBFEATURE_PARAM_LEN);
+-	ret = nand->onfi_get_features(mtd, nand,
+-				ONFI_FEATURE_ADDR_TIMING_MODE, feature);
+-	if (ret || feature[0] != mode)
+-		goto err_out;
++	//memset(feature, 0, ONFI_SUBFEATURE_PARAM_LEN);
++	//ret = nand->onfi_get_features(mtd, nand,
++	//			ONFI_FEATURE_ADDR_TIMING_MODE, feature);
++	//if (ret || feature[0] != mode)
++	//	goto err_out;
++	// HACH - Start
++	//dev_err(this->dev, "mode:%d ,failed in get feature.\n", feature[0]);
++	// HACH - End
+ 
+ 	nand->select_chip(mtd, -1);
+ 	kfree(feature);
+-- 
+2.11.0
+

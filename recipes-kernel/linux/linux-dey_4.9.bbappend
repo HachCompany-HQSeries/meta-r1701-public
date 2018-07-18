@@ -13,5 +13,7 @@ SRC_URI_append = " \
     file://0003-Fix-for-matrix-keypad-column-gpio-scanning-issue.patch \
     file://0004-Color-LCD-driver-patch.patch \
     file://0005-Add-HACH-log-image.patch \
-    file://0006-Adding-r1701-device-trees.patch \
+    file://0006-Do-not-add-Power-Key-SLEEP-event.patch \
+    file://0007-Update-the-battery-charger-driver-for-R1701.patch \
+    file://0008-Adding-r1701-device-trees.patch \
 "

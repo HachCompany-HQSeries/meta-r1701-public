@@ -368,16 +368,7 @@ if [ -f /proc/sys/kernel/hotplug ]; then
 	echo "/sbin/mdev" > /proc/sys/kernel/hotplug
 	mdev -s
 fi
-if [ -c "${FBDEV:-/dev/fb0}" ]; then
-	log "fb0 exists!"
-else
-	modprobe mipdisplay-3-2-inch
-fi
 
-modprobe sdhci_esdhc_imx
-
-# Give some time for the devices to settle down
-sleep 5
 
 # Run all shell scripts in postinstall folder
 run-parts /etc/*-postinsts
@@ -392,6 +383,33 @@ if [ "$(is_nand)" = "no" ]; then
 	# Launch 'rngd' to feed random data to kernel entropy pool
 	mkdir -p /var/run && rngd
 fi
+# Read the model type variable.
+read_uboot_var model-type modeltype
+
+# Check if it exists
+if [ -z "${modeltype}" ]; then
+	modprobe mxsfb
+	export FRAMEBUFFER=/dev/fb0
+else
+	if [ "${modeltype}" = "MPP" ]; then
+		modprobe mipdisplay-3-2-inch
+		export FRAMEBUFFER=/dev/fb0
+	else
+		modprobe mxsfb
+		export FRAMEBUFFER=/dev/fb0
+	fi
+fi
+
+#if [ -c "${FBDEV:-/dev/fb0}" ]; then
+#	log "fb0 exists!"
+#else
+#	modprobe mipdisplay-3-2-inch
+#fi
+
+modprobe sdhci_esdhc_imx
+
+# Give some time for the devices to settle down
+sleep 5
 
 # Start xsplash.
 xsplash &

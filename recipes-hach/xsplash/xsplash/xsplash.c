@@ -82,7 +82,7 @@ typedef int      bool;
 #define XSPLASH_TEXT_COLOR GR_RGB(0xff,0xff,0xff)
 
 /* This is the color of the progress bar indicator */
-#define XSPLASH_BAR_COLOR GR_RGB(0x00,0xff,0x00)
+#define XSPLASH_BAR_COLOR GR_RGB(0xff,0xff,0xff)
 
 /* This is the color of the progress bar background */
 #define XSPLASH_BAR_BACKGROUND_COLOR GR_RGB(0x00,0x00,0x00)
