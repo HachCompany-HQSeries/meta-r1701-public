@@ -14,7 +14,7 @@ DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-n
 inherit cmake pkgconfig
 
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=feature/power-management;protocol=ssh \
+SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=develop;protocol=ssh \
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
