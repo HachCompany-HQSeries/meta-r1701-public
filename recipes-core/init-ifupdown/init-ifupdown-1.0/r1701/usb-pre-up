@@ -1,0 +1,32 @@
+#!/bin/sh
+#===============================================================================
+#
+#  usb-pre-up
+#
+#  Copyright (C) 2017 by Digi International Inc.
+#  All rights reserved.
+#
+#  This program is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License version 2 as published by
+#  the Free Software Foundation.
+#
+#
+#  !Description: Load g_ether network gadget driver
+#
+#===============================================================================
+
+[ "${IFACE}" != "usb0" ] && exit 0
+
+# If g_ether module is already loaded exit
+grep -qws 'g_ether' /proc/modules && exit 0
+
+# Load the g_ether module with the params defined in modprobe.d/g_ether.conf
+modprobe g_ether
+
+# Validate that firmware was loaded by checking if the interface is present.
+if [ -d "/sys/class/net/${IFACE}" ]; then
+	echo "Loading g_ether module: [OK]"
+else
+	echo "Loading g_ether module: [FAILED]"
+	exit 1
+fi
