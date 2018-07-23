@@ -391,7 +391,7 @@ if [ -z "${modeltype}" ]; then
 	modprobe mxsfb
 	export FRAMEBUFFER=/dev/fb0
 else
-	if [ "${modeltype}" = "MPP" ]; then
+	if [ "${modeltype}" = "HQ_MPP" ]; then
 		modprobe mipdisplay-3-2-inch
 		export FRAMEBUFFER=/dev/fb0
 	else
