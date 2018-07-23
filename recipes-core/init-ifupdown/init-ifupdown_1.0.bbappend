@@ -2,6 +2,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}-${PV}:"
 
 SRC_URI_append_r1701 = "\
     file://interfaces.usb \
+    file://usb-pre-up \
+    file://usb-post-down \
 "
 
 USB_INTERFACE ?= "usb0"
@@ -11,6 +13,8 @@ USB0_STATIC_NETMASK ?= "255.255.255.0"
 
 do_install_append_r1701() {
         if [ -n "${USB_INTERFACE}" ]; then
+            install -m 0755 ${WORKDIR}/usb-pre-up ${D}${sysconfdir}/network/if-pre-up.d/
+            install -m 0755 ${WORKDIR}/usb-post-down ${D}${sysconfdir}/network/if-post-down.d/
             cat ${WORKDIR}/interfaces.usb >> ${D}${sysconfdir}/network/interfaces
             [ -n "${USB0_AUTO}" ] && sed -i -e 's/^#auto ##USB_INTERFACE##/auto ##USB_INTERFACE##/g' ${D}${sysconfdir}/network/interfaces
                 sed -i -e 's,##USB_INTERFACE##,${USB_INTERFACE},g' ${D}${sysconfdir}/network/interfaces
