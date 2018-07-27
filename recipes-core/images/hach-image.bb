@@ -76,6 +76,8 @@ IMAGE_INSTALL += " \
     recovery-utils \
     cpio \
     cppzmq \
+    e2fsprogs-mke2fs \
+    util-linux-sfdisk \
     r1701-apps \
 "
 
