@@ -1,14 +1,14 @@
-From b7a52803fc1eb28ba5dff36d74d29d655fb8162a Mon Sep 17 00:00:00 2001
+From 9805ff06b91e2767de58086c0a2d290bc5aa342c Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
 Date: Fri, 6 Jul 2018 09:47:58 -0600
-Subject: [PATCH] Update the battery charger driver for R1701
+Subject: [PATCH 7/9] Update the battery charger driver for R1701
 
 ---
  drivers/power/supply/bq25890_charger.c | 78 +++++++++++++++++++++++++++-------
  1 file changed, 63 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
-index f993a55cde20..dba5b4a89788 100644
+index f993a55cde20..12cec4abe311 100644
 --- a/drivers/power/supply/bq25890_charger.c
 +++ b/drivers/power/supply/bq25890_charger.c
 @@ -24,7 +24,7 @@
@@ -149,7 +149,7 @@ index f993a55cde20..dba5b4a89788 100644
 -
 +	if (val == USB_BUS_ADD || val == USB_BUS_REMOVE) {
 +		bq->usb_event = val;
-+		queue_work(system_power_efficient_wq, &bq->usb_work);	
++		queue_work(system_power_efficient_wq, &bq->usb_work);
 +	}
  	return NOTIFY_OK;
  }
@@ -179,7 +179,7 @@ index f993a55cde20..dba5b4a89788 100644
  	if (!IS_ERR_OR_NULL(bq->usb_phy))
 -		usb_unregister_notifier(bq->usb_phy, &bq->usb_nb);
 +		//usb_unregister_notifier(bq->usb_phy, &bq->usb_nb);
-+ 		usb_unregister_notify(&bq->usb_nb);
++		usb_unregister_notify(&bq->usb_nb);
  
  	return ret;
  }

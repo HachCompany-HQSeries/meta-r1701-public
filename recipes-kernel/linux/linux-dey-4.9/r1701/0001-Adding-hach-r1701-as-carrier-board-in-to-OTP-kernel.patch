@@ -1,7 +1,7 @@
-From 85e89cf65bc7a8b56b3bffcc2c55a329c42f7864 Mon Sep 17 00:00:00 2001
+From db578a1d6e4e6016f3e2b225cabd131d06459b89 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 10 Jan 2018 13:18:35 -0700
-Subject: [PATCH 1/7] Adding hach-r1701 as carrier board in to OTP kernel
+Subject: [PATCH 1/9] Adding hach-r1701 as carrier board in to OTP kernel
 
 ---
  drivers/char/fsl_otp.c | 1 +

@@ -1,21 +1,37 @@
-From a68fb28631ee6cbf41534216feff9b5bfa617e7a Mon Sep 17 00:00:00 2001
-From: ryang <ryang@hach.com>
-Date: Fri, 6 Jul 2018 13:01:57 -0600
-Subject: [PATCH] Adding r1701 device trees.
+From da6b7090e92cb7b01d3c71df22589e9c7dc0c844 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Thu, 2 Aug 2018 10:16:57 -0600
+Subject: [PATCH 9/9] Adding r1701 device trees
 
 ---
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 1018 ++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 1019 +++++++++++++++++++++++++++++++++
- 2 files changed, 2037 insertions(+)
+ arch/arm/boot/dts/Makefile            |    4 +-
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 1021 +++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 1021 +++++++++++++++++++++++++++++++++
+ 3 files changed, 2045 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index ff8eee581a80..5714b10d09a3 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -530,7 +530,9 @@ dtb-$(CONFIG_SOC_IMX6UL) += \
+ 	imx6ul-ccimx6ulstarter.dtb \
+ 	imx6ul-ccimx6ulstarter-id129.dtb \
+ 	imx6ul-ccimx6ulstarter-wb.dtb \
+-	imx6ul-ccimx6ulstarter-wb-mfg.dtb
++	imx6ul-ccimx6ulstarter-wb-mfg.dtb \
++	imx6ul-r1701.dtb \
++	imx6ul-r1701-wb.dtb
+ dtb-$(CONFIG_SOC_IMX6ULL) += \
+ 	imx6ull-14x14-ddr3-arm2.dtb \
+ 	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-wb.dts b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
 new file mode 100644
-index 000000000000..0181a07b20cb
+index 000000000000..905c8fd7c8d8
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-wb.dts
-@@ -0,0 +1,1018 @@
+@@ -0,0 +1,1021 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -62,7 +78,7 @@ index 000000000000..0181a07b20cb
 +        regulator-name = "usb_otg2_vbus";
 +        regulator-min-microvolt = <5000000>;
 +        regulator-max-microvolt = <5000000>;
-+        gpio = <&gpio2 12 GPIO_ACTIVE_LOW>;
++        //gpio = <&gpio2 12 GPIO_ACTIVE_LOW>;
 +        enable-active-low;
 +    };
 +
@@ -111,7 +127,8 @@ index 000000000000..0181a07b20cb
 +
 +    /* Gpio based matrix Keyboard */
 +    matrix_keypad: matrix-keypad@0 {
-+        compatible = "gpio-matrix-keypad";linux,no-autorepeat;
++        compatible = "gpio-matrix-keypad";
++        linux,no-autorepeat;
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -374,10 +391,10 @@ index 000000000000..0181a07b20cb
 +            compatible = "ethernet-phy-ieee802.3-c22";
 +            smsc,disable-energy-detect;
 +            reg = <0>;
-+            //pinctrl-names = "default";
-+            //pinctrl-0 = <&pinctrl_etnphy0_int>;
-+            //interrupt-parent = <&gpio4>;
-+            //interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&pinctrl_etnphy0_int>;
++            interrupt-parent = <&gpio4>;
++            interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
 +        };
 +    };
 +};
@@ -706,7 +723,7 @@ index 000000000000..0181a07b20cb
 +    vbus-supply = <&reg_usb_otg1_vbus>;
 +    digi,power-line-active-high;
 +
-+    /* We do not have OC detect line on hardware */
++    /* We do not have OC detect line on hardware for OTG port */
 +    disable-over-current;
 +    status = "okay";
 +};
@@ -714,10 +731,14 @@ index 000000000000..0181a07b20cb
 +/* USB - 2 # Host */
 +&usbotg2 {
 +    dr_mode = "host";
-+    pinctrl-0 = <&pinctrl_usbotg2>;
-+    vbus-supply = <&reg_usb_otg2_vbus>;
-+    digi,power-line-active-low;
-+    over-current-active-low;
++
++    /* Keep below code disabled. Somehow imx6ul does not work reliabiliy with these properties enabled. */
++    //pinctrl-0 = <&pinctrl_usbotg2>;
++    //vbus-supply = <&reg_usb_otg2_vbus>;
++    //digi,power-line-active-low;
++    //over-current-active-low;
++
++    disable-over-current;
 +    status = "okay";
 +};
 +
@@ -745,9 +766,7 @@ index 000000000000..0181a07b20cb
 +                MX6UL_PAD_NAND_DATA05__RAWNAND_DATA05   0xf0f1
 +                MX6UL_PAD_NAND_DATA06__RAWNAND_DATA06   0xf0f1
 +                MX6UL_PAD_NAND_DATA07__RAWNAND_DATA07   0xf0f1
-+                //MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xb0b1
 +                MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xf0f1
-+                //MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xb000
 +            >;
 +        };
 +
@@ -849,17 +868,17 @@ index 000000000000..0181a07b20cb
 +        pinctrl_usbotg1: usbotg1grp {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
-+                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059    //MX6UL_PAD_GPIO1_IO04__USB_OTG1_PWR      0x17059
++                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059  //MX6UL_PAD_GPIO1_IO04__USB_OTG1_PWR      0x17059
 +            >;
 +        };
 +
-+        /* USB 2 HOST port pins (Battery Compartment)*/
-+        pinctrl_usbotg2: usbotg2grp {
-+            fsl,pins = <
-+                MX6UL_PAD_ENET2_TX_EN__USB_OTG2_OC      0x17059
-+                MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12    0x17059    //MX6UL_PAD_ENET2_TX_DATA1__USB_OTG2_PWR  0x17059
-+            >;
-+        };
++        /* USB 2 HOST port pins (Battery Compartment) - DO NOT ENABLE THIS BLOCK. */
++        // pinctrl_usbotg2: usbotg2grp {
++        //     fsl,pins = <
++        //         MX6UL_PAD_ENET2_TX_EN__USB_OTG2_OC      0x17059
++        //         MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12    0x17059
++        //     >;
++        // };
 +
 +        /* AUDIO PWM - Beeper */
 +        pinctrl_pwm1: pwm1grp {
@@ -925,11 +944,11 @@ index 000000000000..0181a07b20cb
 +        };
 +
 +        /* Ethernet PHY interrupt, Active low signal */
-+        //pinctrl_etnphy0_int: phyInterrupt {
-+        //    fsl,pins = <
-+        //        MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
-+        //    >;
-+        //};
++        pinctrl_etnphy0_int: phyInterrupt {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
++            >;
++        };
 +
 +        /*ethernet PHY power pin, active low output pin */
 +        //pinctrl_etnphy_power: phyPower {
@@ -1036,10 +1055,10 @@ index 000000000000..0181a07b20cb
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..0ad6b9995163
+index 000000000000..c5abe7d54f9a
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,1019 @@
+@@ -0,0 +1,1021 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1135,7 +1154,8 @@ index 000000000000..0ad6b9995163
 +
 +    /* Gpio based matrix Keyboard */
 +    matrix_keypad: matrix-keypad@0 {
-+        compatible = "gpio-matrix-keypad";linux,no-autorepeat;
++        compatible = "gpio-matrix-keypad";
++        linux,no-autorepeat;
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -1398,10 +1418,10 @@ index 000000000000..0ad6b9995163
 +            compatible = "ethernet-phy-ieee802.3-c22";
 +            smsc,disable-energy-detect;
 +            reg = <0>;
-+            //pinctrl-names = "default";
-+            //pinctrl-0 = <&pinctrl_etnphy0_int>;
-+            //interrupt-parent = <&gpio4>;
-+            //interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&pinctrl_etnphy0_int>;
++            interrupt-parent = <&gpio4>;
++            interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
 +        };
 +    };
 +};
@@ -1730,7 +1750,7 @@ index 000000000000..0ad6b9995163
 +    vbus-supply = <&reg_usb_otg1_vbus>;
 +    digi,power-line-active-high;
 +
-+    /* We do not have OC detect line on hardware */
++    /* We do not have OC detect line on hardware for OTG port */
 +    disable-over-current;
 +    status = "okay";
 +};
@@ -1738,10 +1758,13 @@ index 000000000000..0ad6b9995163
 +/* USB - 2 # Host */
 +&usbotg2 {
 +    dr_mode = "host";
++
++    /* Keep below code disabled. Somehow imx6ul does not work reliabiliy with these properties enabled. */
 +    //pinctrl-0 = <&pinctrl_usbotg2>;
 +    //vbus-supply = <&reg_usb_otg2_vbus>;
 +    //digi,power-line-active-low;
 +    //over-current-active-low;
++
 +    disable-over-current;
 +    status = "okay";
 +};
@@ -1770,9 +1793,7 @@ index 000000000000..0ad6b9995163
 +                MX6UL_PAD_NAND_DATA05__RAWNAND_DATA05   0xf0f1
 +                MX6UL_PAD_NAND_DATA06__RAWNAND_DATA06   0xf0f1
 +                MX6UL_PAD_NAND_DATA07__RAWNAND_DATA07   0xf0f1
-+                //MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xb0b1
 +                MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xf0f1
-+                //MX6UL_PAD_NAND_READY_B__RAWNAND_READY_B 0xb000
 +            >;
 +        };
 +
@@ -1874,17 +1895,17 @@ index 000000000000..0ad6b9995163
 +        pinctrl_usbotg1: usbotg1grp {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
-+                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059  //MX6UL_PAD_GPIO1_IO04__USB_OTG1_PWR      0x17059   
++                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059  //MX6UL_PAD_GPIO1_IO04__USB_OTG1_PWR      0x17059
 +            >;
 +        };
 +
-+        /* USB 2 HOST port pins (Battery Compartment)*/
-+       // pinctrl_usbotg2: usbotg2grp {
-+       //     fsl,pins = <
-+       //         MX6UL_PAD_ENET2_TX_EN__USB_OTG2_OC      0x17059
-+       //         MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12    0x17059    //MX6UL_PAD_ENET2_TX_DATA1__USB_OTG2_PWR  0x17059
-+       //     >;
-+       // };
++        /* USB 2 HOST port pins (Battery Compartment) - DO NOT ENABLE THIS BLOCK. */
++        // pinctrl_usbotg2: usbotg2grp {
++        //     fsl,pins = <
++        //         MX6UL_PAD_ENET2_TX_EN__USB_OTG2_OC      0x17059
++        //         MX6UL_PAD_ENET2_TX_DATA1__GPIO2_IO12    0x17059
++        //     >;
++        // };
 +
 +        /* AUDIO PWM - Beeper */
 +        pinctrl_pwm1: pwm1grp {
@@ -1950,11 +1971,11 @@ index 000000000000..0ad6b9995163
 +        };
 +
 +        /* Ethernet PHY interrupt, Active low signal */
-+        //pinctrl_etnphy0_int: phyInterrupt {
-+        //    fsl,pins = <
-+        //        MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
-+        //    >;
-+        //};
++        pinctrl_etnphy0_int: phyInterrupt {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0
++            >;
++        };
 +
 +        /*ethernet PHY power pin, active low output pin */
 +        //pinctrl_etnphy_power: phyPower {
