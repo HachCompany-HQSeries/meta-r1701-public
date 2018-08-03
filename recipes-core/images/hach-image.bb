@@ -55,12 +55,11 @@ IMAGE_FEATURES_remove += " \
     cloudconnector \
     libdigiapix \
     evtest \
-	fbtest \
+    fbtest \
     i2c-tools \
     memwatch \
     dey-examples \
     tcpdump \
-    sysinfo \
     ethtool \
     modemmanager \
     libdrm \
@@ -69,7 +68,6 @@ IMAGE_FEATURES_remove += " \
 IMAGE_INSTALL += " \
     boost \
     zeromq \
-    fcgi \
     sqlite3 \
     busybox-udhcpd \
     protobuf \
@@ -78,6 +76,8 @@ IMAGE_INSTALL += " \
     cppzmq \
     e2fsprogs-mke2fs \
     util-linux-sfdisk \
+    tzdata \
+    sysinfo \
     r1701-apps \
 "
 
