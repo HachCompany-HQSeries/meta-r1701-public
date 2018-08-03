@@ -2071,7 +2071,7 @@ index 000000000000..c5abe7d54f9a
 +                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  /* TP33             */
 +
 +                /* Ethernet control lines */
-+                MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0  /* ENET1_INT& */
++                //MX6UL_PAD_CSI_DATA06__GPIO4_IO27        0x10b0  /* ENET1_INT& */
 +                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  /* ENET1_PWR& */
 +
 +                /* Charger IRQ line - Active low signal */
@@ -2080,6 +2080,6 @@ index 000000000000..c5abe7d54f9a
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
