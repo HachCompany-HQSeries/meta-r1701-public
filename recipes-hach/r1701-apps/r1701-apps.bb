@@ -18,6 +18,7 @@ SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=develo
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
+PV = "${SOFTWARE_VERSION}+${SRCPV}"
 
 # Configure the SysV initialization service for the sys_mgr within the r1701_applications.
 inherit update-rc.d

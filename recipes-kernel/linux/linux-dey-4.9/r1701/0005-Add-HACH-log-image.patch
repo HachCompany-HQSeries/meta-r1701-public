@@ -1,7 +1,7 @@
-From 3000592888c2cbda75cae62aca15f55de73152d2 Mon Sep 17 00:00:00 2001
+From f327af374143da24d7d8c9831831e1f66e40fe05 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 25 Apr 2018 07:58:16 -0600
-Subject: [PATCH 5/7] Add HACH log image
+Subject: [PATCH 5/9] Add HACH log image
 
 ---
  drivers/video/logo/logo_custom_clut224.ppm | 58294 +++++++++++++++++++++++----

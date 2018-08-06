@@ -7,7 +7,6 @@ require hach-image.bb
 IMAGE_INSTALL += " \
     htop \
     mtd-utils \
-    tzdata \
 "
 
 # Add predefined runtime package groups.
