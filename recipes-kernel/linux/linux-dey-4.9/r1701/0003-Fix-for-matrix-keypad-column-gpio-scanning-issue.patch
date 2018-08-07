@@ -1,0 +1,47 @@
+From e7858ad1b79084e0700b2f5fa57b56ee0b99e103 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Tue, 16 Jan 2018 10:50:02 -0700
+Subject: [PATCH 3/9] Fix for matrix keypad column gpio scanning issue.
+
+---
+ drivers/input/keyboard/matrix_keypad.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/input/keyboard/matrix_keypad.c b/drivers/input/keyboard/matrix_keypad.c
+index 7f12b6579f82..b8cd5a2a65af 100644
+--- a/drivers/input/keyboard/matrix_keypad.c
++++ b/drivers/input/keyboard/matrix_keypad.c
+@@ -52,10 +52,14 @@ static void __activate_col(const struct matrix_keypad_platform_data *pdata,
+ 	bool level_on = !pdata->active_low;
+ 
+ 	if (on) {
+-		gpio_direction_output(pdata->col_gpios[col], level_on);
++		/* Scan sleep API is not changing GPIO lines as expected.       */
++		/* hence we are using standard GPIO set API.                    */
++		/* gpio_direction_output(pdata->col_gpios[col], level_on);      */
++		gpio_set_value(pdata->col_gpios[col], level_on);
+ 	} else {
+-		gpio_set_value_cansleep(pdata->col_gpios[col], !level_on);
+-		gpio_direction_input(pdata->col_gpios[col]);
++		/* gpio_set_value_cansleep(pdata->col_gpios[col], !level_on); */
++		/* gpio_direction_input(pdata->col_gpios[col]); */
++		gpio_set_value(pdata->col_gpios[col], !level_on);
+ 	}
+ }
+ 
+@@ -80,7 +84,11 @@ static void activate_all_cols(const struct matrix_keypad_platform_data *pdata,
+ static bool row_asserted(const struct matrix_keypad_platform_data *pdata,
+ 			 int row)
+ {
+-	return gpio_get_value_cansleep(pdata->row_gpios[row]) ?
++	/* Scan sleep API is not changing GPIO lines as expected.       */
++	/* hence we are using standard GPIO set API.                    */
++	/* return gpio_get_value_cansleep(pdata->row_gpios[row]) ?	*/
++	/*		!pdata->active_low : pdata->active_low;		*/
++	return gpio_get_value(pdata->row_gpios[row]) ?
+ 			!pdata->active_low : pdata->active_low;
+ }
+ 
+-- 
+2.11.0
+

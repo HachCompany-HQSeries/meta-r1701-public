@@ -1,0 +1,40 @@
+From 20218637511e5ea641be4afaf0deeb6afca06722 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Thu, 2 Aug 2018 09:35:40 -0600
+Subject: [PATCH 8/9] NAND suspend-resume initialization issue patch
+
+---
+ drivers/mtd/nand/gpmi-nand/gpmi-nand.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mtd/nand/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/gpmi-nand/gpmi-nand.c
+index 290160344606..7cd8e9a9cc7a 100644
+--- a/drivers/mtd/nand/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/gpmi-nand/gpmi-nand.c
+@@ -2460,7 +2460,8 @@ static int gpmi_pm_suspend(struct device *dev)
+ static int gpmi_pm_resume(struct device *dev)
+ {
+ 	struct gpmi_nand_data *this = dev_get_drvdata(dev);
+-	int ret;
++    struct nand_chip *chip = &this->nand;
++	int ret, i;
+ 
+ 	pinctrl_pm_select_default_state(dev);
+ 
+@@ -2483,6 +2484,13 @@ static int gpmi_pm_resume(struct device *dev)
+ 		return ret;
+ 	}
+ 
++    /* Generate reset to micron nand chip. This is must for nand to operate
++     * poperly - Digi recommendation
++     */
++    for (i = 0; i < chip->numchips; i++){
++        nand_reset(chip, i);
++    }
++
+ 	/* re-init others */
+ 	gpmi_extra_init(this);
+ 
+-- 
+2.11.0
+
