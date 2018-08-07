@@ -13,8 +13,11 @@ DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-n
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
 
+# The tag of the app to build
+APP_TAG = "v${SOFTWARE_VERSION}"
+
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=develop;protocol=ssh \
+SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;tag=${APP_TAG};protocol=ssh \
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
