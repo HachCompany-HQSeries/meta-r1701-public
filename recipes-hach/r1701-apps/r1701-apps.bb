@@ -17,10 +17,10 @@ inherit cmake pkgconfig
 APP_TAG = "v${SOFTWARE_VERSION}"
 
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;tag=0.0.1;protocol=ssh \
+SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;tag=${APP_TAG};protocol=ssh \
            file://r1701-apps.sh \
 "
-SRCREV = "${AUTOREV}"
+SRCREV = "${APP_TAG}"
 PV = "${SOFTWARE_VERSION}+${SRCPV}"
 
 # Configure the SysV initialization service for the sys_mgr within the r1701_applications.
