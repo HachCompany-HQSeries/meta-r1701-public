@@ -17,7 +17,7 @@ inherit cmake pkgconfig
 APP_TAG = "v${SOFTWARE_VERSION}"
 
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;tag=${APP_TAG};protocol=ssh \
+SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;tag=0.0.1;protocol=ssh \
            file://r1701-apps.sh \
 "
 SRCREV = "${AUTOREV}"
