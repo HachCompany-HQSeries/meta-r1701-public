@@ -23,7 +23,7 @@ BRANCH_OR_TAG = "branch"
 BRANCH_OR_TAG_NAME = "develop"
 
 # Srcrev command
-SRCREV_CMD = "${AUTOREV}"
+SRCREV_CMD = "${APP_TAG}"
 
 # This is the full version of teh identifierMang
 REPO_IDENTIFIER = "${BRANCH_OR_TAG}=${BRANCH_OR_TAG_NAME}"
