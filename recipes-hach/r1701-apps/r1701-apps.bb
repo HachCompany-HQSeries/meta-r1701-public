@@ -17,13 +17,13 @@ inherit cmake pkgconfig
 APP_TAG = "v${SOFTWARE_VERSION}"
 
 # This is the branch or TAG 
-BRANCH_OR_TAG = "tag"
+BRANCH_OR_TAG = "branch"
 
 # Branch or tag name
-BRANCH_OR_TAG_NAME = "${APP_TAG}"
+BRANCH_OR_TAG_NAME = "developo"
 
 # Srcrev command
-SRCREV_CMD = "${APP_TAG}"
+SRCREV_CMD = "${AUTOREV}"
 
 # This is the full version of teh identifierMang
 REPO_IDENTIFIER = "${BRANCH_OR_TAG}=${BRANCH_OR_TAG_NAME}"
