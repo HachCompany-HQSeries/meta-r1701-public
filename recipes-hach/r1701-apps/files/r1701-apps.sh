@@ -1,14 +1,17 @@
 #!/bin/sh
 case "$1" in
   start)
+        screen_size="mmsize=53.28x71.04"
         # Handle Display based on model type.
         modeltype=$(fw_printenv -n "model-type" 2>/dev/null)
         if [ "${modeltype}" = "HQ_MPP" ]; then
             modprobe -r mipdisplay-3-2-inch
             modprobe -r mxsfb
             modprobe mipdisplay-3-2-inch
+            screen_size="mmsize=42.672x68.072"
         else
             modprobe -r mipdisplay-3-2-inch
+            screen_size="mmsize=53.28x71.04"
         fi
 
         # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
@@ -32,7 +35,7 @@ case "$1" in
         echo "Test Mode: ${testmode}"
 
         # export correct QT flags.
-        export QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0
+        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_size}"
         export QT_QPA_FB_DISABLE_INPUT=1
         export QMLSCENE_DEVICE=softwarecontext
 
