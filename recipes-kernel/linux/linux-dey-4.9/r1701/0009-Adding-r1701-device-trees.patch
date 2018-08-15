@@ -339,7 +339,7 @@ index 000000000000..8e0cae2973b8
 +    regulator-max-microvolt = <1800000>;
 +    regulator-boot-on;
 +    regulator-always-on;
-+
++    regulator-state-mem { regulator-off-in-suspend; };
 +};
 +
 +/* PMIC - VCOIN --> Coin cell charger, 3 VDC */
@@ -1385,7 +1385,7 @@ index 000000000000..8dbc887c240f
 +    regulator-max-microvolt = <1800000>;
 +    regulator-boot-on;
 +    regulator-always-on;
-+
++    regulator-state-mem { regulator-off-in-suspend; };
 +};
 +
 +/* PMIC - VCOIN --> Coin cell charger, 3 VDC */
