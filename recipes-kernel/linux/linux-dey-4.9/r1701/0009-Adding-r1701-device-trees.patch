@@ -537,7 +537,7 @@ index 000000000000..8e0cae2973b8
 +    pinctrl-0 = <&pinctrl_pwm4>;
 +    clocks =    <&clks IMX6UL_CLK_PWM4>,
 +    <&clks IMX6UL_CLK_PWM4>;
-+    status = "disabled";
++    status = "okay";
 +};
 +
 +/* All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here if not used */
@@ -1583,7 +1583,7 @@ index 000000000000..8dbc887c240f
 +    pinctrl-0 = <&pinctrl_pwm4>;
 +    clocks =    <&clks IMX6UL_CLK_PWM4>,
 +                <&clks IMX6UL_CLK_PWM4>;
-+    status = "disabled";
++    status = "okay";
 +};
 +
 +/* All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here if not used */
