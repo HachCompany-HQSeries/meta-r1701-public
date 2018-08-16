@@ -1,4 +1,4 @@
-From f327af374143da24d7d8c9831831e1f66e40fe05 Mon Sep 17 00:00:00 2001
+From 90241d134b0c74fa54f75dfd9ef7c4e4814a0818 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 25 Apr 2018 07:58:16 -0600
 Subject: [PATCH 5/9] Add HACH log image

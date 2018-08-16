@@ -16,7 +16,7 @@ inherit cmake pkgconfig
 # The tag of the app to build
 APP_TAG = "v${SOFTWARE_VERSION}"
 
-# This is the branch or TAG 
+# This is the branch or TAG
 BRANCH_OR_TAG = "branch"
 
 # Branch or tag name
