@@ -1,24 +1,23 @@
 #!/bin/sh
 case "$1" in
   start)
-        screen_size="mmsize=53.28x71.04"
-        # Handle Display based on model type.
+        # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
+        # sheet.
+        screen_active_area_size="mmsize=42.672x68.072"
         modeltype=$(fw_printenv -n "model-type" 2>/dev/null)
         if [ "${modeltype}" = "HQ_MPP" ]; then
             modprobe -r mipdisplay-3-2-inch
-            modprobe -r mxsfb
+            modprobe -r mxsfb pwm_bl
             modprobe mipdisplay-3-2-inch
-            screen_size="mmsize=42.672x68.072"
+            screen_active_area_size="mmsize=42.672x68.072"
         else
             modprobe -r mipdisplay-3-2-inch
-            screen_size="mmsize=53.28x71.04"
+            screen_active_area_size="mmsize=53.28x71.04"
         fi
 
         # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
         testmode=$(fw_printenv -n "test-mode" 2>/dev/null)
         if [ "${testmode}" = "On" ]; then
-            #modprobe fec
-            #ifconfig eth0 up
             echo "r1701 - Ethernet enabled..."
         else
             ifconfig eth0 down
@@ -35,7 +34,7 @@ case "$1" in
         echo "Test Mode: ${testmode}"
 
         # export correct QT flags.
-        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_size}"
+        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
         export QT_QPA_FB_DISABLE_INPUT=1
         export QMLSCENE_DEVICE=softwarecontext
 
