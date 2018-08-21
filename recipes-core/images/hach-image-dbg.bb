@@ -7,6 +7,7 @@ require hach-image.bb
 IMAGE_INSTALL += " \
     htop \
     mtd-utils \
+    suspend-resume \
 "
 
 # Add predefined runtime package groups.
