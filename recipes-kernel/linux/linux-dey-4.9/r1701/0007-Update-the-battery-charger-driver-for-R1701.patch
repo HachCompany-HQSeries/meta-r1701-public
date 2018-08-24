@@ -1,4 +1,4 @@
-From d014c057e76fb463918d53b8176532516098689b Mon Sep 17 00:00:00 2001
+From 91e63200867ffbb067615b56462fe0b308662346 Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
 Date: Fri, 6 Jul 2018 09:47:58 -0600
 Subject: [PATCH 7/9] Update the battery charger driver for R1701

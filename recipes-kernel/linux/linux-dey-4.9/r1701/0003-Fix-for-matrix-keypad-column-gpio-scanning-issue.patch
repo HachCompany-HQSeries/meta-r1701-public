@@ -1,4 +1,4 @@
-From 85e05009bd84a2f1eb420af170d9a1471f91bfb9 Mon Sep 17 00:00:00 2001
+From 5388c2c941c62998bfa0bcbbfc64d3321f3ec5f3 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Tue, 16 Jan 2018 10:50:02 -0700
 Subject: [PATCH 3/9] Fix for matrix keypad column gpio scanning issue.

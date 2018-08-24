@@ -1,4 +1,4 @@
-From 9618b92e3e9c6d8515d65ed1339b8ad619316409 Mon Sep 17 00:00:00 2001
+From 765fa47a8a9c797d58fd2f102cdaa90dc8e9caae Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 10 Jan 2018 13:20:54 -0700
 Subject: [PATCH 2/9] Addin sharp MIP display support to Kconfig file
