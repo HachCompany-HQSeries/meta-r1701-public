@@ -1204,16 +1204,16 @@ index 000000000000..8dbc887c240f
 +    };
 +
 +    /* PHY Power regulator - r1701-app controls this power pin for power management */
-+    //reg_3v3_etn: regulator-3v3etn {
-+    //    compatible = "regulator-fixed";
-+    //    regulator-name = "3V3_ETN";
-+    //    regulator-min-microvolt = <3300000>;
-+    //    regulator-max-microvolt = <3300000>;
-+    //    pinctrl-names = "default";
-+    //    pinctrl-0 = <&pinctrl_etnphy_power>;
-+    //    gpio = <&gpio4 28 GPIO_ACTIVE_LOW>;
-+    //    enable-active-low;
-+    //};
++    reg_V5P0_EN: regulator-V5P0_EN {
++        compatible = "regulator-fixed";
++        regulator-name = "V5P0_EN";
++        regulator-min-microvolt = <3300000>;
++        regulator-max-microvolt = <3300000>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_V5P0_EN_power>;
++        gpio = <&gpio5 6 GPIO_ACTIVE_HIGH>;
++        enable-active-high;regulator-boot-on;regulator-always-on;
++    };
 +};
 +
 +/* NAND */
@@ -2014,12 +2014,12 @@ index 000000000000..8dbc887c240f
 +        //    >;
 +        //};
 +
-+        /*ethernet PHY power pin, active low output pin */
-+        //pinctrl_etnphy_power: phyPower {
-+        //    fsl,pins = <
-+        //      MX6UL_PAD_CSI_DATA07__GPIO4_IO28          0x10b0
-+        //    >;
-+        //};
++        /* Enable 5 VDC to system from VDC RAW power, Active High Signal */
++        pinctrl_V5P0_EN_power: V5P0_EN_power {
++            fsl,pins = <
++                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06      0x10b0
++            >;
++        };
 +
 +        /* General purpose pinctrl */
 +        pinctrl_hog: hoggrp {
@@ -2095,7 +2095,7 @@ index 000000000000..8dbc887c240f
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  /* POWER_GOOD */
 +
 +                /* Enable 5 VDC to system from VDC RAW power, Active High Signal */
-+                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06         0x10b0  /* V5P0_EN */
++                //MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06         0x10b0  /* V5P0_EN */
 +
 +
 +                /* Ethernet control lines */
