@@ -28,8 +28,6 @@ UPDATE_MOUNT_DIR="/mnt/update"
 
 REBOOT_TIME=10
 
-MIP_DISPLAY_5VDC_POWER_PIN_CTRL_PIN=134
-
 # Functions.
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -385,36 +383,20 @@ if [ "$(is_nand)" = "no" ]; then
 	# Launch 'rngd' to feed random data to kernel entropy pool
 	mkdir -p /var/run && rngd
 fi
+
 # Read the model type variable.
 read_uboot_var model-type modeltype
 
-# Check if it exists
-#if [ -z "${modeltype}" ]; then
-#	modprobe mxsfb
-#	export FRAMEBUFFER=/dev/fb0
-#else
-#
-#fi
-
-if [ "${modeltype}" = "HQ_MPP" ]; then
-    modprobe -r mxsfb
-    echo "${MIP_DISPLAY_5VDC_POWER_PIN_CTRL_PIN}" > /sys/class/gpio/export
-    sleep 1
-    echo out > /sys/class/gpio/gpio${MIP_DISPLAY_5VDC_POWER_PIN_CTRL_PIN}/direction
-    echo 1 > /sys/class/gpio/gpio${MIP_DISPLAY_5VDC_POWER_PIN_CTRL_PIN}/value
-    modprobe mipdisplay-3-2-inch
-    export FRAMEBUFFER=/dev/fb0
-else
+# Load display driver.
+if [ "${modeltype}" = "HQ_HPP" ]; then
     modprobe -r mipdisplay-3-2-inch
     modprobe mxsfb
     export FRAMEBUFFER=/dev/fb0
+else
+    modprobe -r mxsfb
+    modprobe mipdisplay-3-2-inch
+    export FRAMEBUFFER=/dev/fb0
 fi
-
-#if [ -c "${FBDEV:-/dev/fb0}" ]; then
-#	log "fb0 exists!"
-#else
-#	modprobe mipdisplay-3-2-inch
-#fi
 
 modprobe sdhci_esdhc_imx
 
