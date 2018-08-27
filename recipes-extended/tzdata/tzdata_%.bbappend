@@ -1,1 +1,1 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}-${PV}:"
+DEFAULT_TIMEZONE = "America/Denver"
