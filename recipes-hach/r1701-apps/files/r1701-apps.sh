@@ -38,6 +38,10 @@ case "$1" in
         export QT_QPA_FB_DISABLE_INPUT=1
         export QMLSCENE_DEVICE=softwarecontext
 
+        # set cpu to the performance level
+        echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
+
+
         # Start system manager as daemon.
         start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
         echo "r1701 - started as deamon"

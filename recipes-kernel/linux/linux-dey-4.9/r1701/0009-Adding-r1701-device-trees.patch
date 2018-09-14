@@ -1,13 +1,13 @@
-From 8386e41da3ed3cab56f297858e473117e55c634d Mon Sep 17 00:00:00 2001
-From: Devang Patel <dpatel@hach.com>
-Date: Fri, 24 Aug 2018 12:04:35 -0600
-Subject: [PATCH 9/9] Adding r1701 device trees
+From dea06226d8f662e322a36427b10f8861141be159 Mon Sep 17 00:00:00 2001
+From: ryang <ryang@hach.com>
+Date: Thu, 13 Sep 2018 15:29:01 -0600
+Subject: [PATCH] Adding-r1701-device-trees
 
 ---
  arch/arm/boot/dts/Makefile            |    4 +-
- arch/arm/boot/dts/imx6ul-r1701-wb.dts | 1044 +++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701.dts    | 1044 +++++++++++++++++++++++++++++++++
- 3 files changed, 2091 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-wb.dts | 1044 ++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701.dts    | 1046 +++++++++++++++++++++++++++++++++
+ 3 files changed, 2093 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-wb.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701.dts
 
@@ -1078,10 +1078,10 @@ index 000000000000..a7985a446bf4
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701.dts b/arch/arm/boot/dts/imx6ul-r1701.dts
 new file mode 100644
-index 000000000000..553b4ef89731
+index 000000000000..e7ab832cc097
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701.dts
-@@ -0,0 +1,1044 @@
+@@ -0,0 +1,1046 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1208,6 +1208,8 @@ index 000000000000..553b4ef89731
 +        /* Debounce time and column scan time can be adjusted based on our need. */
 +        debounce-delay-ms = <10>;
 +        col-scan-delay-us = <100>;
++		/* Wakeup interrupt */
++		key-wakeup-gpios = <&mca_gpio 1 GPIO_ACTIVE_HIGH>;
 +    };
 +
 +    /*
