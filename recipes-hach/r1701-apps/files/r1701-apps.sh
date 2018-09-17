@@ -1,11 +1,15 @@
 #!/bin/sh
 case "$1" in
   start)
+        # set cpu to the performance level, maximum frequency i.e. 528 MHz
+        echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
+
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
         # sheet.
         screen_active_area_size="mmsize=42.672x68.072"
         modeltype=$(fw_printenv -n "model-type" 2>/dev/null)
         if [ "${modeltype}" = "HQ_MPP" ]; then
+            modprobe -r bq25890_charger
             modprobe -r mipdisplay-3-2-inch
             modprobe -r mxsfb pwm_bl
             modprobe mipdisplay-3-2-inch
@@ -21,7 +25,7 @@ case "$1" in
             echo "r1701 - Ethernet enabled..."
         else
             ifconfig eth0 down
-            modprobe -r fec
+            modprobe -r fec smsc libphy
             echo "r1701 - Ethernet disabled..."
         fi
 
@@ -37,10 +41,6 @@ case "$1" in
         export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
         export QT_QPA_FB_DISABLE_INPUT=1
         export QMLSCENE_DEVICE=softwarecontext
-
-        # set cpu to the performance level
-        echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
-
 
         # Start system manager as daemon.
         start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
