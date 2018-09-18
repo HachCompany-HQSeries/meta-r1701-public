@@ -1,4 +1,6 @@
 #!/bin/sh
+APPNAME="sys_mgr"
+APPRUNPID="/var/run/$APPNAME.pid"
 case "$1" in
   start)
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
@@ -43,13 +45,30 @@ case "$1" in
         export QMLSCENE_DEVICE=softwarecontext
 
         # Start system manager as daemon.
-        start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
-        echo "r1701 - started as deamon"
+        #start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
+        #echo "r1701 - started as deamon"
+	
+	/opt/hach/bin/${APPNAME} &> /dev/null &
+	PIDAPP=""
+	while [ -z "$PIDAPP" ]
+	do
+		PIDAPP=$(ps |grep $APPNAME|grep -v grep|cut -c1-5)
+		if [ -z "$PIDAPP" ]
+		then
+			sleep 0.1
+		fi
+	done
+	echo $PIDAPP > $APPRUNPID
+
         ;;
   stop)
-        start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
-        echo "r1701 - deamon stopped"
-        ;;
+        #start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
+        #echo "r1701 - deamon stopped"
+        PIDAPP=$(cat $APPRUNPID)
+	kill -9 $PIDAPP
+	rm $APPRUNPID
+
+	;;
   *)
         echo "Usage: $0 {start|stop}"
         exit 1

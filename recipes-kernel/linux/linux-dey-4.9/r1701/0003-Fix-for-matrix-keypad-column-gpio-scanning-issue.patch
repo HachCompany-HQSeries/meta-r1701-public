@@ -1,14 +1,14 @@
-From 6123f0822c74675a4e89a63c1f025b85726a409c Mon Sep 17 00:00:00 2001
+From 6dfc42059fec3785da3ca2eac476e3eeb3b19a9d Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
-Date: Thu, 13 Sep 2018 15:38:22 -0600
+Date: Tue, 18 Sep 2018 09:10:24 -0600
 Subject: [PATCH 3/3] Fix-for-matrix-keypad-column-gpio-scanning-issue
 
 ---
- drivers/input/keyboard/matrix_keypad.c | 60 +++++++++++++++++++++++++++++++---
- 1 file changed, 55 insertions(+), 5 deletions(-)
+ drivers/input/keyboard/matrix_keypad.c | 67 ++++++++++++++++++++++++++++++----
+ 1 file changed, 60 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/input/keyboard/matrix_keypad.c b/drivers/input/keyboard/matrix_keypad.c
-index 7f12b6579f82..fac48b932008 100644
+index 7f12b6579f82..65ca410bf5b2 100644
 --- a/drivers/input/keyboard/matrix_keypad.c
 +++ b/drivers/input/keyboard/matrix_keypad.c
 @@ -39,6 +39,7 @@ struct matrix_keypad {
@@ -64,7 +64,23 @@ index 7f12b6579f82..fac48b932008 100644
  static int matrix_keypad_start(struct input_dev *dev)
  {
  	struct matrix_keypad *keypad = input_get_drvdata(dev);
-@@ -280,6 +294,8 @@ static int matrix_keypad_suspend(struct device *dev)
+@@ -224,6 +238,9 @@ static void matrix_keypad_stop(struct input_dev *dev)
+ 	 * we should disable them now.
+ 	 */
+ 	disable_row_irqs(keypad);
++
++	/* clear the last key state */
++	memset(keypad->last_key_state, 0, sizeof(keypad->last_key_state));
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+@@ -275,11 +292,13 @@ static int matrix_keypad_suspend(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct matrix_keypad *keypad = platform_get_drvdata(pdev);
+ 
+-	matrix_keypad_stop(keypad->input_dev);
++	//matrix_keypad_stop(keypad->input_dev);
+ 
  	if (device_may_wakeup(&pdev->dev))
  		matrix_keypad_enable_wakeup(keypad);
  
@@ -73,7 +89,7 @@ index 7f12b6579f82..fac48b932008 100644
  	return 0;
  }
  
-@@ -288,6 +304,8 @@ static int matrix_keypad_resume(struct device *dev)
+@@ -288,10 +307,12 @@ static int matrix_keypad_resume(struct device *dev)
  	struct platform_device *pdev = to_platform_device(dev);
  	struct matrix_keypad *keypad = platform_get_drvdata(pdev);
  
@@ -82,7 +98,12 @@ index 7f12b6579f82..fac48b932008 100644
  	if (device_may_wakeup(&pdev->dev))
  		matrix_keypad_disable_wakeup(keypad);
  
-@@ -358,6 +376,31 @@ static int matrix_keypad_init_gpio(struct platform_device *pdev,
+-	matrix_keypad_start(keypad->input_dev);
++	//matrix_keypad_start(keypad->input_dev);
+ 
+ 	return 0;
+ }
+@@ -358,6 +379,31 @@ static int matrix_keypad_init_gpio(struct platform_device *pdev,
  		}
  	}
  
@@ -114,7 +135,7 @@ index 7f12b6579f82..fac48b932008 100644
  	/* initialized as disabled - enabled by input->open */
  	disable_row_irqs(keypad);
  	return 0;
-@@ -394,6 +437,10 @@ static void matrix_keypad_free_gpio(struct matrix_keypad *keypad)
+@@ -394,6 +440,10 @@ static void matrix_keypad_free_gpio(struct matrix_keypad *keypad)
  
  	for (i = 0; i < pdata->num_col_gpios; i++)
  		gpio_free(pdata->col_gpios[i]);
@@ -125,7 +146,7 @@ index 7f12b6579f82..fac48b932008 100644
  }
  
  #ifdef CONFIG_OF
-@@ -472,6 +519,7 @@ static int matrix_keypad_probe(struct platform_device *pdev)
+@@ -472,6 +522,7 @@ static int matrix_keypad_probe(struct platform_device *pdev)
  	const struct matrix_keypad_platform_data *pdata;
  	struct matrix_keypad *keypad;
  	struct input_dev *input_dev;
@@ -133,7 +154,7 @@ index 7f12b6579f82..fac48b932008 100644
  	int err;
  
  	pdata = dev_get_platdata(&pdev->dev);
-@@ -493,6 +541,8 @@ static int matrix_keypad_probe(struct platform_device *pdev)
+@@ -493,6 +544,8 @@ static int matrix_keypad_probe(struct platform_device *pdev)
  		goto err_free_mem;
  	}
  
