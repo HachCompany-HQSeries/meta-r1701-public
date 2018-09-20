@@ -26,8 +26,8 @@ case "$1" in
         if [ "${testmode}" = "On" ]; then
             echo "r1701 - Ethernet enabled..."
         else
-            ifconfig eth0 down
-            modprobe -r fec smsc libphy
+            # ifconfig eth0 down
+            # modprobe -r fec smsc libphy
             echo "r1701 - Ethernet disabled..."
         fi
 
