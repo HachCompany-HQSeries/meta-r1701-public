@@ -16,5 +16,5 @@ SRC_URI_append = " \
     file://0006-Do-not-add-Power-Key-SLEEP-event.patch \
     file://0007-Update-the-battery-charger-driver-for-R1701.patch \
     file://0008-NAND-suspend-resume-initialization-issue-patch.patch \
-    file://0009-Adding-r1701-device-trees.patch \
+    file://0009-Adding-HPP-and-MPP-device-trees.patch \
 "
