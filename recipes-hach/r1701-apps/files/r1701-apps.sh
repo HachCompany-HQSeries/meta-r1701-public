@@ -14,6 +14,10 @@ case "$1" in
         if [ "${modeltype}" = "HQ_MPP" ]; then
             screen_active_area_size="mmsize=42.672x68.072"
         else
+            # Unbind virtual console from framebuffer device so that unwanted image/characters do not show up on screen.
+            # detach framebuffer console from console layer
+            echo 0 > sys/class/vtconsole/vtcon1/bind
+
             modprobe bq25890_charger
             screen_active_area_size="mmsize=53.28x71.04"
         fi
