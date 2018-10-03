@@ -884,7 +884,7 @@ index 0000000000..8a8727408c
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	CONFIG_COMMON_ENV \
 +	CONFIG_ENV_MTD_SETTINGS \
-+	"bootargs_linux=\0" \
++	"bootargs_linux=vt.global_cursor_default=0\0" \
 +	"bootargs_nand_linux=setenv bootargs console=${console},${baudrate} " \
 +		"${bootargs_linux} ${mtdparts} ubi.mtd=${mtdlinuxindex} " \
 +		"ubi.mtd=${mtdrootfsindex} root=ubi1_0 " \
