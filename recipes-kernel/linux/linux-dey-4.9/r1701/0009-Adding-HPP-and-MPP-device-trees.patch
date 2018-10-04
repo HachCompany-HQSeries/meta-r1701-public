@@ -578,8 +578,8 @@ index 000000000000..479d4ea4dd92
 +        ti,precharge-current = <128000>;
 +
 +        // when battery is charging and it is below minimum system voltage, the system will be regulated above
-+        // minimum-sys-voltage setting (in uV) - 3.7 VDC
-+        ti,minimum-sys-voltage = <3700000>;
++        // minimum-sys-voltage setting (in uV) - 3.0 VDC
++        ti,minimum-sys-voltage = <3000000>;
 +
 +        // VBUS voltage level in boost mode (in uV) - 5 VDC
 +        ti,boost-voltage = <5000000>;
