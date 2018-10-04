@@ -1,14 +1,14 @@
-From c859b7e7e4cdc131231af58c0b595b5fae214c6f Mon Sep 17 00:00:00 2001
+From 69411571459a50295b698e2bc8f3dfdb5abb8e9b Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
-Date: Wed, 3 Oct 2018 11:23:50 -0600
+Date: Thu, 4 Oct 2018 16:02:42 -0600
 Subject: [PATCH 7/7] Update-the-battery-charger-driver-for-R1701
 
 ---
- drivers/power/supply/bq25890_charger.c | 95 +++++++++++++++++++++++++++++-----
- 1 file changed, 81 insertions(+), 14 deletions(-)
+ drivers/power/supply/bq25890_charger.c | 107 +++++++++++++++++++++++++++------
+ 1 file changed, 89 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
-index f993a55cde20..d1411ad6b276 100644
+index f993a55cde20..345dbd04269a 100644
 --- a/drivers/power/supply/bq25890_charger.c
 +++ b/drivers/power/supply/bq25890_charger.c
 @@ -24,7 +24,7 @@
@@ -46,7 +46,30 @@ index f993a55cde20..d1411ad6b276 100644
  static int bq25890_power_supply_get_property(struct power_supply *psy,
  					     enum power_supply_property psp,
  					     union power_supply_propval *val)
-@@ -452,7 +462,34 @@ static int bq25890_power_supply_get_property(struct power_supply *psy,
+@@ -383,14 +393,18 @@ static int bq25890_power_supply_get_property(struct power_supply *psy,
+ 
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_STATUS:
++		ret = bq25890_field_read(bq, F_CHG_STAT); /* read charger status value again */
++		if (ret < 0)
++			return ret;
++
+ 		if (!state.online)
+ 			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
+-		else if (state.chrg_status == STATUS_NOT_CHARGING)
++		else if (ret == STATUS_NOT_CHARGING)
+ 			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+-		else if (state.chrg_status == STATUS_PRE_CHARGING ||
+-			 state.chrg_status == STATUS_FAST_CHARGING)
++		else if (ret == STATUS_PRE_CHARGING ||
++			 ret == STATUS_FAST_CHARGING)
+ 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+-		else if (state.chrg_status == STATUS_TERMINATION_DONE)
++		else if (ret == STATUS_TERMINATION_DONE)
+ 			val->intval = POWER_SUPPLY_STATUS_FULL;
+ 		else
+ 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
+@@ -452,7 +466,34 @@ static int bq25890_power_supply_get_property(struct power_supply *psy,
  	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
  		val->intval = bq25890_find_val(bq->init_data.iterm, TBL_ITERM);
  		break;
@@ -62,7 +85,7 @@ index f993a55cde20..d1411ad6b276 100644
 +		}
 +		break;
 +	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
-+
+ 
 +		ret = bq25890_field_read(bq, F_BATV); /* read measured value */
 +		if (ret < 0)
 +			return ret;
@@ -74,14 +97,14 @@ index f993a55cde20..d1411ad6b276 100644
 +		ret = bq25890_field_read(bq, F_SYSV); /* read measured value */
 +		if (ret < 0)
 +			return ret;
- 
++
 +		/* converted_val = 2.304V + ADC_val * 20mV (table 10.3.15) */
 +		val->intval = 2304000 + ret * 20000;
 +		break;
  	default:
  		return -EINVAL;
  	}
-@@ -474,7 +511,8 @@ static int bq25890_get_chip_state(struct bq25890_device *bq,
+@@ -474,7 +515,8 @@ static int bq25890_get_chip_state(struct bq25890_device *bq,
  		{F_VSYS_STAT,	&state->vsys_status},
  		{F_BOOST_FAULT, &state->boost_fault},
  		{F_BAT_FAULT,	&state->bat_fault},
@@ -91,7 +114,7 @@ index f993a55cde20..d1411ad6b276 100644
  	};
  
  	for (i = 0; i < ARRAY_SIZE(state_fields); i++) {
-@@ -484,7 +522,9 @@ static int bq25890_get_chip_state(struct bq25890_device *bq,
+@@ -484,7 +526,9 @@ static int bq25890_get_chip_state(struct bq25890_device *bq,
  
  		*state_fields[i].data = ret;
  	}
@@ -102,7 +125,7 @@ index f993a55cde20..d1411ad6b276 100644
  	dev_dbg(bq->dev, "S:CHG/PG/VSYS=%d/%d/%d, F:CHG/BOOST/BAT=%d/%d/%d\n",
  		state->chrg_status, state->online, state->vsys_status,
  		state->chrg_fault, state->boost_fault, state->bat_fault);
-@@ -615,6 +655,10 @@ static int bq25890_hw_init(struct bq25890_device *bq)
+@@ -615,6 +659,10 @@ static int bq25890_hw_init(struct bq25890_device *bq)
  	ret = bq25890_field_write(bq, F_WD, 0);
  	if (ret < 0)
  		return ret;
@@ -113,7 +136,7 @@ index f993a55cde20..d1411ad6b276 100644
  
  	/* initialize currents/voltages and other parameters */
  	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
-@@ -650,6 +694,9 @@ static enum power_supply_property bq25890_power_supply_props[] = {
+@@ -650,6 +698,9 @@ static enum power_supply_property bq25890_power_supply_props[] = {
  	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
  	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
  	POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT,
@@ -123,7 +146,7 @@ index f993a55cde20..d1411ad6b276 100644
  };
  
  static char *bq25890_charger_supplied_to[] = {
-@@ -684,19 +731,32 @@ static void bq25890_usb_work(struct work_struct *data)
+@@ -684,19 +735,32 @@ static void bq25890_usb_work(struct work_struct *data)
  			container_of(data, struct bq25890_device, usb_work);
  
  	switch (bq->usb_event) {
@@ -158,7 +181,7 @@ index f993a55cde20..d1411ad6b276 100644
  		power_supply_changed(bq->charger);
  		break;
  	}
-@@ -713,9 +773,10 @@ static int bq25890_usb_notifier(struct notifier_block *nb, unsigned long val,
+@@ -713,9 +777,10 @@ static int bq25890_usb_notifier(struct notifier_block *nb, unsigned long val,
  	struct bq25890_device *bq =
  			container_of(nb, struct bq25890_device, usb_nb);
  
@@ -172,7 +195,7 @@ index f993a55cde20..d1411ad6b276 100644
  	return NOTIFY_OK;
  }
  
-@@ -870,11 +931,16 @@ static int bq25890_probe(struct i2c_client *client,
+@@ -870,11 +935,16 @@ static int bq25890_probe(struct i2c_client *client,
  	}
  
  	/* OTG reporting */
@@ -191,7 +214,7 @@ index f993a55cde20..d1411ad6b276 100644
  	}
  
  	ret = devm_request_threaded_irq(dev, client->irq, NULL,
-@@ -894,7 +960,8 @@ static int bq25890_probe(struct i2c_client *client,
+@@ -894,7 +964,8 @@ static int bq25890_probe(struct i2c_client *client,
  
  irq_fail:
  	if (!IS_ERR_OR_NULL(bq->usb_phy))
@@ -201,7 +224,7 @@ index f993a55cde20..d1411ad6b276 100644
  
  	return ret;
  }
-@@ -906,8 +973,8 @@ static int bq25890_remove(struct i2c_client *client)
+@@ -906,8 +977,8 @@ static int bq25890_remove(struct i2c_client *client)
  	power_supply_unregister(bq->charger);
  
  	if (!IS_ERR_OR_NULL(bq->usb_phy))
