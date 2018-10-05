@@ -63,6 +63,7 @@ IMAGE_FEATURES_remove += " \
     ethtool \
     modemmanager \
     libdrm \
+    cryptoauthlib \
 "
 
 IMAGE_INSTALL += " \

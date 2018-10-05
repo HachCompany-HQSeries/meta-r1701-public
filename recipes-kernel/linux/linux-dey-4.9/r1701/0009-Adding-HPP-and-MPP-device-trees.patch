@@ -363,7 +363,7 @@ index 000000000000..479d4ea4dd92
 +// See this link - "https://www.digi.com/resources/documentation/digidocs/90001546/reference/android/r_caam_android.htm"
 +// NOTE - Disable this module if not needed.
 +&caam_keyblob {
-+    status = "okay";
++    status = "disabled";
 +};
 +
 +// MCA IO3 & IO4 connected as ADC, it is defined under i2c1 node in imx6ul-ccimx6ul.dtsi file.
@@ -1295,7 +1295,7 @@ index 000000000000..e2a85baa9226
 +// See this link - "https://www.digi.com/resources/documentation/digidocs/90001546/reference/android/r_caam_android.htm"
 +// NOTE - Disable this module if not needed.
 +&caam_keyblob {
-+    status = "okay";
++    status = "disabled";
 +};
 +
 +// MCA IO3 & IO4 connected as ADC, it is defined under i2c1 node in imx6ul-ccimx6ul.dtsi file.
