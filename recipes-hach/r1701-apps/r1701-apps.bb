@@ -39,7 +39,7 @@ PV = "${SOFTWARE_VERSION}+${SRCPV}"
 # Configure the SysV initialization service for the sys_mgr within the r1701_applications.
 inherit update-rc.d
 INITSCRIPT_NAME = "r1701-apps.sh"
-INITSCRIPT_PARAMS = "defaults 99"
+INITSCRIPT_PARAMS = "defaults 1"
 
 # Source directory where the code will be placed.
 S = "${WORKDIR}/git"
