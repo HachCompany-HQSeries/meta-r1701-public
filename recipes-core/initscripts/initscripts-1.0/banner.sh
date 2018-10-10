@@ -20,5 +20,7 @@ elif ( > /dev/console ) 2>/dev/null; then
 else
     vtmaster=/dev/null
 fi
+# NOTE - Do not ECHO below message, otherwise this text will appear on screen with boot logo during boot up process and
+#        it is annoying. We only want to show LOGO.
 #echo > $vtmaster
 #echo "Please wait: booting..." > $vtmaster
