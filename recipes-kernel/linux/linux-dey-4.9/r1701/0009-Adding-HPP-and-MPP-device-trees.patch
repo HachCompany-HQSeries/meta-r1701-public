@@ -214,8 +214,8 @@ index 000000000000..ad14be656b1c
 +        compatible = "digi,mca-cc6ul-pwrkey";
 +
 +        // enable the KEY_POWER events. We do not want MCA to post ACPI power off event to kernel. We will detect this
-+        // key detection in our application and then will initiate graceful shutdown event.
-+        /delete-property/digi,key-power;
++        // key detection in our application and then will initiate graceful shutdown event. "/delete-property/"
++        digi,key-power;
 +
 +        // enable the KEY_SLEEP events
 +        digi,key-sleep;
@@ -1126,8 +1126,8 @@ index 000000000000..44c240f3dc1a
 +        compatible = "digi,mca-cc6ul-pwrkey";
 +
 +        // enable the KEY_POWER events. We do not want MCA to post ACPI power off event to kernel. We will detect this
-+        // key detection in our application and then will initiate graceful shutdown event.
-+        /delete-property/digi,key-power;
++        // key detection in our application and then will initiate graceful shutdown event. /delete-property/
++        digi,key-power;
 +
 +        // enable the KEY_SLEEP events
 +        digi,key-sleep;
@@ -1784,6 +1784,6 @@ index 000000000000..44c240f3dc1a
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
