@@ -4,4 +4,4 @@ logger -t acpid  "Power key poweroff request."
 #echo "shutdown" | /opt/hach/bin/zmq-push.sh localhost 5555
 #sleep 3
 #logger -t "ZMQ: Sent Shutdown event."
-exec /sbin/poweroff
+#exec /sbin/poweroff
