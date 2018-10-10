@@ -1,4 +1,4 @@
-From 47bbb48e97e6a4134240dd54ee81b6e4c231439f Mon Sep 17 00:00:00 2001
+From e6bf2c880a932833f5b1beeb7340c36a84ba6d09 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Wed, 10 Jan 2018 13:18:35 -0700
 Subject: [PATCH 1/9] Adding hach-r1701 as carrier board in to OTP kernel

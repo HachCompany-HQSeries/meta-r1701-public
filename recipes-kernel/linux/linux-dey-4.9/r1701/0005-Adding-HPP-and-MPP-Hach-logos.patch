@@ -1,7 +1,7 @@
-From eecb1f6744c16bf69abb326e2a11bf9b5197d8e5 Mon Sep 17 00:00:00 2001
+From 5582c30dce51b8ade4d89e599dfbf0fcf79f7363 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Tue, 2 Oct 2018 15:06:55 -0600
-Subject: [PATCH] Adding HPP and MPP Hach logos.
+Subject: [PATCH 5/9] Adding HPP and MPP Hach logos.
 
 ---
  drivers/video/console/fbcon.c           |   108 +-

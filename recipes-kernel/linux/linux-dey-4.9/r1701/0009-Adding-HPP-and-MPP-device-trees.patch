@@ -1,13 +1,13 @@
-From 905b9b62bf9b73451fa5a75ac1aae62681aa70b6 Mon Sep 17 00:00:00 2001
+From 97e0dd85277072df00dd2d7691b04e5338acf617 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Thu, 27 Sep 2018 14:58:52 -0600
-Subject: [PATCH] Adding HPP and MPP device trees.
+Date: Wed, 10 Oct 2018 13:08:24 -0600
+Subject: [PATCH 9/9] Adding HPP and MPP device trees.
 
 ---
  arch/arm/boot/dts/Makefile             |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 976 +++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 693 +++++++++++++++++++++++
- 3 files changed, 1672 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 944 +++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 802 ++++++++++++++++++++++++++++
+ 3 files changed, 1749 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-hpp.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 
@@ -28,10 +28,10 @@ index ff8eee581a80..b031244e08a6 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-hpp.dts b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 new file mode 100644
-index 000000000000..479d4ea4dd92
+index 000000000000..ad14be656b1c
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
-@@ -0,0 +1,976 @@
+@@ -0,0 +1,944 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -175,6 +175,11 @@ index 000000000000..479d4ea4dd92
 +        enable-active-high;
 +        regulator-boot-on;
 +        regulator-always-on;
++
++        // When power off key is pressed, system will enter in to suspend mode and we do not want this 5V power on.
++        regulator-state-mem {
++            regulator-off-in-suspend;
++        };
 +    };
 +};
 +
@@ -208,7 +213,8 @@ index 000000000000..479d4ea4dd92
 +    pwrkey {
 +        compatible = "digi,mca-cc6ul-pwrkey";
 +
-+        // enable the KEY_POWER events
++        // enable the KEY_POWER events. We do not want MCA to post ACPI power off event to kernel. We will detect this
++        // key detection in our application and then will initiate graceful shutdown event.
 +        /delete-property/digi,key-power;
 +
 +        // enable the KEY_SLEEP events
@@ -218,7 +224,7 @@ index 000000000000..479d4ea4dd92
 +        digi,debounce-ms = <100>;
 +
 +        // number of seconds that the Power Key must be pressed to generate a KEY_POWER event.
-+        digi,pwroff-delay-sec = <2>;
++        digi,pwroff-delay-sec = <5>;
 +
 +        // time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off.
 +        digi,pwroff-guard-sec = <30>;
@@ -371,8 +377,8 @@ index 000000000000..479d4ea4dd92
 +    compatible = "digi,mca-cc6ul-adc";
 +
 +    // Channel 3 - BLEMOD_ID_ADC
-+    // Channel 4 - ALK_BAT_ADC (Only MPP)
-+    digi,adc-ch-list = <3>;
++    // Channel 4 - ALK_BAT_ADC
++    digi,adc-ch-list = <3 4>;
 +
 +    // ADC reference voltage. Use:
 +    //   - digi,adc-vref: Value in uV that corresponds with the VCC_MCA voltage.
@@ -380,7 +386,7 @@ index 000000000000..479d4ea4dd92
 +    //     This forces MCA_IO2/EXT_VREF to be configured as a 1.2 V output, and a
 +    //     100 nF capacitor must be placed between this line and GND.
 +    //     If this property is set, the value in 'digi,adc-vref' is ignored.
-+    digi,adc-vref = <3000000>;
++    digi,adc-vref = <3300000>;
 +};
 +
 +// Ethernet
@@ -520,7 +526,6 @@ index 000000000000..479d4ea4dd92
 +    status = "disabled";
 +};
 +
-+// FW_LED_01 - User LED
 +&pwm4 {
 +    status = "disabled";
 +};
@@ -560,11 +565,6 @@ index 000000000000..479d4ea4dd92
 +        interrupt-parent = <&gpio4>;
 +        interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
 +
-+        // Charger IRQ also assigned to one of the MCA IRQ line, enable this IRQ node if MCA IRQ is preffered and
-+        // disable above IRQ definition.
-+        //interrupt-parent = <&mca_gpio>;
-+        //interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
-+
 +        // maximum charging voltage (in uV) - 4.1 VDC
 +        ti,battery-regulation-voltage = <4100000>;
 +
@@ -587,7 +587,7 @@ index 000000000000..479d4ea4dd92
 +        // maximum allowed current draw in boost mode (in uA) - 1 A
 +        ti,boost-max-current = <1000000>;
 +
-+        // Below three settings are Optional properties
++        // Below three settings are Optional properties //
 +
 +        // if present boost mode frequency will be 500kHz, otherwise 1.5MHz, we want 1.5 MHZ so disable this propert
 +        //ti,boost-low-freq;
@@ -622,37 +622,12 @@ index 000000000000..479d4ea4dd92
 +        // number of data lines.  Could be <8>, <16>, <18> or <24>
 +        bus-width = <16>;
 +
++        // Display panel timning table.
 +        display-timings {
 +            native-mode = <&timing0>;
 +
 +            // VGA - Ortustech Display (Portrait Mode)
 +            timing0: 480x640 {
-+
-+                // Display Timing chart
-+                //                    +----------+-------------------------------------+----------+-------+
-+                //                    |          |        ↑                            |          |       |
-+                //                    |          |        |vback_porch                 |          |       |
-+                //                    |          |        ↓                            |          |       |
-+                //                    +----------#######################################----------+-------+
-+                //                    |          #        ↑                            #          |       |
-+                //                    |          #        |                            #          |       |
-+                //                    |  hback   #        |                            #  hfront  | hsync |
-+                //                    |   porch  #        |       hactive              #  porch   |  len  |
-+                //                    |<-------->#<-------+--------------------------->#<-------->|<----->|
-+                //                    |          #        |                            #          |       |
-+                //                    |          #        |vactive                     #          |       |
-+                //                    |          #        |                            #          |       |
-+                //                    |          #        ↓                            #          |       |
-+                //                    +----------#######################################----------+-------+
-+                //                    |          |        ↑                            |          |       |
-+                //                    |          |        |vfront_porch                |          |       |
-+                //                    |          |        ↓                            |          |       |
-+                //                    +----------+-------------------------------------+----------+-------+
-+                //                    |          |        ↑                            |          |       |
-+                //                    |          |        |vsync_len                   |          |       |
-+                //                    |          |        ↓                            |          |       |
-+                //                    +----------+-------------------------------------+----------+-------+
-+                //
 +
 +                // Pixel clock in Hz 19.8 MHz Typical
 +                clock-frequency = <19800000>;
@@ -740,6 +715,13 @@ index 000000000000..479d4ea4dd92
 +    pinctrl-0 = <&pinctrl_hog>;
 +
 +    imx6ul-ccimx6ul {
++        // Enable 5 VDC to system from VDC RAW power, Active High Signal
++        pinctrl_V5P0_EN_power: V5P0_EN_power {
++            fsl,pins = <
++                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06      0x10b0
++            >;
++        };
++
 +        // NAND
 +        pinctrl_gpmi_nand: gpmigrp {
 +            fsl,pins = <
@@ -885,13 +867,6 @@ index 000000000000..479d4ea4dd92
 +            >;
 +        };
 +
-+        // FW_LED_01 PWM signal pin
-+        pinctrl_pwm4: pwm4grp {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO05__PWM4_OUT          0x110b0
-+            >;
-+        };
-+
 +        // Battery Charger Chip
 +        pinctrl_i2c3: i2c3grp {
 +            fsl,pins = <
@@ -930,13 +905,6 @@ index 000000000000..479d4ea4dd92
 +                MX6UL_PAD_LCD_HSYNC__LCDIF_HSYNC        0x79
 +                MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC        0x79
 +                MX6UL_PAD_LCD_CLK__LCDIF_CLK            0x17050
-+            >;
-+        };
-+
-+        // Enable 5 VDC to system from VDC RAW power, Active High Signal
-+        pinctrl_V5P0_EN_power: V5P0_EN_power {
-+            fsl,pins = <
-+                MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06      0x10b0
 +            >;
 +        };
 +
@@ -1010,10 +978,10 @@ index 000000000000..479d4ea4dd92
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-mpp.dts b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 new file mode 100644
-index 000000000000..e2a85baa9226
+index 000000000000..44c240f3dc1a
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
-@@ -0,0 +1,693 @@
+@@ -0,0 +1,802 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1043,6 +1011,18 @@ index 000000000000..e2a85baa9226
 +        // serial4 = &uart5 for starter board hardware
 +        stdout-path = "serial4:115200n8";
 +    };
++
++    /*
++    // USB 1 - OTG port bus power setting for HOST mode
++    reg_usb_otg1_vbus: reg_usb_otg1:@0 {
++        compatible = "regulator-fixed";
++        regulator-name = "usb_otg1_vbus";
++        regulator-min-microvolt = <5000000>;
++        regulator-max-microvolt = <5000000>;
++        gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
++        enable-active-high;
++    };
++    */
 +
 +    // Gpio based matrix Keyboard
 +    matrix_keypad: matrix-keypad@0 {
@@ -1107,6 +1087,11 @@ index 000000000000..e2a85baa9226
 +        enable-active-high;
 +        regulator-boot-on;
 +        regulator-always-on;
++
++        // When power off key is pressed, system will enter in to suspend mode and we do not want this 5V power on.
++        regulator-state-mem {
++            regulator-off-in-suspend;
++        };
 +    };
 +};
 +
@@ -1140,7 +1125,8 @@ index 000000000000..e2a85baa9226
 +    pwrkey {
 +        compatible = "digi,mca-cc6ul-pwrkey";
 +
-+        // enable the KEY_POWER events
++        // enable the KEY_POWER events. We do not want MCA to post ACPI power off event to kernel. We will detect this
++        // key detection in our application and then will initiate graceful shutdown event.
 +        /delete-property/digi,key-power;
 +
 +        // enable the KEY_SLEEP events
@@ -1150,7 +1136,7 @@ index 000000000000..e2a85baa9226
 +        digi,debounce-ms = <100>;
 +
 +        // number of seconds that the Power Key must be pressed to generate a KEY_POWER event.
-+        digi,pwroff-delay-sec = <2>;
++        digi,pwroff-delay-sec = <5>;
 +
 +        // time that the MCA will wait for the OS to power off the system. After that the MCA will switch it off.
 +        digi,pwroff-guard-sec = <30>;
@@ -1312,7 +1298,7 @@ index 000000000000..e2a85baa9226
 +    //     This forces MCA_IO2/EXT_VREF to be configured as a 1.2 V output, and a
 +    //     100 nF capacitor must be placed between this line and GND.
 +    //     If this property is set, the value in 'digi,adc-vref' is ignored.
-+    digi,adc-vref = <3000000>;
++    digi,adc-vref = <3300000>;
 +};
 +
 +// Ethernet
@@ -1458,13 +1444,12 @@ index 000000000000..e2a85baa9226
 +    status = "disabled";
 +};
 +
-+// FW_LED_01 - User LED
-+&pwm4 {
++// All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here if not used
++&pwm3 {
 +    status = "disabled";
 +};
 +
-+// All PWM channels are not disabled by default in main imx6ul.dtsi file, hence disable them all here if not used
-+&pwm3 {
++&pwm4 {
 +    status = "disabled";
 +};
 +
@@ -1484,9 +1469,60 @@ index 000000000000..e2a85baa9226
 +    status = "disabled";
 +};
 +
-+// Battery Charger Chip - Only HPP
++// Battery Charger Chip
 +&i2c3 {
-+    status = "disabled";
++    clock-frequency = <100000>;
++    pinctrl-names = "default";
++    pinctrl-0 = <&pinctrl_i2c3>;
++    status = "okay";
++
++    // Refer - https://www.kernel.org/doc/Documentation/devicetree/bindings/power/supply/bq25890.txt
++    batteryCharger: bq25890@6A {
++
++        compatible = "ti,bq25890";
++        reg = <0x6A>;
++
++        // The INT pin sends active low, 256-µs pulse to host to report charger device status and fault.
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_charger_irq>;
++        interrupt-parent = <&gpio4>;
++        interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
++
++        // maximum charging voltage (in uV) - 4.1 VDC
++        ti,battery-regulation-voltage = <4100000>;
++
++        // maximum charging current (in uA) - 500 mA
++        ti,charge-current = <500000>;
++
++        // charge will be terminated when current in constant-voltage phase drops below this value (in uA) - 256 mA
++        ti,termination-current = <256000>;
++
++        // maximum charge current during precharge phase (in uA)
++        ti,precharge-current = <128000>;
++
++        // when battery is charging and it is below minimum system voltage, the system will be regulated above
++        // minimum-sys-voltage setting (in uV) - 3.0 VDC
++        ti,minimum-sys-voltage = <3000000>;
++
++        // VBUS voltage level in boost mode (in uV) - 5 VDC
++        ti,boost-voltage = <5000000>;
++
++        // maximum allowed current draw in boost mode (in uA) - 1 A
++        ti,boost-max-current = <1000000>;
++
++        // Below three settings are Optional properties //
++
++        // if present boost mode frequency will be 500kHz, otherwise 1.5MHz, we want 1.5 MHZ so disable this propert
++        //ti,boost-low-freq;
++
++        // If present the ILIM resistor will be used and the input current will be the lower between the resistor setting
++        // and the IINLIM register setting. We need this property.
++        ti,use-ilim-pin;
++
++        // Temperature above which the charge current is lowered, to avoid overheating (in degrees Celsius). If omitted,
++        // the default setting will be used (120 degrees)
++        ti,thermal-regulation-threshold = <120>;
++    };
 +};
 +
 +// Parallel LCD - Only HPP
@@ -1501,6 +1537,17 @@ index 000000000000..e2a85baa9226
 +&usbotg1 {
 +    dr_mode = "peripheral";
 +    status = "okay";
++
++    /* Only HPP has OTG port.
++    dr_mode = "otg";
++    pinctrl-0 = <&pinctrl_usbotg1>;
++    vbus-supply = <&reg_usb_otg1_vbus>;
++    digi,power-line-active-high;
++
++    // We do not have OC detect line on hardware for OTG port
++    disable-over-current;
++    status = "okay";
++    */
 +};
 +
 +// USB - 2 # Host - Only HPP
@@ -1637,10 +1684,35 @@ index 000000000000..e2a85baa9226
 +            >;
 +        };
 +
++        /*
++        // USB 1 OTG port pins (Battery Charger)
++        pinctrl_usbotg1: usbotg1grp {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
++                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059
++            >;
++        };
++        */
++
 +        // AUDIO PWM - Beeper
 +        pinctrl_pwm1: pwm1grp {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO08__PWM1_OUT          0x110b0
++            >;
++        };
++
++        // Battery Charger Chip
++        pinctrl_i2c3: i2c3grp {
++            fsl,pins = <
++                MX6UL_PAD_ENET2_RX_DATA0__I2C3_SCL      0x4001b8b0
++                MX6UL_PAD_ENET2_RX_DATA1__I2C3_SDA      0x4001b8b0
++            >;
++        };
++
++        // Battery Charger IRQ - Active Low Signal
++        pinctrl_charger_irq: chargerIrq {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0
 +            >;
 +        };
 +
@@ -1683,6 +1755,11 @@ index 000000000000..e2a85baa9226
 +                // BLE Module
 +                MX6UL_PAD_SD1_DATA0__GPIO2_IO18         0x10b0  // BLEMOD_PWR&
 +                MX6UL_PAD_SD1_DATA2__GPIO2_IO20         0x10b0  // BLE_MOD_READ_ID
++
++                // LCD Module
++                MX6UL_PAD_LCD_RESET__GPIO3_IO04         0x10b0  // LCD_RESET&
++                MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09      0x10b0  // LCD2_STANDBY&
++                MX6UL_PAD_SNVS_TAMPER0__GPIO5_IO00      0x10b0  // LCD2_PWR_EN&
 +
 +                // Input signal to indicate whether input power is good or not (5VDC)
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // POWER_GOOD

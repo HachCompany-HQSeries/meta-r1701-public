@@ -1,4 +1,4 @@
-From c8222fb6ed79d332334b86e1e0f60d9ce3612c70 Mon Sep 17 00:00:00 2001
+From ec3f3cc17e7088f2c72e34e45d7b32330e622448 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Mon, 2 Jul 2018 11:12:14 -0600
 Subject: [PATCH 6/9] Do not add Power Key SLEEP event
