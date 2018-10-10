@@ -11,18 +11,20 @@ case "$1" in
         screen_active_area_size="mmsize=42.672x68.072"
         modeltype=$(fw_printenv -n "model-type" 2>/dev/null)
         modelname=$(fw_printenv -n "model-name" 2>/dev/null)
+        testmode=$(fw_printenv -n "test-mode" 2>/dev/null)
         if [ "${modeltype}" = "HQ_MPP" ]; then
             screen_active_area_size="mmsize=42.672x68.072"
         else
             # Unbind virtual console from framebuffer device so that unwanted image/characters do not show up on screen.
             # detach framebuffer console from console layer
             echo 0 > sys/class/vtconsole/vtcon1/bind
-
-            modprobe bq25890_charger
             screen_active_area_size="mmsize=53.28x71.04"
         fi
 
-        testmode=$(fw_printenv -n "test-mode" 2>/dev/null)
+        # export correct QT flags.
+        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
+        export QT_QPA_FB_DISABLE_INPUT=1
+        export QMLSCENE_DEVICE=softwarecontext
 
         # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
         #if [ "${testmode}" = "On" ]; then
@@ -38,19 +40,9 @@ case "$1" in
         modprobe -r g_ether usb_f_rndis usb_f_ecm libcomposite u_ether
         ifdown usb0
 
-        # Print model name and type as well as test mode
-        echo "Model Type: ${modeltype}"
-        echo "Model Name: ${modelname}"
-        echo "Test Mode: ${testmode}"
-
-        # export correct QT flags.
-        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
-        export QT_QPA_FB_DISABLE_INPUT=1
-        export QMLSCENE_DEVICE=softwarecontext
-
         # Start system manager as daemon.
         start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
-        echo "r1701 - started as deamon"
+        echo "${modeltype} - started as deamon"
 
         # Start system manager as background application. NOT AS DAEMON
         #/opt/hach/bin/${APPNAME} &> /dev/null &
@@ -66,6 +58,11 @@ case "$1" in
 
         #echo $PIDAPP > $APPRUNPID
         #echo "r1701 application started..."
+
+        # Print model name and type as well as test mode
+        echo "Model Type: ${modeltype}"
+        echo "Model Name: ${modelname}"
+        echo "Test Mode: ${testmode}"
     ;;
   stop)
         start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
