@@ -1,5 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}-${PV}:"
 
+# We are overwriting the new commit id. This SHA is just one commit further than the one DIGI has defined in meta-digi
+# layer. This commit ID add WATCHDOG_MAGICCLOSE feature to MCA watch dog driver. It is needed for is. We can crate a
+# patch for it for since digi has done and this commit ID has only this watch dog realted change so why not use override
+# SRCREV.
+SRCREV = "4e73388cd70e3071cb4806f1fbecde2c87a5c15d"
+
 # Making GIT clone protocol as HTTPS. Somehow github cloning using default git protocol is quite slow. JTTPS seems to be
 # working faster.
 SRC_URI = " \
