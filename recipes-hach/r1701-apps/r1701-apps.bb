@@ -46,7 +46,6 @@ S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
 EXTRA_OECMAKE += " -DUNIT_TEST=OFF \
-                   -DPERFORMANCE=OFF \
                    -DDEBUG=OFF \
                    -DENABLE_CLANG_FORMATTER=OFF \
                    -DCMAKE_CXX_STANDARD=17 \
@@ -66,8 +65,8 @@ CFLAGS_R1701 = "-Wno-poison-system-directories -Wall -Wpointer-arith -Wno-psabi 
 # These definitions are required for easylogging so that when it is turned on it will include all of the needed features.
 # These are added explicitly to allow the addition of the TIMED_ functions which make timing the performance of
 # functions and scopes very easy.
-TARGET_CFLAGS += "${CFLAGS_R1701} -DELPP_FEATURE_ALL -DELPP_THREAD_SAFE"
-TARGET_CXXFLAGS += "${CFLAGS_R1701} -DELPP_FEATURE_ALL -DELPP_THREAD_SAFE"
+TARGET_CFLAGS += "${CFLAGS_R1701} -DELPP_DISABLE_PERFORMANCE_TRACKING -DELPP_THREAD_SAFE"
+TARGET_CXXFLAGS += "${CFLAGS_R1701} -DELPP_DISABLE_PERFORMANCE_TRACKING -DELPP_THREAD_SAFE"
 
 do_install_append() {
     # Install the SysV init script to the rootfs.
