@@ -738,7 +738,7 @@ index 0000000000..70d66ef460
 +#undef CONFIG_SHA256
 +#endif
 +
-+/* USB Configs - remove it */
++/* USB Configs - remove it
 +#ifdef CONFIG_CMD_USB
 +#undef CONFIG_USB_EHCI
 +#undef CONFIG_USB_EHCI_MX6
@@ -750,7 +750,7 @@ index 0000000000..70d66ef460
 +#undef CONFIG_MXC_USB_FLAGS
 +#undef CONFIG_USB_MAX_CONTROLLER_COUNT
 +#undef CONFIG_CMD_USB
-+#endif
++#endif */
 +
 +/* FLASH and environment organization */
 +#define CONFIG_SYS_BOOT_NAND
