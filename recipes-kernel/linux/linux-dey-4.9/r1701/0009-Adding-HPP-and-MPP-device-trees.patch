@@ -1,13 +1,13 @@
-From 9d7b630cc930d8ade902602f135a23437b495adb Mon Sep 17 00:00:00 2001
-From: ryang <ryang@hach.com>
-Date: Thu, 11 Oct 2018 11:34:42 -0600
+From 4c863a0347f21cc1236ae642829df746234305ba Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Thu, 15 Nov 2018 13:18:46 -0700
 Subject: [PATCH 9/9] Adding-HPP-and-MPP-device-trees
 
 ---
  arch/arm/boot/dts/Makefile             |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 953 +++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 811 ++++++++++++++++++++++++++++
- 3 files changed, 1767 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 949 +++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 799 +++++++++++++++++++++++++++
+ 3 files changed, 1751 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-hpp.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 
@@ -28,10 +28,10 @@ index ff8eee581a80..b031244e08a6 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-hpp.dts b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 new file mode 100644
-index 000000000000..0c13b041467b
+index 000000000000..c3ed71403ad6
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
-@@ -0,0 +1,953 @@
+@@ -0,0 +1,949 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -58,7 +58,7 @@ index 000000000000..0c13b041467b
 +
 +    // Set boot console output with a stdout-path property
 +    chosen {
-+        // serial4 = &uart5 for starter board hardware
++        // serial4 = &uart5 for Console FIXED.
 +        stdout-path = "serial4:115200n8";
 +    };
 +
@@ -88,8 +88,7 @@ index 000000000000..0c13b041467b
 +        compatible = "pwm-backlight";
 +        pwms = <&pwm2 0 50000 PWM_POLARITY_INVERTED>;
 +
-+        // a poor man's way to create a 1:1 relationship between
-+        // the PWM value and the actual duty cycle
++        // a poor man's way to create a 1:1 relationship between the PWM value and the actual duty cycle
 +        brightness-levels = <    0  1  2  3  4  5  6  7  8  9
 +                                10 11 12 13 14 15 16 17 18 19
 +                                20 21 22 23 24 25 26 27 28 29
@@ -167,7 +166,7 @@ index 000000000000..0c13b041467b
 +    reg_V5P0_EN: regulator-V5P0_EN {
 +        compatible = "regulator-fixed";
 +        regulator-name = "V5P0_EN";
-+        regulator-min-microvolt = <3300000>;
++        regulator-min-microvolt = <0>;
 +        regulator-max-microvolt = <3300000>;
 +        pinctrl-names = "default";
 +        pinctrl-0 = <&pinctrl_V5P0_EN_power>;
@@ -377,8 +376,9 @@ index 000000000000..0c13b041467b
 +    compatible = "digi,mca-cc6ul-adc";
 +
 +    // Channel 3 - BLEMOD_ID_ADC
-+    // Channel 4 - ALK_BAT_ADC
-+    digi,adc-ch-list = <3 4>;
++    // Channel 4 - LITH_BAT_ADC
++    // Channel 5 - REF_V2P5
++    digi,adc-ch-list = <3 4 5>;
 +
 +    // ADC reference voltage. Use:
 +    //   - digi,adc-vref: Value in uV that corresponds with the VCC_MCA voltage.
@@ -508,7 +508,7 @@ index 000000000000..0c13b041467b
 +    pinctrl-names = "default";
 +    pinctrl-0 = <&pinctrl_pwm1>;
 +    clocks =    <&clks IMX6UL_CLK_PWM1>,
-+    <&clks IMX6UL_CLK_PWM1>;
++                <&clks IMX6UL_CLK_PWM1>;
 +    status = "okay";
 +};
 +
@@ -587,14 +587,14 @@ index 000000000000..0c13b041467b
 +        // maximum allowed current draw in boost mode (in uA) - 1.2 A
 +        ti,boost-max-current = <1200000>;
 +
-+		// charge timer in hours: 5,8,12 and 20 - 8 hours
-+		ti,charge-timer= <8>;
++        // charge timer in hours: 5,8,12 and 20 - 8 hours
++        ti,charge-timer= <8>;
 +
-+		// IR Compensation Resistor Setting (uOhm) - 20mOhm
-+		ti,compensation-resistor= <20000>;
++        // IR Compensation Resistor Setting (uOhm) - 20mOhm
++        ti,compensation-resistor= <20000>;
 +
-+		//IR Compensation Voltage Clamp (uV) - 32mV
-+		ti,compensation-voltage= <32000>;
++        //IR Compensation Voltage Clamp (uV) - 32mV
++        ti,compensation-voltage= <32000>;
 +
 +        // Below three settings are Optional properties //
 +
@@ -832,7 +832,7 @@ index 000000000000..0c13b041467b
 +                MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI       0x10b0
 +                MX6UL_PAD_LCD_DATA23__ECSPI1_MISO       0x10b0
 +                MX6UL_PAD_CSI_DATA04__ECSPI1_SCLK       0x10b0
-+                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x30b0
++                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03        0x30b0
 +            >;
 +        };
 +
@@ -931,7 +931,7 @@ index 000000000000..0c13b041467b
 +                MX6UL_PAD_JTAG_TCK__GPIO1_IO14          0x10b0  // KEYPAD_ROW3
 +
 +                // SD card control lines, Active low signals
-+                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03        0x10b0  // SDCARD_PWR&
++                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x10b0  // SDCARD_PWR&
 +
 +                // MIP Display, Active high signals
 +                MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08      0x3031  // SER_LCD_EXTCOM
@@ -954,7 +954,6 @@ index 000000000000..0c13b041467b
 +                MX6UL_PAD_SD1_CMD__GPIO2_IO16           0x10b0  // PRB3_EN&
 +
 +                // BLE Module
-+                MX6UL_PAD_SD1_DATA0__GPIO2_IO18         0x10b0  // BLEMOD_PWR&
 +                MX6UL_PAD_SD1_DATA2__GPIO2_IO20         0x10b0  // BLE_MOD_READ_ID
 +
 +                // LCD Module
@@ -972,25 +971,22 @@ index 000000000000..0c13b041467b
 +                // PWR_ON_OFF_C - Input line
 +                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  // PWR_ON_OFF_C
 +
-+                // Charger IRQ line - Active low signal
-+                //MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  // CHARGER-IRQ
++                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  // CHRGR_PRESENT
 +
-+                // Spare 1
-+                MX6UL_PAD_SD1_DATA3__GPIO2_IO21         0x10b0  // SPARE01 - TP64
-+
-+                // USB HOST Power control pin, Active Low signal (AS NO LOAD)
-+                // It is a TP since power line is configurated as no load
-+                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  // TP33
++                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
++                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
++                MX6UL_PAD_SD1_DATA0__GPIO2_IO18         0x10b0  // SPARE_M19_TP32
++                MX6UL_PAD_SD1_DATA3__GPIO2_IO21         0x10b0  // SPARE_M20_TP64
 +            >;
 +        };
 +    };
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-mpp.dts b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 new file mode 100644
-index 000000000000..9555af3cbd79
+index 000000000000..4aa2825fbdf0
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
-@@ -0,0 +1,811 @@
+@@ -0,0 +1,799 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1017,11 +1013,10 @@ index 000000000000..9555af3cbd79
 +
 +    // Set boot console output with a stdout-path property
 +    chosen {
-+        // serial4 = &uart5 for starter board hardware
++        // serial4 = &uart5 for Console FIXED.
 +        stdout-path = "serial4:115200n8";
 +    };
 +
-+    /*
 +    // USB 1 - OTG port bus power setting for HOST mode
 +    reg_usb_otg1_vbus: reg_usb_otg1:@0 {
 +        compatible = "regulator-fixed";
@@ -1031,7 +1026,6 @@ index 000000000000..9555af3cbd79
 +        gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 +        enable-active-high;
 +    };
-+    */
 +
 +    // Gpio based matrix Keyboard
 +    matrix_keypad: matrix-keypad@0 {
@@ -1088,7 +1082,7 @@ index 000000000000..9555af3cbd79
 +    reg_V5P0_EN: regulator-V5P0_EN {
 +        compatible = "regulator-fixed";
 +        regulator-name = "V5P0_EN";
-+        regulator-min-microvolt = <3300000>;
++        regulator-min-microvolt = <0>;
 +        regulator-max-microvolt = <3300000>;
 +        pinctrl-names = "default";
 +        pinctrl-0 = <&pinctrl_V5P0_EN_power>;
@@ -1298,8 +1292,9 @@ index 000000000000..9555af3cbd79
 +    compatible = "digi,mca-cc6ul-adc";
 +
 +    // Channel 3 - BLEMOD_ID_ADC
-+    // Channel 4 - ALK_BAT_ADC (Only MPP)
-+    digi,adc-ch-list = <3 4>;
++    // Channel 4 - LITH_BAT_ADC
++    // Channel 5 - REF_V2P5
++    digi,adc-ch-list = <3 4 5>;
 +
 +    // ADC reference voltage. Use:
 +    //   - digi,adc-vref: Value in uV that corresponds with the VCC_MCA voltage.
@@ -1405,7 +1400,7 @@ index 000000000000..9555af3cbd79
 +// SPI port for MIP display
 +&ecspi1 {
 +    fsl,spi-num-chipselects = <1>;
-+    cs-gpios = <&gpio5 7 GPIO_ACTIVE_HIGH>;
++    cs-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
 +    pinctrl-names = "default";
 +    pinctrl-0 = <&pinctrl_ecspi1_master>;
 +    status      = "okay";
@@ -1519,14 +1514,14 @@ index 000000000000..9555af3cbd79
 +        // maximum allowed current draw in boost mode (in uA) - 1.2 A
 +        ti,boost-max-current = <1200000>;
 +
-+		// charge timer in hours: 5,8,12 and 20 - 8 hours
-+		ti,charge-timer= <8>;
++        // charge timer in hours: 5,8,12 and 20 - 8 hours
++        ti,charge-timer= <8>;
 +
-+		// IR Compensation Resistor Setting (uOhm) - 20mOhm
-+		ti,compensation-resistor= <20000>;
++        // IR Compensation Resistor Setting (uOhm) - 20mOhm
++        ti,compensation-resistor= <20000>;
 +
-+		//IR Compensation Voltage Clamp (uV) - 32mV
-+		ti,compensation-voltage= <32000>;
++        //IR Compensation Voltage Clamp (uV) - 32mV
++        ti,compensation-voltage= <32000>;
 +
 +        // Below three settings are Optional properties //
 +
@@ -1553,10 +1548,6 @@ index 000000000000..9555af3cbd79
 +
 +// USB - 1 # OTG (Battery Charger port)
 +&usbotg1 {
-+    dr_mode = "peripheral";
-+    status = "okay";
-+
-+    /* Only HPP has OTG port.
 +    dr_mode = "otg";
 +    pinctrl-0 = <&pinctrl_usbotg1>;
 +    vbus-supply = <&reg_usb_otg1_vbus>;
@@ -1565,7 +1556,6 @@ index 000000000000..9555af3cbd79
 +    // We do not have OC detect line on hardware for OTG port
 +    disable-over-current;
 +    status = "okay";
-+    */
 +};
 +
 +// USB - 2 # Host - Only HPP
@@ -1688,7 +1678,7 @@ index 000000000000..9555af3cbd79
 +                MX6UL_PAD_LCD_DATA22__ECSPI1_MOSI       0x10b0
 +                MX6UL_PAD_LCD_DATA23__ECSPI1_MISO       0x10b0
 +                MX6UL_PAD_CSI_DATA04__ECSPI1_SCLK       0x10b0
-+                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x30b0
++                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03        0x30b0
 +            >;
 +        };
 +
@@ -1702,7 +1692,6 @@ index 000000000000..9555af3cbd79
 +            >;
 +        };
 +
-+        /*
 +        // USB 1 OTG port pins (Battery Charger)
 +        pinctrl_usbotg1: usbotg1grp {
 +            fsl,pins = <
@@ -1710,7 +1699,6 @@ index 000000000000..9555af3cbd79
 +                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059
 +            >;
 +        };
-+        */
 +
 +        // AUDIO PWM - Beeper
 +        pinctrl_pwm1: pwm1grp {
@@ -1748,7 +1736,7 @@ index 000000000000..9555af3cbd79
 +                MX6UL_PAD_JTAG_TCK__GPIO1_IO14          0x10b0  // KEYPAD_ROW3
 +
 +                // SD card control lines, Active low signals
-+                MX6UL_PAD_GPIO1_IO03__GPIO1_IO03        0x10b0  // SDCARD_PWR&
++                MX6UL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x10b0  // SDCARD_PWR&
 +
 +                // MIP Display, Active high signals
 +                MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08      0x3031  // SER_LCD_EXTCOM
@@ -1771,7 +1759,6 @@ index 000000000000..9555af3cbd79
 +                MX6UL_PAD_SD1_CMD__GPIO2_IO16           0x10b0  // PRB3_EN&
 +
 +                // BLE Module
-+                MX6UL_PAD_SD1_DATA0__GPIO2_IO18         0x10b0  // BLEMOD_PWR&
 +                MX6UL_PAD_SD1_DATA2__GPIO2_IO20         0x10b0  // BLE_MOD_READ_ID
 +
 +                // LCD Module
@@ -1789,15 +1776,12 @@ index 000000000000..9555af3cbd79
 +                // PWR_ON_OFF_C - Input line
 +                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  // PWR_ON_OFF_C
 +
-+                // Charger IRQ line - Active low signal
-+                //MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  // CHARGER-IRQ
++                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  // CHRGR_PRESENT
 +
-+                // Spare 1
-+                MX6UL_PAD_SD1_DATA3__GPIO2_IO21         0x10b0  // SPARE01 - TP64
-+
-+                // USB HOST Power control pin, Active Low signal (AS NO LOAD)
-+                // It is a TP since power line is configurated as no load
-+                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  // TP33
++                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
++                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
++                MX6UL_PAD_SD1_DATA0__GPIO2_IO18         0x10b0  // SPARE_M19_TP32
++                MX6UL_PAD_SD1_DATA3__GPIO2_IO21         0x10b0  // SPARE_M20_TP64
 +            >;
 +        };
 +    };

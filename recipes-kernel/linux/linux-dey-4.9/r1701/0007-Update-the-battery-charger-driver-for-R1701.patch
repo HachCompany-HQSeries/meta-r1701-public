@@ -1,7 +1,7 @@
-From 01661c0841e60b38cbffb0d98d5e5bf87486096c Mon Sep 17 00:00:00 2001
+From 33e52b1b07a42e668bd02a001f30626448934488 Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
 Date: Thu, 11 Oct 2018 11:45:22 -0600
-Subject: [PATCH 7/7] Update-the-battery-charger-driver-for-R1701
+Subject: [PATCH 7/9] Update-the-battery-charger-driver-for-R1701
 
 ---
  drivers/power/supply/bq25890_charger.c | 138 ++++++++++++++++++++++++++++-----
