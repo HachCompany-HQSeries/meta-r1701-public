@@ -1,6 +1,4 @@
 #!/bin/sh
-#APPNAME="sys_mgr"
-#APPRUNPID="/var/run/$APPNAME.pid"
 case "$1" in
   start)
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
@@ -44,21 +42,6 @@ case "$1" in
         start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
         echo "${modeltype} - started as deamon"
 
-        # Start system manager as background application. NOT AS DAEMON
-        #/opt/hach/bin/${APPNAME} &> /dev/null &
-        #PIDAPP=""
-        #while [ -z "$PIDAPP" ]
-        #do
-        #    PIDAPP=$(ps |grep $APPNAME|grep -v grep|cut -c1-5)
-        #    if [ -z "$PIDAPP" ]
-        #    then
-        #        sleep 0.1
-        #    fi
-        #done
-
-        #echo $PIDAPP > $APPRUNPID
-        #echo "r1701 application started..."
-
         # Print model name and type as well as test mode
         echo "Model Type: ${modeltype}"
         echo "Model Name: ${modelname}"
@@ -67,10 +50,6 @@ case "$1" in
   stop)
         start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
         echo "r1701 - deamon stopped"
-        #PIDAPP=$(cat $APPRUNPID)
-        #kill -9 $PIDAPP
-        #rm $APPRUNPID
-        #echo "r1701 application stoppped..."
     ;;
   *)
         echo "Usage: $0 {start|stop}"
