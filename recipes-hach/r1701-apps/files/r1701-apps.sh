@@ -19,10 +19,33 @@ case "$1" in
             screen_active_area_size="mmsize=53.28x71.04"
         fi
 
-        # export correct QT flags.
-        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
-        export QT_QPA_FB_DISABLE_INPUT=1
-        export QMLSCENE_DEVICE=softwarecontext
+        # Manage factory restore.
+        factoryRestore=$(fw_printenv -n "factory-restore" 2>/dev/null)
+        if [ "${factoryRestore}" = "1" ]; then
+            echo "Factory restore requested..."
+
+            # Delete Database.
+            rm -rf /mnt/update/*
+
+            # Delete all user settings
+            rm -rf /opt/hach/settings/*
+
+            # Delete all exceptions files.
+            rm -rf /opt/hach/exceptions/*
+            sync
+
+            # since factory restore is done, reset u-boot variable to 0.
+            fw_setenv factory-restore 0
+
+            # Make sure that we have reset the flag.
+            factoryRestore=$(fw_printenv -n "factory-restore" 2>/dev/null)
+            if [ "${factoryRestore}" = "1" ]; then
+                echo "ERROR # Factory restore flag did not reset!"
+                fw_setenv factory-restore 0
+            else
+                echo "Factory restore done."
+            fi
+        fi
 
         # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
         #if [ "${testmode}" = "On" ]; then
@@ -37,6 +60,11 @@ case "$1" in
         # based on meter settings.
         modprobe -r g_ether usb_f_rndis usb_f_ecm libcomposite u_ether
         ifdown usb0
+
+        # export correct QT flags.
+        export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
+        export QT_QPA_FB_DISABLE_INPUT=1
+        export QMLSCENE_DEVICE=softwarecontext
 
         # Start system manager as daemon.
         start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d

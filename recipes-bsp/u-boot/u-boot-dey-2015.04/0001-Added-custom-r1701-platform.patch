@@ -906,8 +906,8 @@ index 0000000000..70d66ef460
 +	"model-type=HQ_MPP\0" \
 +	"model-name=HQ1110\0" \
 +	"test-mode=On\0" \
-+	"serial-number=1234567890\0"
-+
++	"serial-number=1234567890\0" \
++	"factory-restore=0\0"
 +#if defined(CONFIG_SYS_BOOT_NAND)
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	CONFIG_COMMON_ENV \
