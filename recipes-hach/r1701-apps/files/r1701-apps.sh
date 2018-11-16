@@ -1,6 +1,4 @@
 #!/bin/sh
-APPNAME="sys_mgr"
-APPRUNPID="/var/run/$APPNAME.pid"
 case "$1" in
   start)
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
@@ -19,6 +17,34 @@ case "$1" in
         else
             modprobe -r mipdisplay-3-2-inch
             screen_active_area_size="mmsize=53.28x71.04"
+        fi
+
+        # Manage factory restore.
+        factoryRestore=$(fw_printenv -n "factory-restore" 2>/dev/null)
+        if [ "${factoryRestore}" = "1" ]; then
+            echo "Factory restore requested..."
+
+            # Delete Database.
+            rm -rf /mnt/update/*
+
+            # Delete all user settings
+            rm -rf /opt/hach/settings/*
+
+            # Delete all exceptions files.
+            rm -rf /opt/hach/exceptions/*
+            sync
+
+            # since factory restore is done, reset u-boot variable to 0.
+            fw_setenv factory-restore 0
+
+            # Make sure that we have reset the flag.
+            factoryRestore=$(fw_printenv -n "factory-restore" 2>/dev/null)
+            if [ "${factoryRestore}" = "1" ]; then
+                echo "ERROR # Factory restore flag did not reset!"
+                fw_setenv factory-restore 0
+            else
+                echo "Factory restore done."
+            fi
         fi
 
         # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
@@ -45,31 +71,12 @@ case "$1" in
         export QMLSCENE_DEVICE=softwarecontext
 
         # Start system manager as daemon.
-        #start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
-        #echo "r1701 - started as deamon"
-
-        # Start system manager as background application. NOT AS DAEMON
-        /opt/hach/bin/${APPNAME} &> /dev/null &
-        PIDAPP=""
-        while [ -z "$PIDAPP" ]
-        do
-            PIDAPP=$(ps |grep $APPNAME|grep -v grep|cut -c1-5)
-            if [ -z "$PIDAPP" ]
-            then
-                sleep 0.1
-            fi
-        done
-
-        echo $PIDAPP > $APPRUNPID
-        echo "r1701 application started..."
+        start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
+        echo "r1701 - started as deamon"
         ;;
   stop)
-        #start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
-        #echo "r1701 - deamon stopped"
-        PIDAPP=$(cat $APPRUNPID)
-        kill -9 $PIDAPP
-        rm $APPRUNPID
-        echo "r1701 application stoppped..."
+        start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
+        echo "r1701 - deamon stopped"
     ;;
   *)
         echo "Usage: $0 {start|stop}"
