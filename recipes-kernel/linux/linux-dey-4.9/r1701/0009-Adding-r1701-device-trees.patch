@@ -119,7 +119,7 @@ index 000000000000..a7985a446bf4
 +    /* Gpio based matrix Keyboard */
 +    matrix_keypad: matrix-keypad@0 {
 +        compatible = "gpio-matrix-keypad";
-+        linux,no-autorepeat;
++        //linux,no-autorepeat;
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -1169,7 +1169,7 @@ index 000000000000..e7ab832cc097
 +    /* Gpio based matrix Keyboard */
 +    matrix_keypad: matrix-keypad@0 {
 +        compatible = "gpio-matrix-keypad";
-+        linux,no-autorepeat;
++        //linux,no-autorepeat;
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -2128,6 +2128,6 @@ index 000000000000..e7ab832cc097
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
