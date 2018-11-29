@@ -20,7 +20,7 @@ APP_TAG = "v${SOFTWARE_VERSION}"
 BRANCH_OR_TAG = "branch"
 
 # Branch or tag name
-BRANCH_OR_TAG_NAME = "develop"
+BRANCH_OR_TAG_NAME = "tim-work-rev6"
 
 # Srcrev command
 SRCREV_CMD = "${AUTOREV}"

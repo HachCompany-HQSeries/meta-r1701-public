@@ -1,4 +1,4 @@
-From 54e1c7fe82444b8765cafceb964b2fb6b827237c Mon Sep 17 00:00:00 2001
+From 3d6f0cf0651294ea5d7fa1bf236529a6976ab46f Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Thu, 2 Aug 2018 09:35:40 -0600
 Subject: [PATCH 8/9] NAND suspend-resume initialization issue patch

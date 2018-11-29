@@ -1,4 +1,4 @@
-From 61c09213c16e55dae4874209d05bcfff32abe62b Mon Sep 17 00:00:00 2001
+From a9751a08e92fbe737aedc95b35402cb935dc7ab5 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Fri, 24 Aug 2018 13:25:57 -0600
 Subject: [PATCH 2/9] Adding sharp MIP display support

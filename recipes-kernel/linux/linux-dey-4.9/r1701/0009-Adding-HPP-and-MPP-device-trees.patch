@@ -1,13 +1,13 @@
-From 4c863a0347f21cc1236ae642829df746234305ba Mon Sep 17 00:00:00 2001
-From: Devang Patel <dpatel@hach.com>
-Date: Thu, 15 Nov 2018 13:18:46 -0700
+From 1ec9440826a0d428c0225e4ecd5b5c997004f717 Mon Sep 17 00:00:00 2001
+From: Tim Higgins <thiggins@hach.com>
+Date: Thu, 29 Nov 2018 15:02:06 -0700
 Subject: [PATCH 9/9] Adding-HPP-and-MPP-device-trees
 
 ---
  arch/arm/boot/dts/Makefile             |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 949 +++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 799 +++++++++++++++++++++++++++
- 3 files changed, 1751 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 946 +++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 796 +++++++++++++++++++++++++++
+ 3 files changed, 1745 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-hpp.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 
@@ -28,10 +28,10 @@ index ff8eee581a80..b031244e08a6 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-hpp.dts b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 new file mode 100644
-index 000000000000..c3ed71403ad6
+index 000000000000..766f9e76371a
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
-@@ -0,0 +1,949 @@
+@@ -0,0 +1,946 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -115,9 +115,6 @@ index 000000000000..c3ed71403ad6
 +    matrix_keypad: matrix-keypad@0 {
 +        compatible = "gpio-matrix-keypad";
 +
-+        // Auto repeat property. Disable below line to have auto repeat feature
-+        linux,no-autorepeat;
-+
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
 +                        &gpio1 10 GPIO_ACTIVE_LOW
@@ -166,7 +163,7 @@ index 000000000000..c3ed71403ad6
 +    reg_V5P0_EN: regulator-V5P0_EN {
 +        compatible = "regulator-fixed";
 +        regulator-name = "V5P0_EN";
-+        regulator-min-microvolt = <0>;
++        regulator-min-microvolt = <3300000>;
 +        regulator-max-microvolt = <3300000>;
 +        pinctrl-names = "default";
 +        pinctrl-0 = <&pinctrl_V5P0_EN_power>;
@@ -983,10 +980,10 @@ index 000000000000..c3ed71403ad6
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-mpp.dts b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 new file mode 100644
-index 000000000000..4aa2825fbdf0
+index 000000000000..02ed6c18636f
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
-@@ -0,0 +1,799 @@
+@@ -0,0 +1,796 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1030,9 +1027,6 @@ index 000000000000..4aa2825fbdf0
 +    // Gpio based matrix Keyboard
 +    matrix_keypad: matrix-keypad@0 {
 +        compatible = "gpio-matrix-keypad";
-+
-+        // Auto repeat property. Disable below line to have auto repeat feature
-+        linux,no-autorepeat;
 +
 +        col-gpios = <
 +                        &gpio1 15 GPIO_ACTIVE_LOW
@@ -1082,7 +1076,7 @@ index 000000000000..4aa2825fbdf0
 +    reg_V5P0_EN: regulator-V5P0_EN {
 +        compatible = "regulator-fixed";
 +        regulator-name = "V5P0_EN";
-+        regulator-min-microvolt = <0>;
++        regulator-min-microvolt = <3300000>;
 +        regulator-max-microvolt = <3300000>;
 +        pinctrl-names = "default";
 +        pinctrl-0 = <&pinctrl_V5P0_EN_power>;
