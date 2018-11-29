@@ -8,14 +8,14 @@ case "$1" in
         # sheet.
         screen_active_area_size="mmsize=42.672x68.072"
         modeltype=$(fw_printenv -n "model-type" 2>/dev/null)
+        modelname=$(fw_printenv -n "model-name" 2>/dev/null)
+        testmode=$(fw_printenv -n "test-mode" 2>/dev/null)
         if [ "${modeltype}" = "HQ_MPP" ]; then
-            modprobe -r bq25890_charger
-            modprobe -r mipdisplay-3-2-inch
-            modprobe -r mxsfb pwm_bl
-            modprobe mipdisplay-3-2-inch
             screen_active_area_size="mmsize=42.672x68.072"
         else
-            modprobe -r mipdisplay-3-2-inch
+            # Unbind virtual console from framebuffer device so that unwanted image/characters do not show up on screen.
+            # detach framebuffer console from console layer
+            echo 0 > sys/class/vtconsole/vtcon1/bind
             screen_active_area_size="mmsize=53.28x71.04"
         fi
 
@@ -48,22 +48,18 @@ case "$1" in
         fi
 
         # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
-        testmode=$(fw_printenv -n "test-mode" 2>/dev/null)
-        if [ "${testmode}" = "On" ]; then
-            echo "r1701 - Ethernet enabled..."
-        else
+        #if [ "${testmode}" = "On" ]; then
+            #echo "r1701 - Ethernet enabled..."
+        #else
             # ifconfig eth0 down
             # modprobe -r fec smsc libphy
-            echo "r1701 - Ethernet disabled..."
-        fi
+            #echo "r1701 - Ethernet disabled..."
+        #fi
 
         # Make sure that all USB related kernel modules are not loaded. Firmware will handle the USB gadget connection
         # based on meter settings.
         modprobe -r g_ether usb_f_rndis usb_f_ecm libcomposite u_ether
         ifdown usb0
-
-        echo "Model Type: ${modeltype}"
-        echo "Test Mode: ${testmode}"
 
         # export correct QT flags.
         export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
@@ -72,8 +68,13 @@ case "$1" in
 
         # Start system manager as daemon.
         start-stop-daemon --start --quiet --make-pidfile --pidfile /var/run/sys_mgr.pid --exec /opt/hach/bin/sys_mgr -- -d
-        echo "r1701 - started as deamon"
-        ;;
+        echo "${modeltype} - started as deamon"
+
+        # Print model name and type as well as test mode
+        echo "Model Type: ${modeltype}"
+        echo "Model Name: ${modelname}"
+        echo "Test Mode: ${testmode}"
+    ;;
   stop)
         start-stop-daemon --stop --quiet --pidfile /var/run/sys_mgr.pid
         echo "r1701 - deamon stopped"

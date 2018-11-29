@@ -3,27 +3,37 @@
 #
 
 #
-# Set device tree filename depending on the board ID (if defined)
+# Set device tree filename depending on the board ID (if defined), 1 = MPP, 2 = HPP
 #
-#if test -n "${board_id}"; then
-#	setenv fdt_file zImage-imx6ul-r1701-id${board_id}.dtb
-#else
-	#
-	# Set device tree filename depending on the hardware variant
-	#
-	#if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
-	#	setenv fdt_file zImage-imx6ul-r1701-wb.dtb
-	#elif test "${module_variant}" = "0x03"; then
-		setenv fdt_file zImage-imx6ul-r1701.dtb
-	#else
-	#	echo "------ Using default fdt_file: $fdt_file"
-	#fi
-#fi
+if test -n "${board_id}"; then
+    if test "${board_id}" = "1"; then
+        setenv fdt_file zImage-imx6ul-r1701-mpp.dtb
+        echo "# Using fdt_file: $fdt_file"
+    elif test "${board_id}" = "2"; then
+        setenv fdt_file zImage-imx6ul-r1701-hpp.dtb
+        echo "# Using fdt_file: $fdt_file"
+    else
+        echo "Failed to detect correct board ID, Read id # $board_id"
+        echo "# Using default fdt_file: $fdt_file"
+    fi
+else
+    #
+    # Set device tree filename depending on the hardware variant i.e. Does SOM is wireless or non-wireless. 2 & 4 are
+    # are Wireless variant and 3 is non wireless one.
+    #
+    if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
+        echo "------ Wireless SOM variant - Using default fdt_file: $fdt_file"
+    elif test "${module_variant}" = "0x03"; then
+        echo "------ Non Wireless SOM variant - Using default fdt_file: $fdt_file"
+    else
+        echo "------ Unknown SOM variant - Using default fdt_file: $fdt_file"
+    fi
+fi
 
 if test "${mtdbootpart}" = "recovery"; then
-	setenv boot_initrd true
-	setenv initrd_file uramdisk-recovery.img
+    setenv boot_initrd true
+    setenv initrd_file uramdisk-recovery.img
 else
-	true
+    true
 fi
 dboot linux nand ${mtdbootpart}
