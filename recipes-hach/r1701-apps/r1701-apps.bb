@@ -13,7 +13,7 @@ DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-n
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
 
-# The tag of the app to build
+# The tag of the app to build.
 APP_TAG = "v${SOFTWARE_VERSION}"
 
 # This is the branch or TAG
