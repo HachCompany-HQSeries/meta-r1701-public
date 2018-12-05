@@ -422,8 +422,8 @@ if [ -n "${rescue}" ]; then
 	done
 fi
 
-log "Starting recovery..."
-psplash_message "Starting recovery..."
+log "Starting update..."
+psplash_message "Starting update..."
 
 # Read the recovery command.
 read_uboot_var "${ENV_RECOVERY_COMMAND}" COMMAND
