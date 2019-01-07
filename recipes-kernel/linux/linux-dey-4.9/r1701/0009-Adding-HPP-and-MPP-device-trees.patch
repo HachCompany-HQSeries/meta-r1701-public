@@ -495,7 +495,7 @@ index 000000000000..766f9e76371a
 +    pressureSensor: ecspi@0 {
 +        compatible = "meas,ms5607";
 +        reg = <0>;
-+        spi-max-frequency = <10000000>;
++        spi-max-frequency = <1000000>;
 +        status = "okay";
 +    };
 +};
@@ -1423,7 +1423,7 @@ index 000000000000..02ed6c18636f
 +    pressureSensor: ecspi@0 {
 +        compatible = "meas,ms5607";
 +        reg = <0>;
-+        spi-max-frequency = <10000000>;
++        spi-max-frequency = <1000000>;
 +        status = "okay";
 +    };
 +};
@@ -1780,6 +1780,6 @@ index 000000000000..02ed6c18636f
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
