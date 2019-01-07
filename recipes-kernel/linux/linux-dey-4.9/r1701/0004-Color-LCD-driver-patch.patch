@@ -1,4 +1,4 @@
-From 6f7a98bd419ad707204580c516fa4386a80042f8 Mon Sep 17 00:00:00 2001
+From 7776c3b22056637a8937d816e3ee57a95a47aae3 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Tue, 17 Apr 2018 15:22:36 -0600
 Subject: [PATCH 4/9] Color LCD driver patch

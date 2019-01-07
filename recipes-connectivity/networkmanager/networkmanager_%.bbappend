@@ -1,13 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
-# Removed Ethernet 1 and wifi related configuration.
-#SRC_URI_remove += " \
-#    file://nm.eth1.dhcp \
-#    file://nm.eth1.static \
-#    file://nm.wlan0.dhcp \
-#    file://nm.wlan0.static \
-#"
-
 # Removed redudant packages.
 PACKAGECONFIG_remove = "netconfig nss modemmanager \
                         ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', '${BLUEZ}', '', d)} \
@@ -20,3 +12,17 @@ PACKAGECONFIG[modemmanager] = ""
 # We do not use ethernet 1 and wireless
 ETH1_STATIC_CIDR = ""
 WLAN0_STATIC_CIDR = ""
+
+do_install_append_r1701() {
+    # Remove 1st ethernet
+    #rm -f ${D}${sysconfdir}/NetworkManager/system-connections/nm.eth0
+
+    # Remove 2nd ethernet
+    rm -f ${D}${sysconfdir}/NetworkManager/system-connections/nm.eth1
+
+    # Remove Wireless
+    rm -f ${D}${sysconfdir}/NetworkManager/system-connections/nm.wlan0
+
+    # Remove Cellular
+    rm -f ${D}${sysconfdir}/NetworkManager/system-connections/nm.cellular
+}

@@ -8,7 +8,7 @@ autoconnect=false
 ssid=""
 
 [ipv4]
-method=auto
+method=ignore
 
 [ipv6]
 method=ignore

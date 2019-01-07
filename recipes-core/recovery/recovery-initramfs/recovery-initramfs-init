@@ -388,15 +388,15 @@ fi
 read_uboot_var model-type modeltype
 
 # Load display driver.
-if [ "${modeltype}" = "HQ_HPP" ]; then
-    modprobe -r mipdisplay-3-2-inch
-    modprobe mxsfb
-    export FRAMEBUFFER=/dev/fb0
-else
-    modprobe -r mxsfb
-    modprobe mipdisplay-3-2-inch
-    export FRAMEBUFFER=/dev/fb0
-fi
+#if [ "${modeltype}" = "HQ_HPP" ]; then
+    #modprobe -r mipdisplay-3-2-inch
+    #modprobe mxsfb
+    #export FRAMEBUFFER=/dev/fb0
+#else
+    #modprobe -r mxsfb
+    #modprobe mipdisplay-3-2-inch
+    #export FRAMEBUFFER=/dev/fb0
+#fi
 
 modprobe sdhci_esdhc_imx
 

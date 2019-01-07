@@ -20,7 +20,7 @@ APP_TAG = "v${SOFTWARE_VERSION}"
 BRANCH_OR_TAG = "branch"
 
 # Branch or tag name
-BRANCH_OR_TAG_NAME = "develop"
+BRANCH_OR_TAG_NAME = "feature/hw_rev6"
 
 # Srcrev command
 SRCREV_CMD = "${AUTOREV}"
@@ -46,7 +46,7 @@ S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
 EXTRA_OECMAKE += " -DUNIT_TEST=OFF \
-                   -DDEBUG=OFF \
+                   -DDEBUG=ON \
                    -DENABLE_CLANG_FORMATTER=OFF \
                    -DCMAKE_CXX_STANDARD=17 \
                    -DCMAKE_CXX_STANDARD_REQUIRED=ON \

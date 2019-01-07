@@ -1,7 +1,7 @@
 From 4d9b633ab838980cd9dea791af0fa727d4c73a66 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Thu, 7 Jun 2018 10:22:18 -0600
-Subject: [PATCH 2/2] Adding Rev-3 board support
+Subject: [PATCH 2/2] Updating SD card and Ethernet PHY power lines
 
 ---
  board/digi/r1701/r1701.c | 64 +++++++++++++++++++++++++-----------------------
@@ -15,7 +15,7 @@ index 3d58ea2856..560cbf6f6a 100644
 @@ -52,6 +52,10 @@ DECLARE_GLOBAL_DATA_PTR;
  unsigned int board_version = CARRIERBOARD_VERSION_UNDEFINED;
  unsigned int board_id = CARRIERBOARD_ID_UNDEFINED;
- 
+
 +// We do not use I2C multi bus and spare console gpio lines.
 +#undef CONFIG_I2C_MULTI_BUS
 +#undef CONFIG_CONSOLE_ENABLE_GPIO
@@ -31,7 +31,7 @@ index 3d58ea2856..560cbf6f6a 100644
 +	/* Add SD Card power control pin Port-5 Pin-1 */
 +	MX6_PAD_SNVS_TAMPER1__GPIO5_IO01 | MUX_PAD_CTRL(GPI_PAD_CTRL),
  };
- 
+
  #ifdef CONFIG_SYS_I2C_MXC
 @@ -144,11 +151,11 @@ static iomux_v3_cfg_t const fec1_pads[] = {
  	MX6_PAD_ENET1_RX_DATA1__ENET1_RDATA01 | MUX_PAD_CTRL(ENET_PAD_CTRL),
@@ -44,9 +44,9 @@ index 3d58ea2856..560cbf6f6a 100644
 +	 * GPIO5_IO2 is used as PHY power enable on r1701 board.
  	 */
 -	MX6_PAD_LCD_HSYNC__GPIO3_IO02 | MUX_PAD_CTRL(NO_PAD_CTRL),
-+	MX6_PAD_SNVS_TAMPER2__GPIO5_IO02 | MUX_PAD_CTRL(GPI_PAD_CTRL),
++	MX6_PAD_CSI_DATA07__GPIO4_IO28 | MUX_PAD_CTRL(GPI_PAD_CTRL),
  };
- 
+
  static void setup_iomux_fec(void)
 @@ -206,8 +213,11 @@ int board_mmc_init(bd_t *bis)
  	for (i = 0; i < CONFIG_SYS_FSL_USDHC_NUM; i++) {
@@ -57,7 +57,7 @@ index 3d58ea2856..560cbf6f6a 100644
 +			imx_iomux_v3_setup_multiple_pads(usdhc2_pads, ARRAY_SIZE(usdhc2_pads));
 +
 +            /* Enable SD Card power - Active low signal */
-+            gpio_direction_output(IMX_GPIO_NR(5, 1) , 0);
++            gpio_direction_output(IMX_GPIO_NR(5, 7) , 0);
 +
  			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC2_CLK);
  			break;
@@ -99,14 +99,14 @@ index 3d58ea2856..560cbf6f6a 100644
 +    /* Deassert PHY reset (high) */
 +    mca_update_bits(MCA_CC6UL_GPIO_DATA_0, reset, reset);
  }
- 
+
  int board_eth_init(bd_t *bis)
 @@ -263,6 +265,10 @@ int board_eth_init(bd_t *bis)
- 
+
  	setup_iomux_fec();
- 
+
 +    /* Turn on power to ethernet module */
-+    gpio_direction_output(IMX_GPIO_NR(5, 2) , 0);
++    gpio_direction_output(IMX_GPIO_NR(4, 28) , 0);
 +    udelay(50);
 +
  	ret = fecmxc_initialize_multi(bis, CONFIG_FEC_ENET_DEV,
@@ -115,7 +115,7 @@ index 3d58ea2856..560cbf6f6a 100644
 @@ -279,12 +285,8 @@ static int setup_fec(int fec_id)
  		= (struct iomuxc_gpr_base_regs *) IOMUXC_GPR_BASE_ADDR;
  	int ret;
- 
+
 -	if (board_version != 1) {
 -		/* Enable PHY power */
 -		int phy_power_gpio = IMX_GPIO_NR(3, 2);
@@ -123,8 +123,8 @@ index 3d58ea2856..560cbf6f6a 100644
 -		gpio_direction_output(phy_power_gpio , 1);
 -	}
 +    /* Enable PHY power */
-+    gpio_direction_output(IMX_GPIO_NR(5, 2) , 0);
- 
++    gpio_direction_output(IMX_GPIO_NR(4, 28) , 0);
+
  	if (0 == fec_id) {
  		if (check_module_fused(MX6_MODULE_ENET1))
 diff --git a/configs/r1701_defconfig b/configs/r1701_defconfig
@@ -139,6 +139,6 @@ index a23f37d211..fa0c53f217 100644
 +#CONFIG_SECURE_BOOT is not set
  CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/digi/ccimx6ul/imximage.cfg,MX6UL,DDR_MB=256"
  CONFIG_DM_THERMAL=y
--- 
+--
 2.11.0
 
