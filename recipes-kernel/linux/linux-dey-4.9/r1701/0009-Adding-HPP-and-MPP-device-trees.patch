@@ -587,11 +587,11 @@ index 000000000000..766f9e76371a
 +        // charge timer in hours: 5,8,12 and 20 - 8 hours
 +        ti,charge-timer= <8>;
 +
-+        // IR Compensation Resistor Setting (uOhm) - 20mOhm
-+        ti,compensation-resistor= <20000>;
++        // IR Compensation Resistor Setting (uOhm) - 80mOhm
++        ti,compensation-resistor= <80000>;
 +
-+        //IR Compensation Voltage Clamp (uV) - 32mV
-+        ti,compensation-voltage= <32000>;
++        //IR Compensation Voltage Clamp (uV) - 96mV
++        ti,compensation-voltage= <96000>;
 +
 +        // Below three settings are Optional properties //
 +
@@ -1511,11 +1511,11 @@ index 000000000000..02ed6c18636f
 +        // charge timer in hours: 5,8,12 and 20 - 8 hours
 +        ti,charge-timer= <8>;
 +
-+        // IR Compensation Resistor Setting (uOhm) - 20mOhm
-+        ti,compensation-resistor= <20000>;
++        // IR Compensation Resistor Setting (uOhm) - 80mOhm
++        ti,compensation-resistor= <80000>;
 +
-+        //IR Compensation Voltage Clamp (uV) - 32mV
-+        ti,compensation-voltage= <32000>;
++        //IR Compensation Voltage Clamp (uV) - 96mV
++        ti,compensation-voltage= <96000>;
 +
 +        // Below three settings are Optional properties //
 +

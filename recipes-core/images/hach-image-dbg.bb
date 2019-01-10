@@ -8,6 +8,7 @@ IMAGE_INSTALL += " \
     htop \
     mtd-utils \
     suspend-resume \
+    dey-examples-spidev \
 "
 
 # Add predefined runtime package groups.
