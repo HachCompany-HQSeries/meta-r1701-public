@@ -1,4 +1,4 @@
 #!/bin/sh
 
-logger -t acpid  "Power key standby request."
-exec /bin/standby
+logger -t acpid  "Power key standby request. BUT we are not doing suspend."
+#exec /bin/standby
