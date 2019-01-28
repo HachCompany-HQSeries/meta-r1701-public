@@ -1,6 +1,6 @@
-From 1ec9440826a0d428c0225e4ecd5b5c997004f717 Mon Sep 17 00:00:00 2001
+From c6e5244e399f179292c95a9a9ad92d6b07749827 Mon Sep 17 00:00:00 2001
 From: Tim Higgins <thiggins@hach.com>
-Date: Thu, 29 Nov 2018 15:02:06 -0700
+Date: Tue, 15 Jan 2019 17:28:43 -0700
 Subject: [PATCH 9/9] Adding-HPP-and-MPP-device-trees
 
 ---
@@ -28,7 +28,7 @@ index ff8eee581a80..b031244e08a6 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-hpp.dts b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 new file mode 100644
-index 000000000000..766f9e76371a
+index 000000000000..5e96b5fc8820
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 @@ -0,0 +1,946 @@
@@ -145,7 +145,7 @@ index 000000000000..766f9e76371a
 +                            MATRIX_KEY(1,   0,  KEY_UP)
 +                            MATRIX_KEY(1,   1,  KEY_ENTER)
 +                            MATRIX_KEY(1,   2,  KEY_DOWN)
-+                            MATRIX_KEY(2,   0,  KEY_BACK)
++                            MATRIX_KEY(2,   0,  KEY_BACKSPACE)
 +                            MATRIX_KEY(2,   1,  KEY_RIGHT)
 +                        >;
 +
@@ -980,7 +980,7 @@ index 000000000000..766f9e76371a
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-mpp.dts b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 new file mode 100644
-index 000000000000..02ed6c18636f
+index 000000000000..8a3fe2797a6f
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 @@ -0,0 +1,796 @@
@@ -1058,7 +1058,7 @@ index 000000000000..02ed6c18636f
 +                            MATRIX_KEY(1,   0,  KEY_UP)
 +                            MATRIX_KEY(1,   1,  KEY_ENTER)
 +                            MATRIX_KEY(1,   2,  KEY_DOWN)
-+                            MATRIX_KEY(2,   0,  KEY_BACK)
++                            MATRIX_KEY(2,   0,  KEY_BACKSPACE)
 +                            MATRIX_KEY(2,   1,  KEY_RIGHT)
 +                        >;
 +
@@ -1780,6 +1780,6 @@ index 000000000000..02ed6c18636f
 +        };
 +    };
 +};
---
+-- 
 2.11.0
 
