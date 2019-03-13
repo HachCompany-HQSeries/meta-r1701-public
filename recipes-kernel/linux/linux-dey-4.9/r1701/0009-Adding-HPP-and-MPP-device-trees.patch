@@ -1,7 +1,7 @@
-From 255023015cec635728c394728564c92a1b7f05dc Mon Sep 17 00:00:00 2001
+From 2fe5bea416d67ab1961479e4acc4b5f3e344cab8 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Mon, 25 Feb 2019 13:47:12 -0700
-Subject: [PATCH] Adding-HPP-and-MPP-device-trees
+Subject: [PATCH 08/10] Adding-HPP-and-MPP-device-trees
 
 ---
  arch/arm/boot/dts/Makefile             |   4 +-
@@ -28,7 +28,7 @@ index ff8eee581a80..b031244e08a6 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-hpp.dts b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 new file mode 100644
-index 000000000000..dcc4f4b78d94
+index 000000000000..33f4a4aadec5
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 @@ -0,0 +1,939 @@
@@ -52,7 +52,7 @@ index 000000000000..dcc4f4b78d94
 +#include "imx6ul-ccimx6ul.dtsi"
 +
 +/ {
-+    model = "Hach HQ_HPP";
++    model = "HQ_HPP";
 +    compatible = "hach,r1701", "digi,ccimx6ul", "fsl,imx6ul";
 +    hach,machine,name = "r1701";
 +
@@ -973,7 +973,7 @@ index 000000000000..dcc4f4b78d94
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-mpp.dts b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 new file mode 100644
-index 000000000000..2c6a81aadd73
+index 000000000000..df165787ea26
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 @@ -0,0 +1,790 @@
@@ -997,7 +997,7 @@ index 000000000000..2c6a81aadd73
 +#include "imx6ul-ccimx6ul.dtsi"
 +
 +/ {
-+    model = "Hach HQ_MPP";
++    model = "HQ_MPP";
 +    compatible = "hach,r1701", "digi,ccimx6ul", "fsl,imx6ul";
 +    hach,machine,name = "r1701";
 +
