@@ -1,7 +1,7 @@
-From f4c8a0110123f11d50d7b99b70c893d5bd130f6e Mon Sep 17 00:00:00 2001
+From e26612ae858ec990e4029190662b12313b5e384e Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Mon, 2 Jul 2018 11:12:14 -0600
-Subject: [PATCH 6/9] Do not add Power Key SLEEP event
+Subject: [PATCH 05/10] Do not add Power Key SLEEP event
 
 ---
  drivers/input/misc/pwrkey-mca-cc6ul.c | 6 +++---
