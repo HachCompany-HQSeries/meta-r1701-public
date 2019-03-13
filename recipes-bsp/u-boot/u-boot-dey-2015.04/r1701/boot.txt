@@ -3,17 +3,17 @@
 #
 
 #
-# Set device tree filename depending on the board ID (if defined), 1 = MPP, 2 = HPP
+# Find Model type. Whether it is MPP or HPP.
 #
-if test -n "${board_id}"; then
-    if test "${board_id}" = "1"; then
+if test -n "${model-type}"; then
+    if test "${model-type}" = "HQ_MPP"; then
         setenv fdt_file zImage-imx6ul-r1701-mpp.dtb
-        echo "# Using fdt_file: $fdt_file"
-    elif test "${board_id}" = "2"; then
+        echo "# Using fdt_file: $fdt_file for $model-type"
+    elif test "${model-type}" = "HQ_HPP"; then
         setenv fdt_file zImage-imx6ul-r1701-hpp.dtb
-        echo "# Using fdt_file: $fdt_file"
+        echo "# Using fdt_file: $fdt_file for $model-type"
     else
-        echo "Failed to detect correct board ID, Read id # $board_id"
+        echo "Failed to detect correct model type, Detected Model Type # $model-type"
         echo "# Using default fdt_file: $fdt_file"
     fi
 else
@@ -21,8 +21,9 @@ else
     # Set device tree filename depending on the hardware variant i.e. Does SOM is wireless or non-wireless. 2 & 4 are
     # are Wireless variant and 3 is non wireless one.
     #
+    setenv fdt_file zImage-imx6ul-r1701-mpp.dtb
     if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
-        echo "------ Wireless SOM variant - Using default fdt_file: $fdt_file"
+        echo "------ Wireless SOM variant, Wrong SOM for this instrument ------ Using default fdt_file: $fdt_file"
     elif test "${module_variant}" = "0x03"; then
         echo "------ Non Wireless SOM variant - Using default fdt_file: $fdt_file"
     else
@@ -30,6 +31,9 @@ else
     fi
 fi
 
+#
+# Load correct boot command with appropriate FDT file set above.
+#
 if test "${mtdbootpart}" = "recovery"; then
     setenv boot_initrd true
     setenv initrd_file uramdisk-recovery.img
