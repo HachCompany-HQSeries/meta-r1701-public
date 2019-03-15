@@ -1,7 +1,7 @@
-From 694245b0f1dc428ee05584753bf5c537aa1ba2f5 Mon Sep 17 00:00:00 2001
+From 3d4c32b30a9e27c811f77c20efbbef7574aa3644 Mon Sep 17 00:00:00 2001
 From: Robert Yang <ryang@hach.com>
 Date: Thu, 24 Jan 2019 12:49:29 -0700
-Subject: [PATCH 10/10] Fix pressure sensor crc4 check
+Subject: [PATCH 09/10] Fix pressure sensor crc4 check
 
 ---
  drivers/iio/pressure/ms5611_core.c | 2 +-

@@ -1,7 +1,7 @@
-From 517f422251c1eebeeb32ca32028d1e5b56bdf614 Mon Sep 17 00:00:00 2001
+From ddd2a3320ee2ae39fbadfc109ef165eabe759c9b Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Fri, 24 Aug 2018 13:25:57 -0600
-Subject: [PATCH 2/9] Adding sharp MIP display support
+Subject: [PATCH 02/10] Adding sharp MIP display support
 
 ---
  drivers/video/fbdev/Kconfig               |   14 +
