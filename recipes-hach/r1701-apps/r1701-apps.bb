@@ -20,7 +20,7 @@ APP_TAG = "v${SOFTWARE_VERSION}"
 BRANCH_OR_TAG = "branch"
 
 # Branch or tag name
-BRANCH_OR_TAG_NAME = "rev-7-hardware-support"
+BRANCH_OR_TAG_NAME = "develop"
 
 # Srcrev command
 SRCREV_CMD = "${AUTOREV}"
