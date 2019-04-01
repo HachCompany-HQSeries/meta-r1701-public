@@ -63,7 +63,6 @@ case "$1" in
 
         # export correct QT flags.
         export QT_QPA_PLATFORM="linuxfb:fb=/dev/fb0:${screen_active_area_size}"
-        export QT_QPA_FB_DISABLE_INPUT=1
         export QMLSCENE_DEVICE=softwarecontext
 
         # Start system manager as daemon.

@@ -3,6 +3,3 @@
 
 # Use Qt Quick 2D Renderer
 export QMLSCENE_DEVICE="softwarecontext"
-
-#Do not process keybopard events posted from kernel.
-export QT_QPA_FB_DISABLE_INPUT=1

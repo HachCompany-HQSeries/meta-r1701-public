@@ -1,7 +1,7 @@
-From 65c2c95028d4de3e53a06342aa696d3ef85a4874 Mon Sep 17 00:00:00 2001
+From 160acb6edce4ac595d3041909427080c321d10ff Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
 Date: Tue, 18 Sep 2018 09:10:24 -0600
-Subject: [PATCH 3/9] Fix-for-matrix-keypad-column-gpio-scanning-issue
+Subject: [PATCH 03/10] Fix-for-matrix-keypad-column-gpio-scanning-issue
 
 ---
  drivers/input/keyboard/matrix_keypad.c | 67 ++++++++++++++++++++++++++++++----

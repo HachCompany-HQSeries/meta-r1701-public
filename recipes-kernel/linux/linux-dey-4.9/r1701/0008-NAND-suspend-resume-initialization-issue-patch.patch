@@ -1,7 +1,7 @@
-From 3d6f0cf0651294ea5d7fa1bf236529a6976ab46f Mon Sep 17 00:00:00 2001
+From 37d9824c514937b9a21702f61c2bd055cd0b22b4 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Thu, 2 Aug 2018 09:35:40 -0600
-Subject: [PATCH 8/9] NAND suspend-resume initialization issue patch
+Subject: [PATCH 07/10] NAND suspend-resume initialization issue patch
 
 ---
  drivers/mtd/nand/gpmi-nand/gpmi-nand.c | 10 +++++++++-

@@ -1,19 +1,19 @@
-From 7559ade1a42c7bfd1d5f8fe5935afe3c4cf22f83 Mon Sep 17 00:00:00 2001
+From 37eaa0717468206191842f80733cc94f8369f537 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Tue, 2 Oct 2018 15:06:55 -0600
-Subject: [PATCH 5/9] Adding HPP and MPP Hach logos.
+Date: Wed, 13 Mar 2019 15:23:04 -0600
+Subject: [PATCH 10/10] Adding HPP and MPP Hach logos.
 
 ---
- drivers/video/console/fbcon.c           |   108 +-
+ drivers/video/console/fbcon.c           |    95 +-
  drivers/video/logo/Makefile             |     2 +-
- drivers/video/logo/logo.c               |    68 +-
+ drivers/video/logo/logo.c               |    58 +-
  drivers/video/logo/logo_hpp_clut224.ppm | 51203 ++++++++++++++++++++++++++++++
  include/linux/linux_logo.h              |    49 +-
- 5 files changed, 51344 insertions(+), 86 deletions(-)
+ 5 files changed, 51324 insertions(+), 83 deletions(-)
  create mode 100644 drivers/video/logo/logo_hpp_clut224.ppm
 
 diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
-index 93873b0973eb..71c062bee7cb 100644
+index 93873b0973eb..34f5ba4d49a0 100644
 --- a/drivers/video/console/fbcon.c
 +++ b/drivers/video/console/fbcon.c
 @@ -26,7 +26,7 @@
@@ -169,12 +169,15 @@ index 93873b0973eb..71c062bee7cb 100644
  	if (vc->vc_num != fg_console || !softback_lines)
  		return (u16 *) (vc->vc_origin + offset);
  	line = offset / vc->vc_size_row;
-@@ -3622,27 +3622,57 @@ static void fbcon_exit(void)
+@@ -3622,27 +3622,50 @@ static void fbcon_exit(void)
  
  static int __init fb_console_init(void)
  {
 -	int i;
--
++    struct device_node *root = of_find_node_by_path("/");
++    const char *model;
++    int i;
+ 
 -	console_lock();
 -	fb_register_client(&fbcon_event_notifier);
 -	fbcon_device = device_create(fb_class, NULL, MKDEV(0, 0), NULL,
@@ -187,43 +190,30 @@ index 93873b0973eb..71c062bee7cb 100644
 -		fbcon_device = NULL;
 -	} else
 -		fbcon_init_device();
--
++    if (!root){
++        pr_err(KERN_ERR "%s - Unable to find root devicetree node...\n", __func__);
++        return -1;
++    }
+ 
 -	for (i = 0; i < MAX_NR_CONSOLES; i++)
 -		con2fb_map[i] = -1;
--
++    model = of_get_property(root, "model", NULL);
++    if (model == NULL){
++        pr_err(KERN_ERR "%s - Unable to find Model type from devicetree...\n", __func__);
++        return -1;
++    }
+ 
 -	console_unlock();
 -	fbcon_start();
 -	return 0;
-+    struct device_node *np = of_find_compatible_node(NULL, NULL, "digi,ccimx6ul");
-+    const char *board_id_str;
-+    unsigned int board_id;
-+    int i;
-+
-+    if (!np){
-+        pr_err(KERN_ERR "%s - Unable to find 'digi,ccimx6ul' devicetree property...\n", __func__);
++    // No need to initialize fbcon interface for MPP. fbcon interface is only for HPP.
++    if (strcmp(model, "HQ_MPP") == 0){
++        logo_shown = FBCON_LOGO_DONTSHOW;
 +        return -1;
 +    }
 +
-+    if (!of_property_read_string(np, "digi,carrierboard,id", &board_id_str)){
-+        if (kstrtoul(board_id_str, 0, (unsigned long *)&board_id)){
-+            pr_err(KERN_ERR "%s - Failed to convert 'board_id_str' to 'board_id'...\n", __func__);
-+            return -1;
-+        }
-+        else{
-+            /* No need to initialize fbcon interface for MPP. fbcon interface is only for HPP */
-+            if (board_id == 1){
-+                logo_shown = FBCON_LOGO_DONTSHOW;
-+                return -1;
-+            }
-+        }
-+    }
-+    else{
-+        pr_err(KERN_ERR "%s - Unable to find 'digi,carrierboard,id' devicetree property...\n", __func__);
-+        return -1;
-+    }
-+
-+    /* Sanity check, Board ID must be 2 i.e. HQ_HPP */
-+    if(board_id != 2)
++    // Sanity check, Model type must be HQ_HPP.
++    if(strcmp(model, "HQ_HPP") != 0)
 +        return -1;
 +
 +    console_lock();
@@ -248,7 +238,7 @@ index 93873b0973eb..71c062bee7cb 100644
  }
  
  fs_initcall(fb_console_init);
-@@ -3670,7 +3700,7 @@ static void __exit fb_console_exit(void)
+@@ -3670,7 +3693,7 @@ static void __exit fb_console_exit(void)
  	fbcon_exit();
  	do_unregister_con_driver(&fb_con);
  	console_unlock();
@@ -271,7 +261,7 @@ index 931301800511..7e4a38d746d8 100644
  obj-$(CONFIG_LOGO_BLACKFIN_VGA16)	+= logo_blackfin_vga16.o
  obj-$(CONFIG_LOGO_DEC_CLUT224)		+= logo_dec_clut224.o
 diff --git a/drivers/video/logo/logo.c b/drivers/video/logo/logo.c
-index 3ae53901f6d2..fb91c509234b 100644
+index 3ae53901f6d2..a044eb8f8957 100644
 --- a/drivers/video/logo/logo.c
 +++ b/drivers/video/logo/logo.c
 @@ -1,4 +1,3 @@
@@ -302,15 +292,14 @@ index 3ae53901f6d2..fb91c509234b 100644
  }
  
  late_initcall(fb_logo_late_init);
-@@ -42,22 +46,48 @@ late_initcall(fb_logo_late_init);
+@@ -42,22 +46,38 @@ late_initcall(fb_logo_late_init);
   */
  const struct linux_logo * __ref fb_find_logo(int depth)
  {
 -	const struct linux_logo *logo = NULL;
 +    const struct linux_logo *logo = NULL;
-+    struct device_node *np = of_find_compatible_node(NULL, NULL, "digi,ccimx6ul");
-+    const char *board_id_str;
-+    unsigned int board_id;
++    struct device_node *root;
++    const char *model;
  
 -	if (nologo || logos_freed)
 -		return NULL;
@@ -327,34 +316,25 @@ index 3ae53901f6d2..fb91c509234b 100644
 -#ifdef CONFIG_LOGO_SUPERH_MONO
 -		/* SuperH Linux logo */
 -		logo = &logo_superh_mono;
-+    if (!np){
-+        pr_err(KERN_ERR "%s - Unable to find 'digi,ccimx6ul' devicetree property...\n", __func__);
++    // Read Model name from device tree.
++    root = of_find_node_by_path("/");
++    if (!root){
++        pr_err(KERN_ERR "%s - Unable to find root devicetree node...\n", __func__);
 +        return logo;
 +    }
 +
-+    // Read board ID.
-+    if (!of_property_read_string(np, "digi,carrierboard,id", &board_id_str)){
-+        if (kstrtoul(board_id_str, 0, (unsigned long *)&board_id)){
-+            pr_err(KERN_ERR "%s - Failed to convert 'board_id_str' to 'board_id'...\n", __func__);
-+            return logo;
-+        }
-+    }
-+    else{
-+        pr_err(KERN_ERR "%s - Unable to find 'digi,carrierboard,id' devicetree property...\n", __func__);
++    model = of_get_property(root, "model", NULL);
++    if(model == NULL){
++        pr_err(KERN_ERR "%s - Unable to find Model type from devicetree...\n", __func__);
 +        return logo;
 +    }
 +
 +    if (depth >= 1) {
 +#ifdef CONFIG_LOGO_CUSTOM_CLUT224
-+        // Display HPP Logo.
-+        if (board_id == 2){
++        if (strcmp(model, "HQ_HPP") == 0){
 +            logo = &logo_hpp_clut224;
-+            pr_info("%s - Board ID # %d (HQ_HPP)...\n", __func__, board_id);
 +        }
-+        else{
-+            pr_info("%s - Board ID # %d (1=MPP or UNKNOWN)... \n", __func__, board_id);
-+        }
-+
++        pr_info("%s - Model type # %s\n", __func__, model);
 +        return logo;
  #endif
 -	}
@@ -364,7 +344,7 @@ index 3ae53901f6d2..fb91c509234b 100644
  	if (depth >= 4) {
  #ifdef CONFIG_LOGO_LINUX_VGA16
  		/* Generic Linux logo */
-@@ -72,7 +102,7 @@ const struct linux_logo * __ref fb_find_logo(int depth)
+@@ -72,7 +92,7 @@ const struct linux_logo * __ref fb_find_logo(int depth)
  		logo = &logo_superh_vga16;
  #endif
  	}
@@ -373,7 +353,7 @@ index 3ae53901f6d2..fb91c509234b 100644
  	if (depth >= 8) {
  #ifdef CONFIG_LOGO_LINUX_CLUT224
  		/* Generic Linux logo */
-@@ -111,10 +141,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
+@@ -111,10 +131,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
  		/* M32R Linux logo */
  		logo = &logo_m32r_clut224;
  #endif
