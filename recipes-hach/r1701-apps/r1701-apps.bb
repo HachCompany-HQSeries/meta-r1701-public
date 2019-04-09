@@ -45,7 +45,8 @@ INITSCRIPT_PARAMS = "defaults 99"
 S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
-EXTRA_OECMAKE += " -DUNIT_TEST=OFF \
+EXTRA_OECMAKE += " -DINI_PATH=/opt/hach/configs/sys_r1701.cfg \
+                   -DUNIT_TEST=OFF \
                    -DDEBUG=ON \
                    -DENABLE_CLANG_FORMATTER=OFF \
                    -DCMAKE_CXX_STANDARD=17 \
