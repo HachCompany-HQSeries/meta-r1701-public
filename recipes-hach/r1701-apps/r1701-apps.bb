@@ -13,28 +13,11 @@ DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-n
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
 
-# The tag of the app to build.
-APP_TAG = "v${SOFTWARE_VERSION}"
-
-# This is the branch or TAG
-BRANCH_OR_TAG = "branch"
-
-# Branch or tag name
-BRANCH_OR_TAG_NAME ?= "develop"
-
-# Srcrev command
-SRCREV_CMD = "${AUTOREV}"
-
-# This is the full version of teh identifierMang
-REPO_IDENTIFIER = "${BRANCH_OR_TAG}=${BRANCH_OR_TAG_NAME}"
-
-
 # Location of source code and artifacts used by this recipe.
-SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;${REPO_IDENTIFIER};protocol=ssh \
+SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=${FW_BRANCH};protocol=ssh \
            file://r1701-apps.sh \
 "
-SRCREV = "${SRCREV_CMD}"
-PV = "${SOFTWARE_VERSION}+${SRCPV}"
+SRCREV = "${FW_COMMIT}"
 
 # Configure the SysV initialization service for the sys_mgr within the r1701_applications.
 inherit update-rc.d
