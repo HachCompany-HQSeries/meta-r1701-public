@@ -249,7 +249,7 @@ CONF_VERSION = "1"
 PRSERV_HOST = "localhost:0"
 
 #
-# Source Mirror
+# Local Source Mirror
 #
 SOURCE_MIRROR_URL ?= "file://${HOME}/.yocto_sources/"
 INHERIT += "own-mirrors" 
