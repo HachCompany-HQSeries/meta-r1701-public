@@ -21,7 +21,7 @@ index df2fb57e9991..5501ab382e72 100644
 -		gpio_free(config->ena_gpio);
 -		return -ENOMEM;
 -	}
-+    ret = gpio_export(config->ena_gpio, false);
++    ret = gpio_export(config->ena_gpio, true);
 +    if (ret){
 +        gpio_free(config->ena_gpio);
 +        pr_err(KERN_ERR "Failed to export GPIO pin to SYSFS interface for userspace control.\n");
