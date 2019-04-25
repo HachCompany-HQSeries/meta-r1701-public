@@ -24,4 +24,5 @@ SRC_URI_append = " \
     file://0008-NAND-suspend-resume-initialization-issue-patch.patch \
     file://0009-Adding-HPP-and-MPP-device-trees.patch \
     file://0010-Fix-pressure-sensor-crc4-check.patch \
+    file://0011-Exporting-fix-regulator-GPIO-pin-to-sysfs-for-usersp.patch \
 "
