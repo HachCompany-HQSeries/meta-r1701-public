@@ -1,4 +1,7 @@
 #!/bin/sh
 
-logger -t acpid  "Power key standby request. BUT we are not doing suspend."
+logger -t acpid  "Suspend to RAM requested, sending ZMQ event to r1701-apps..."
+echo "suspendToRam" | /opt/hach/bin/zmq-push.sh localhost 5555
+
+# Do not execute below code, our application will do sustepnd to RAM.
 #exec /bin/standby
