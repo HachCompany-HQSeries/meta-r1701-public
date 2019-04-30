@@ -154,7 +154,7 @@ index 000000000000..33f4a4aadec5
 +        col-scan-delay-us = <100>;
 +
 +        // Wakeup interrupt
-+        key-wakeup-gpios = <&mca_gpio 2 GPIO_ACTIVE_HIGH>;
++        //key-wakeup-gpios = <&mca_gpio 2 GPIO_ACTIVE_HIGH>;
 +    };
 +
 +    // V5P0_EN Power regulator - enabled at boot time for MIP display support as well probe, audio etc.
@@ -1060,7 +1060,7 @@ index 000000000000..df165787ea26
 +        col-scan-delay-us = <100>;
 +
 +        // Wakeup interrupt
-+        key-wakeup-gpios = <&mca_gpio 2 GPIO_ACTIVE_HIGH>;
++        //key-wakeup-gpios = <&mca_gpio 2 GPIO_ACTIVE_HIGH>;
 +    };
 +
 +    // V5P0_EN Power regulator - enabled at boot time for MIP display support as well probe, audio etc.
@@ -1767,6 +1767,6 @@ index 000000000000..df165787ea26
 +        };
 +    };
 +};
--- 
+--
 2.11.0
 
