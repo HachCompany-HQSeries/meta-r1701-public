@@ -2,4 +2,4 @@
 logger -t acpid  "Sending Shutdown event..."
 
 # Send shutdown event only if system manager is running otherwise take ownership of shutting donw the system.
-pgrep sys_mgr >/dev/null && echo "shutdown" | /opt/hach/bin/zmq-push.sh localhost 5555 || logger -t acpid  "Overriding Shutdown event since sys_mgr is not running..." && exec /sbin/poweroff
+pgrep sys_mgr >/dev/null && echo "shutdown" | /opt/hach/bin/zmq-push.sh localhost 5555 || echo "Overriding Shutdown event since sys_mgr is not running..." && exec /sbin/poweroff
