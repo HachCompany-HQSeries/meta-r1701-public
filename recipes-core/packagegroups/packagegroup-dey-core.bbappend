@@ -8,13 +8,14 @@ RDEPENDS_${PN} = "\
     busybox \
     busybox-acpid \
     busybox-static-nodes \
-    ${@bb.utils.contains("MACHINE_FEATURES", "rtc", "busybox-hwclock", "", d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', bb.utils.contains("MACHINE_FEATURES", "rtc", "${VIRTUAL-RUNTIME_base-utils-hwclock}", "", d), d)} \
     init-ifupdown \
     modutils-initscripts \
     netbase \
     networkmanager \
     os-release \
     recovery-utils \
+    sysinfo \
     usbutils \
     ${VIRTUAL-RUNTIME_dev_manager} \
     ${VIRTUAL-RUNTIME_init_manager} \
@@ -27,6 +28,7 @@ RDEPENDS_${PN} = "\
 "
 
 RRECOMMENDS_${PN} = "\
+    ${VIRTUAL-RUNTIME_base-utils-syslog} \
     ${MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS} \
     ${MACHINE_EXTRA_RRECOMMENDS} \
 "

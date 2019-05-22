@@ -1,6 +1,4 @@
-# Copyright (C) 2015-2017, Digi International Inc.
-
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append = " file://qt5.sh"
 
