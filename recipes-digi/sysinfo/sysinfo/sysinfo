@@ -236,10 +236,12 @@ make_report(){
 	echo "--------------------------------------"
 	echo ""
 
-	if [ "$(($(cat /sys/fsl_otp/HW_OCOTP_CFG5) & 2))" != "0" ]; then
-		echo "Device status: [CLOSED]"
-	else
-		echo "Device status: [OPEN]"
+	if [ -e /sys/fsl_otp/HW_OCOTP_CFG5 ]; then
+		if [ "$(($(cat /sys/fsl_otp/HW_OCOTP_CFG5) & 2))" != "0" ]; then
+			echo "Device status: [CLOSED]"
+		else
+			echo "Device status: [OPEN]"
+		fi
 	fi
 
 	if [ -f "/proc/device-tree/digi,uboot-env,encrypted" ]; then
@@ -260,13 +262,18 @@ if [ -z "${UBOOT_VERSION}" ]; then
 	[ -c "/dev/mtd0" ] && UBOOT_PARTITION="/dev/mtd0"
 	UBOOT_VERSION="$(strings ${UBOOT_PARTITION} | grep -m 1 dub | cut -d' ' -f2)"
 fi
-MACHINE="$(cat /proc/device-tree/hach,machine,name | tr -d '\0')"
+MACHINE="$(cat /proc/device-tree/hach,machine,name | tr '\0' '\t' | cut -f 1)"
 BOARD_VARIANT="$(cat /proc/device-tree/digi,hwid,variant | tr -d '\0')"
 BOARD_SN="$(cat /proc/device-tree/digi,hwid,sn | tr -d '\0')"
 BOARD_VERSION="$(cat /proc/device-tree/digi,carrierboard,version | tr -d '\0')"
 BOARD_ID="$(cat /proc/device-tree/digi,carrierboard,id | tr -d '\0')"
+
 if grep -qs '\<digi,ccimx6ul\>' /proc/device-tree/compatible; then
 	MCA_NODE="/sys/bus/i2c/devices/0-007e"
+elif grep -qs '\<digi,ccimx8x\>' /proc/device-tree/compatible; then
+	MCA_NODE="/sys/bus/i2c/devices/0-0063"
+fi
+if [ -d "$MCA_NODE" ]; then
 	MCA_HW_VERSION=$(cat ${MCA_NODE}/hw_version 2>/dev/null | tr -d '\0') || MCA_HW_VERSION="??"
 	MCA_FW_VERSION=$(cat ${MCA_NODE}/fw_version 2>/dev/null | tr -d '\0') || MCA_FW_VERSION="??"
 	MCA_VERSION="HW_VERSION=${MCA_HW_VERSION}  FW_VERSION=${MCA_FW_VERSION}"
@@ -280,8 +287,7 @@ if [ -d "$IOEXP_NODE" ]; then
 fi
 
 DATE="$(date "+%Y%m%d%H%M%S")"
-FILE="/tmp/sysinfo-${DEY_VERSION}-${BOARD_SN}-${DATE}.txt"
-printf "\n\n"
+REPORT_PATH="/tmp/sysinfo-${DEY_VERSION}-${BOARD_SN}-${DATE}"
 
 (
 	echo "-------------------------------------"
@@ -292,18 +298,19 @@ printf "\n\n"
 	echo ""
 
 	echo "||*Component*||*Version*"
-	echo "|| DUT           | SN-${BOARD_SN}, ${MACHINE} ${BOARD_VARIANT} SBCv${BOARD_VERSION} board_ID=${BOARD_ID}."
-	echo "|| U-Boot        | ${UBOOT_VERSION}"
-	echo "|| Firmware      | ${DISTRO}-${DEY_VERSION}-$(cat /etc/version)"
-	echo "|| Kernel        | $(uname -a)"
-	echo "|| meta-digi     | $(sed -ne '/^meta-digi-dey/s,.*= \(.*\)$,\1,g;T;p' /etc/build)"
-	echo "|| meta-r1701    | $(sed -ne '/^meta-r1701/s,.*= \(.*\)$,\1,g;T;p' /etc/build)"
-	[ -n "${MCA_VERSION}" ] && echo "|| MCA           | ${MCA_VERSION}"
-	[ -n "${IOEXP_VERSION}" ] && echo "|| I/O Expander  | ${IOEXP_VERSION}"
+	echo "|| DUT | SN-${BOARD_SN}, ${MACHINE} ${BOARD_VARIANT} SBCv${BOARD_VERSION} board_ID=${BOARD_ID}."
+	echo "|| U-Boot | ${UBOOT_VERSION}"
+	echo "|| Firmware | ${DISTRO}-${DEY_VERSION}-$(cat /etc/version)"
+	echo "|| Kernel | $(uname -a)"
+	echo "|| meta-digi  | $(sed -ne '/^meta-digi-dey/s,.*= \(.*\)$,\1,g;T;p' /etc/build)"
+	echo "|| meta-r1701 | $(sed -ne '/^meta-digi-dey/s,.*= \(.*\)$,\1,g;T;p' /etc/build)"
+	[ -n "${MCA_VERSION}" ] && echo "|| MCA | ${MCA_VERSION}"
+	[ -n "${IOEXP_VERSION}" ] && echo "|| I/O Expander | ${IOEXP_VERSION}"
 	printf "\n\n"
-) | tee ${FILE}
+) | tee "${REPORT_PATH}.txt"
 
-make_report >> ${FILE}
-gzip ${FILE}
-echo "Report generated in ${FILE}.gz"
-printf "\n\n"
+make_report >> "${REPORT_PATH}.txt"
+tar -zhcf "${REPORT_PATH}.tar.gz" -C $(dirname ${REPORT_PATH}) $(basename "${REPORT_PATH}.txt") /proc/device-tree 2> /dev/null
+echo "Report generated in ${REPORT_PATH}.tar.gz"
+
+rm -rf "${REPORT_PATH}.txt"
