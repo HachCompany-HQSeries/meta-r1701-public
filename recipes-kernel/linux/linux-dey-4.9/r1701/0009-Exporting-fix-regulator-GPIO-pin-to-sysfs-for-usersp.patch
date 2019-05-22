@@ -1,7 +1,7 @@
-From 844b1771f686b29685b0ab1011e8fed30d22d47a Mon Sep 17 00:00:00 2001
+From c6dd76a10d6ad85813f38493dd3f1478116997b1 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Thu, 25 Apr 2019 10:13:20 -0600
-Subject: [PATCH 11/11] Exporting fix regulator GPIO pin to sysfs for userspace
+Subject: [PATCH 09/10] Exporting fix regulator GPIO pin to sysfs for userspace
  control.
 
 ---
@@ -9,13 +9,13 @@ Subject: [PATCH 11/11] Exporting fix regulator GPIO pin to sysfs for userspace
  1 file changed, 13 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index df2fb57e9991..5501ab382e72 100644
+index 1ef182540597..bf3596055462 100644
 --- a/drivers/regulator/core.c
 +++ b/drivers/regulator/core.c
-@@ -1953,11 +1953,19 @@ static int regulator_ena_gpio_request(struct regulator_dev *rdev,
+@@ -1964,11 +1964,19 @@ static int regulator_ena_gpio_request(struct regulator_dev *rdev,
  	if (ret)
  		return ret;
-
+ 
 -	pin = kzalloc(sizeof(struct regulator_enable_gpio), GFP_KERNEL);
 -	if (pin == NULL) {
 -		gpio_free(config->ena_gpio);
@@ -34,9 +34,9 @@ index df2fb57e9991..5501ab382e72 100644
 +        gpio_free(config->ena_gpio);
 +        return -ENOMEM;
 +    }
-
+ 
  	pin->gpiod = gpiod;
  	pin->ena_gpio_invert = config->ena_gpio_invert;
---
-2.11.0
+-- 
+2.17.1
 

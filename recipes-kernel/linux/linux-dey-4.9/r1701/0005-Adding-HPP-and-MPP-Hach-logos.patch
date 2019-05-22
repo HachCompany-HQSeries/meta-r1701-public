@@ -1,257 +1,84 @@
-From 37eaa0717468206191842f80733cc94f8369f537 Mon Sep 17 00:00:00 2001
+From d152b59ebde6c3ddc553a965e292b071a7eb53ec Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Wed, 13 Mar 2019 15:23:04 -0600
-Subject: [PATCH 10/10] Adding HPP and MPP Hach logos.
+Date: Thu, 16 May 2019 16:32:22 -0600
+Subject: [PATCH 05/10] Adding HPP and MPP Hach logos.
 
 ---
- drivers/video/console/fbcon.c           |    95 +-
+ drivers/video/fbdev/core/fbcon.c        |    47 +-
  drivers/video/logo/Makefile             |     2 +-
- drivers/video/logo/logo.c               |    58 +-
- drivers/video/logo/logo_hpp_clut224.ppm | 51203 ++++++++++++++++++++++++++++++
- include/linux/linux_logo.h              |    49 +-
- 5 files changed, 51324 insertions(+), 83 deletions(-)
+ drivers/video/logo/logo.c               |    45 +-
+ drivers/video/logo/logo_hpp_clut224.ppm | 51203 ++++++++++++++++++++++
+ include/linux/linux_logo.h              |     1 +
+ 5 files changed, 51281 insertions(+), 17 deletions(-)
  create mode 100644 drivers/video/logo/logo_hpp_clut224.ppm
 
-diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
-index 93873b0973eb..34f5ba4d49a0 100644
---- a/drivers/video/console/fbcon.c
-+++ b/drivers/video/console/fbcon.c
-@@ -26,7 +26,7 @@
-  *
-  *  Hardware cursor support added by Emmanuel Marty (core@ggi-project.org)
-  *  Smart redraw scrolling, arbitrary font width support, 512char font support
-- *  and software scrollback added by 
-+ *  and software scrollback added by
-  *                         Jakub Jelinek (jj@ultra.linux.cz)
-  *
-  *  Random hacking by Martin Mares <mj@ucw.cz>
-@@ -110,7 +110,7 @@ static int softback_lines;
- /* console mappings */
- static int first_fb_vc;
- static int last_fb_vc = MAX_NR_CONSOLES - 1;
--static int fbcon_is_default = 1; 
-+static int fbcon_is_default = 1;
- static int fbcon_has_exited;
- static int primary_device = -1;
- static int fbcon_has_console_bind;
-@@ -448,7 +448,7 @@ static int __init fb_console_setup(char *this_opt)
- 			strlcpy(fontname, options + 5, sizeof(fontname));
- 			continue;
- 		}
--		
-+
- 		if (!strncmp(options, "scrollback:", 11)) {
- 			options += 11;
- 			if (*options) {
-@@ -459,7 +459,7 @@ static int __init fb_console_setup(char *this_opt)
- 			}
- 			continue;
- 		}
--		
-+
- 		if (!strncmp(options, "map:", 4)) {
- 			options += 4;
- 			if (*options) {
-@@ -483,7 +483,7 @@ static int __init fb_console_setup(char *this_opt)
- 				first_fb_vc = 0;
- 			if (*options++ == '-')
- 				last_fb_vc = simple_strtoul(options, &options, 10) - 1;
--			fbcon_is_default = 0; 
-+			fbcon_is_default = 0;
- 			continue;
- 		}
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index dd0e27364da1..119f37657f63 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -3633,12 +3633,55 @@ static void fbcon_exit(void)
  
-@@ -946,7 +946,7 @@ static const char *fbcon_startup(void)
- 	info = registered_fb[info_idx];
- 	if (!info)
- 		return NULL;
--	
-+
- 	owner = info->fbops->owner;
- 	if (!try_module_get(owner))
- 		return NULL;
-@@ -1422,7 +1422,7 @@ static __inline__ void ywrap_up(struct vc_data *vc, int count)
- 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct display *p = &fb_display[vc->vc_num];
--	
-+
- 	p->yscroll += count;
- 	if (p->yscroll >= p->vrows)	/* Deal with wrap */
- 		p->yscroll -= p->vrows;
-@@ -1441,7 +1441,7 @@ static __inline__ void ywrap_down(struct vc_data *vc, int count)
- 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
- 	struct fbcon_ops *ops = info->fbcon_par;
- 	struct display *p = &fb_display[vc->vc_num];
--	
-+
- 	p->yscroll -= count;
- 	if (p->yscroll < 0)	/* Deal with wrap */
- 		p->yscroll += p->vrows;
-@@ -1508,7 +1508,7 @@ static __inline__ void ypan_down(struct vc_data *vc, int count)
- 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
- 	struct display *p = &fb_display[vc->vc_num];
- 	struct fbcon_ops *ops = info->fbcon_par;
--	
-+
- 	p->yscroll -= count;
- 	if (p->yscroll < 0) {
- 		ops->bmove(vc, info, 0, 0, p->vrows - vc->vc_rows,
-@@ -2017,7 +2017,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
+ void __init fb_console_init(void)
  {
- 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
- 	struct display *p = &fb_display[vc->vc_num];
--	
++	struct device_node *root = of_find_node_by_path("/");
++	const char *model;
+ 	int i;
++	int status;
 +
- 	if (fbcon_is_inactive(vc, info))
- 		return;
- 
-@@ -2035,7 +2035,7 @@ static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
- 			p->vrows - p->yscroll);
- }
- 
--static void fbcon_bmove_rec(struct vc_data *vc, struct display *p, int sy, int sx, 
-+static void fbcon_bmove_rec(struct vc_data *vc, struct display *p, int sy, int sx,
- 			    int dy, int dx, int height, int width, u_int y_break)
- {
- 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-@@ -2124,7 +2124,7 @@ static void updatescrollmode(struct display *p,
- 	}
- }
- 
--static int fbcon_resize(struct vc_data *vc, unsigned int width, 
-+static int fbcon_resize(struct vc_data *vc, unsigned int width,
- 			unsigned int height, unsigned int user)
- {
- 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
-@@ -2292,7 +2292,7 @@ static int fbcon_switch(struct vc_data *vc)
- 	    ops->update_start(info);
- 	}
- 
--	fbcon_set_palette(vc, color_table); 	
-+	fbcon_set_palette(vc, color_table);
- 	fbcon_clear_margins(vc, 0);
- 
- 	if (logo_shown == FBCON_LOGO_DRAW) {
-@@ -2460,7 +2460,7 @@ static void set_vc_hi_font(struct vc_data *vc, bool set)
- 			vc->vc_complement_mask >>= 1;
- 			vc->vc_s_complement_mask >>= 1;
- 		}
--			
++	if (!root){
++		pr_err(KERN_ERR "%s - Unable to find root devicetree node...\n", __func__);
++		fbcon_device = ERR_PTR(EPERM);
++		status = -1;
++	}
++	else{
++		status = 0;
++	}
 +
- 		/* ++Edmund: reorder the attribute bits */
- 		if (vc->vc_can_do_color) {
- 			unsigned short *cp =
-@@ -2483,7 +2483,7 @@ static void set_vc_hi_font(struct vc_data *vc, bool set)
- 			vc->vc_complement_mask <<= 1;
- 			vc->vc_s_complement_mask <<= 1;
- 		}
--			
++	model = of_get_property(root, "model", NULL);
++	if (model == NULL){
++		pr_err(KERN_ERR "%s - Unable to find Model type from devicetree...\n", __func__);
++		fbcon_device = ERR_PTR(EPERM);
++		status = -1;
++	}
++	else{
++		status = 0;
++	}
 +
- 		/* ++Edmund: reorder the attribute bits */
- 		{
- 			unsigned short *cp =
-@@ -2633,7 +2633,7 @@ static int fbcon_set_font(struct vc_data *vc, struct console_font *font, unsigne
- 	/* Check if the same font is on some other console already */
- 	for (i = first_fb_vc; i <= last_fb_vc; i++) {
- 		struct vc_data *tmp = vc_cons[i].d;
--		
++	// No need to initialize fbcon interface for MPP. fbcon interface is only for HPP.
++	if (strcmp(model, "HQ_MPP") == 0){
++		logo_shown = FBCON_LOGO_DONTSHOW;
++		fbcon_device = ERR_PTR(EPERM);
++		status = -1;
++	}
++	else{
++		status = 0;
++	}
 +
- 		if (fb_display[i].userfont &&
- 		    fb_display[i].fontdata &&
- 		    FNTSUM(fb_display[i].fontdata) == csum &&
-@@ -2711,7 +2711,7 @@ static u16 *fbcon_screen_pos(struct vc_data *vc, int offset)
- {
- 	unsigned long p;
- 	int line;
--	
-+
- 	if (vc->vc_num != fg_console || !softback_lines)
- 		return (u16 *) (vc->vc_origin + offset);
- 	line = offset / vc->vc_size_row;
-@@ -3622,27 +3622,50 @@ static void fbcon_exit(void)
++	// Sanity check, Model type must be HQ_HPP.
++	if(strcmp(model, "HQ_HPP") != 0){
++		fbcon_device = ERR_PTR(EPERM);
++		status = -1;
++	}
++	else{
++		status = 0;
++	}
  
- static int __init fb_console_init(void)
- {
--	int i;
-+    struct device_node *root = of_find_node_by_path("/");
-+    const char *model;
-+    int i;
- 
--	console_lock();
--	fb_register_client(&fbcon_event_notifier);
+ 	console_lock();
+ 	fb_register_client(&fbcon_event_notifier);
 -	fbcon_device = device_create(fb_class, NULL, MKDEV(0, 0), NULL,
 -				     "fbcon");
--
--	if (IS_ERR(fbcon_device)) {
--		printk(KERN_WARNING "Unable to create device "
--		       "for fbcon; errno = %ld\n",
--		       PTR_ERR(fbcon_device));
--		fbcon_device = NULL;
--	} else
--		fbcon_init_device();
-+    if (!root){
-+        pr_err(KERN_ERR "%s - Unable to find root devicetree node...\n", __func__);
-+        return -1;
-+    }
++	if(status == 0){
++		fbcon_device = device_create(fb_class, NULL, MKDEV(0, 0), NULL,
++						"fbcon");
++	}
  
--	for (i = 0; i < MAX_NR_CONSOLES; i++)
--		con2fb_map[i] = -1;
-+    model = of_get_property(root, "model", NULL);
-+    if (model == NULL){
-+        pr_err(KERN_ERR "%s - Unable to find Model type from devicetree...\n", __func__);
-+        return -1;
-+    }
- 
--	console_unlock();
--	fbcon_start();
--	return 0;
-+    // No need to initialize fbcon interface for MPP. fbcon interface is only for HPP.
-+    if (strcmp(model, "HQ_MPP") == 0){
-+        logo_shown = FBCON_LOGO_DONTSHOW;
-+        return -1;
-+    }
-+
-+    // Sanity check, Model type must be HQ_HPP.
-+    if(strcmp(model, "HQ_HPP") != 0)
-+        return -1;
-+
-+    console_lock();
-+    fb_register_client(&fbcon_event_notifier);
-+    fbcon_device = device_create(fb_class, NULL, MKDEV(0, 0), NULL,
-+                        "fbcon");
-+
-+    if (IS_ERR(fbcon_device)) {
-+        printk(KERN_WARNING "Unable to create device "
-+                "for fbcon; errno = %ld\n",
-+                PTR_ERR(fbcon_device));
-+        fbcon_device = NULL;
-+    } else
-+        fbcon_init_device();
-+
-+    for (i = 0; i < MAX_NR_CONSOLES; i++)
-+        con2fb_map[i] = -1;
-+
-+    console_unlock();
-+    fbcon_start();
-+    return 0;
- }
- 
- fs_initcall(fb_console_init);
-@@ -3670,7 +3693,7 @@ static void __exit fb_console_exit(void)
- 	fbcon_exit();
- 	do_unregister_con_driver(&fb_con);
- 	console_unlock();
--}	
-+}
- 
- module_exit(fb_console_exit);
- 
+ 	if (IS_ERR(fbcon_device)) {
+ 		printk(KERN_WARNING "Unable to create device "
 diff --git a/drivers/video/logo/Makefile b/drivers/video/logo/Makefile
-index 931301800511..7e4a38d746d8 100644
+index e3fd4f077b50..027afc4d1b15 100644
 --- a/drivers/video/logo/Makefile
 +++ b/drivers/video/logo/Makefile
-@@ -4,7 +4,7 @@ obj-$(CONFIG_LOGO)			+= logo.o
+@@ -5,7 +5,7 @@ obj-$(CONFIG_LOGO)			+= logo.o
  obj-$(CONFIG_LOGO_LINUX_MONO)		+= logo_linux_mono.o
  obj-$(CONFIG_LOGO_LINUX_VGA16)		+= logo_linux_vga16.o
  obj-$(CONFIG_LOGO_LINUX_CLUT224)	+= logo_linux_clut224.o
@@ -261,15 +88,10 @@ index 931301800511..7e4a38d746d8 100644
  obj-$(CONFIG_LOGO_BLACKFIN_VGA16)	+= logo_blackfin_vga16.o
  obj-$(CONFIG_LOGO_DEC_CLUT224)		+= logo_dec_clut224.o
 diff --git a/drivers/video/logo/logo.c b/drivers/video/logo/logo.c
-index 3ae53901f6d2..a044eb8f8957 100644
+index b505b03fdb5f..135bf1ad2025 100644
 --- a/drivers/video/logo/logo.c
 +++ b/drivers/video/logo/logo.c
-@@ -1,4 +1,3 @@
--
- /*
-  *  Linux logo to be displayed on boot
-  *
-@@ -17,6 +16,11 @@
+@@ -17,6 +17,11 @@
  #include <asm/setup.h>
  #endif
  
@@ -281,34 +103,34 @@ index 3ae53901f6d2..a044eb8f8957 100644
  static bool nologo;
  module_param(nologo, bool, 0);
  MODULE_PARM_DESC(nologo, "Disables startup logo");
-@@ -30,8 +34,8 @@ static bool logos_freed;
- 
- static int __init fb_logo_late_init(void)
- {
--	logos_freed = true;
--	return 0;
-+    logos_freed = true;
-+    return 0;
- }
- 
- late_initcall(fb_logo_late_init);
-@@ -42,22 +46,38 @@ late_initcall(fb_logo_late_init);
-  */
+@@ -43,19 +48,35 @@ late_initcall_sync(fb_logo_late_init);
  const struct linux_logo * __ref fb_find_logo(int depth)
  {
--	const struct linux_logo *logo = NULL;
-+    const struct linux_logo *logo = NULL;
-+    struct device_node *root;
-+    const char *model;
+ 	const struct linux_logo *logo = NULL;
++	struct device_node *root;
++	const char *model;
++
++	if (nologo || logos_freed){
++		pr_info("%s - 'nologo' or 'logos_freed' is set...\n", __func__);
++		return logo;
++	}
++
++	// Read Model name from device tree.
++	root = of_find_node_by_path("/");
++	if (!root){
++		pr_err(KERN_ERR "%s - Unable to find root devicetree node...\n", __func__);
++		return logo;
++	}
  
 -	if (nologo || logos_freed)
 -		return NULL;
-+    if (nologo || logos_freed){
-+        pr_info("%s - 'nologo' or 'logos_freed' is set...\n", __func__);
-+        return logo;
-+    }
++	model = of_get_property(root, "model", NULL);
++	if(model == NULL){
++		pr_err(KERN_ERR "%s - Unable to find Model type from devicetree...\n", __func__);
++		return logo;
++	}
  
--	if (depth >= 1) {
+ 	if (depth >= 1) {
 -#ifdef CONFIG_LOGO_LINUX_MONO
 -		/* Generic Linux logo */
 -		logo = &logo_linux_mono;
@@ -316,54 +138,28 @@ index 3ae53901f6d2..a044eb8f8957 100644
 -#ifdef CONFIG_LOGO_SUPERH_MONO
 -		/* SuperH Linux logo */
 -		logo = &logo_superh_mono;
-+    // Read Model name from device tree.
-+    root = of_find_node_by_path("/");
-+    if (!root){
-+        pr_err(KERN_ERR "%s - Unable to find root devicetree node...\n", __func__);
-+        return logo;
-+    }
-+
-+    model = of_get_property(root, "model", NULL);
-+    if(model == NULL){
-+        pr_err(KERN_ERR "%s - Unable to find Model type from devicetree...\n", __func__);
-+        return logo;
-+    }
-+
-+    if (depth >= 1) {
+-#endif
 +#ifdef CONFIG_LOGO_CUSTOM_CLUT224
-+        if (strcmp(model, "HQ_HPP") == 0){
-+            logo = &logo_hpp_clut224;
-+        }
-+        pr_info("%s - Model type # %s\n", __func__, model);
-+        return logo;
- #endif
--	}
--	
-+    }
-+
- 	if (depth >= 4) {
- #ifdef CONFIG_LOGO_LINUX_VGA16
- 		/* Generic Linux logo */
-@@ -72,7 +92,7 @@ const struct linux_logo * __ref fb_find_logo(int depth)
- 		logo = &logo_superh_vga16;
- #endif
++		if (strcmp(model, "HQ_HPP") == 0){
++			logo = &logo_hpp_clut224;
++		}
++		pr_info("%s - Model type # %s\n", __func__, model);
++		return logo;
++ #endif
  	}
--	
-+
- 	if (depth >= 8) {
- #ifdef CONFIG_LOGO_LINUX_CLUT224
- 		/* Generic Linux logo */
-@@ -111,10 +131,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
+ 	
+ 	if (depth >= 4) {
+@@ -110,10 +131,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
+ #ifdef CONFIG_LOGO_M32R_CLUT224
  		/* M32R Linux logo */
  		logo = &logo_m32r_clut224;
- #endif
+-#endif
 -#ifdef CONFIG_LOGO_CUSTOM_CLUT224
 -		/* Custom logo */
 -		logo = &logo_custom_clut224;
--#endif
+ #endif
  	}
  	return logo;
- }
 diff --git a/drivers/video/logo/logo_hpp_clut224.ppm b/drivers/video/logo/logo_hpp_clut224.ppm
 new file mode 100644
 index 000000000000..eea2e7378916
@@ -51574,66 +51370,10 @@ index 000000000000..eea2e7378916
 +89 115 139  89 115 139  89 115 139  89 115 139  89 115 139  89 115 139
 +89 115 139  89 115 139  89 115 139  89 115 139  89 115 139  77 87 98
 diff --git a/include/linux/linux_logo.h b/include/linux/linux_logo.h
-index 2be299513819..1b82b29e20c4 100644
+index 0ca1dbd8b854..336145ef1698 100644
 --- a/include/linux/linux_logo.h
 +++ b/include/linux/linux_logo.h
-@@ -2,34 +2,34 @@
- #define _LINUX_LINUX_LOGO_H
- 
- /*
-- *  Linux logo to be displayed on boot
-- *
-- *  Copyright (C) 1996 Larry Ewing (lewing@isc.tamu.edu)
-- *  Copyright (C) 1996,1998 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
-- *  Copyright (C) 2001 Greg Banks <gnb@alphalink.com.au>
-- *  Copyright (C) 2001 Jan-Benedict Glaw <jbglaw@lug-owl.de>
-- *  Copyright (C) 2003 Geert Uytterhoeven <geert@linux-m68k.org>
-- *
-- *  Serial_console ascii image can be any size,
-- *  but should contain %s to display the version
-- */
-+*  Linux logo to be displayed on boot
-+*
-+*  Copyright (C) 1996 Larry Ewing (lewing@isc.tamu.edu)
-+*  Copyright (C) 1996,1998 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
-+*  Copyright (C) 2001 Greg Banks <gnb@alphalink.com.au>
-+*  Copyright (C) 2001 Jan-Benedict Glaw <jbglaw@lug-owl.de>
-+*  Copyright (C) 2003 Geert Uytterhoeven <geert@linux-m68k.org>
-+*
-+*  Serial_console ascii image can be any size,
-+*  but should contain %s to display the version
-+*/
- 
- #include <linux/init.h>
- 
- 
--#define LINUX_LOGO_MONO		1	/* monochrome black/white */
--#define LINUX_LOGO_VGA16	2	/* 16 colors VGA text palette */
--#define LINUX_LOGO_CLUT224	3	/* 224 colors */
--#define LINUX_LOGO_GRAY256	4	/* 256 levels grayscale */
-+#define LINUX_LOGO_MONO     1   /* monochrome black/white */
-+#define LINUX_LOGO_VGA16    2   /* 16 colors VGA text palette */
-+#define LINUX_LOGO_CLUT224  3   /* 224 colors */
-+#define LINUX_LOGO_GRAY256  4   /* 256 levels grayscale */
- 
- 
- struct linux_logo {
--	int type;			/* one of LINUX_LOGO_* */
--	unsigned int width;
--	unsigned int height;
--	unsigned int clutsize;		/* LINUX_LOGO_CLUT224 only */
--	const unsigned char *clut;	/* LINUX_LOGO_CLUT224 only */
--	const unsigned char *data;
-+    int type;                   /* one of LINUX_LOGO_* */
-+    unsigned int width;
-+    unsigned int height;
-+    unsigned int clutsize;      /* LINUX_LOGO_CLUT224 only */
-+    const unsigned char *clut;  /* LINUX_LOGO_CLUT224 only */
-+    const unsigned char *data;
- };
- 
- extern const struct linux_logo logo_linux_mono;
-@@ -48,14 +48,13 @@ extern const struct linux_logo logo_superh_clut224;
+@@ -49,6 +49,7 @@ extern const struct linux_logo logo_superh_clut224;
  extern const struct linux_logo logo_m32r_clut224;
  extern const struct linux_logo logo_spe_clut224;
  extern const struct linux_logo logo_custom_clut224;
@@ -51641,16 +51381,6 @@ index 2be299513819..1b82b29e20c4 100644
  
  extern const struct linux_logo *fb_find_logo(int depth);
  #ifdef CONFIG_FB_LOGO_EXTRA
--extern void fb_append_extra_logo(const struct linux_logo *logo,
--				 unsigned int n);
-+extern void fb_append_extra_logo(const struct linux_logo *logo, unsigned int n);
- #else
--static inline void fb_append_extra_logo(const struct linux_logo *logo,
--					unsigned int n)
-+static inline void fb_append_extra_logo(const struct linux_logo *logo, unsigned int n)
- {}
- #endif
- 
 -- 
-2.11.0
+2.17.1
 

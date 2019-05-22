@@ -1,14 +1,14 @@
-From b3c8734cf73179066c285ea689354ca93e675323 Mon Sep 17 00:00:00 2001
+From d55a0ad53dc10573066bd0f01978a72de6882635 Mon Sep 17 00:00:00 2001
 From: ryang <ryang@hach.com>
 Date: Thu, 11 Oct 2018 11:45:22 -0600
 Subject: [PATCH 06/10] Update-the-battery-charger-driver-for-R1701
 
 ---
- drivers/power/supply/bq25890_charger.c | 138 ++++++++++++++++++++++++++++-----
+ drivers/power/supply/bq25890_charger.c | 138 +++++++++++++++++++++----
  1 file changed, 117 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
-index f993a55cde20..69cf8f58ab00 100644
+index 8e2c41ded171..a83ae698cb90 100644
 --- a/drivers/power/supply/bq25890_charger.c
 +++ b/drivers/power/supply/bq25890_charger.c
 @@ -24,7 +24,7 @@
@@ -198,21 +198,21 @@ index f993a55cde20..69cf8f58ab00 100644
  	};
  
  	ret = bq25890_chip_reset(bq);
-@@ -615,6 +677,14 @@ static int bq25890_hw_init(struct bq25890_device *bq)
+@@ -613,6 +675,14 @@ static int bq25890_hw_init(struct bq25890_device *bq)
+ 
+ 	/* disable watchdog */
  	ret = bq25890_field_write(bq, F_WD, 0);
- 	if (ret < 0)
- 		return ret;
++	if (ret < 0)
++		return ret;
 +	/* disable boost mode thermal protection */
 +	ret = bq25890_field_write(bq, F_BHOT, 0x03);
 +	if (ret < 0)
 +		return ret;
 +	/* set battery low voltage to 2.8V */
 +	ret = bq25890_field_write(bq, F_BATLOWV, 0x00);
-+	if (ret < 0)
-+		return ret;
+ 	if (ret < 0)
+ 		return ret;
  
- 	/* initialize currents/voltages and other parameters */
- 	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
 @@ -650,6 +720,9 @@ static enum power_supply_property bq25890_power_supply_props[] = {
  	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
  	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
@@ -323,5 +323,5 @@ index f993a55cde20..69cf8f58ab00 100644
  	bq25890_chip_reset(bq);
  
 -- 
-2.11.0
+2.17.1
 

@@ -1,14 +1,14 @@
-From 2f0cbb2a92088cfe5ed1e09a906debc849f169ac Mon Sep 17 00:00:00 2001
+From fe95b9ec83b4214ce52e00fa51ecff713390e5d1 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
 Date: Tue, 17 Apr 2018 15:22:36 -0600
 Subject: [PATCH 04/10] Color LCD driver patch
 
 ---
- drivers/video/fbdev/mxsfb.c | 79 ++++++++++++++++++++++++++++++++++++++++++++-
+ drivers/video/fbdev/mxsfb.c | 79 ++++++++++++++++++++++++++++++++++++-
  1 file changed, 78 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/video/fbdev/mxsfb.c b/drivers/video/fbdev/mxsfb.c
-index 52ee3e5163bc..c2385a9fbee1 100644
+index 5659ec2d18c4..87891c25c3e1 100644
 --- a/drivers/video/fbdev/mxsfb.c
 +++ b/drivers/video/fbdev/mxsfb.c
 @@ -62,7 +62,8 @@
@@ -34,7 +34,7 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  };
  
  #define mxsfb_is_v3(host) (host->devdata->ipversion == 3)
-@@ -2195,6 +2202,50 @@ static int mxsfb_probe(struct platform_device *pdev)
+@@ -2220,6 +2227,50 @@ static int mxsfb_probe(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -85,7 +85,7 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  	fb_info = framebuffer_alloc(0, &pdev->dev);
  	if (!fb_info) {
  		dev_err(&pdev->dev, "Failed to allocate fbdev\n");
-@@ -2347,6 +2398,16 @@ static int mxsfb_remove(struct platform_device *pdev)
+@@ -2378,6 +2429,16 @@ static int mxsfb_remove(struct platform_device *pdev)
  	unregister_framebuffer(fb_info);
  	mxsfb_free_videomem(host);
  
@@ -102,7 +102,7 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  	platform_set_drvdata(pdev, NULL);
  
  	devm_kfree(&pdev->dev, fb_info->pseudo_palette);
-@@ -2375,6 +2436,10 @@ static int mxsfb_runtime_suspend(struct device *dev)
+@@ -2406,6 +2467,10 @@ static int mxsfb_runtime_suspend(struct device *dev)
  {
  	struct mxsfb_info *host = dev_get_drvdata(dev);
  
@@ -113,7 +113,7 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  	if (host->devdata->flags & MXSFB_FLAG_BUSFREQ)
  		release_bus_freq(BUS_FREQ_HIGH);
  
-@@ -2390,6 +2455,10 @@ static int mxsfb_runtime_resume(struct device *dev)
+@@ -2421,6 +2486,10 @@ static int mxsfb_runtime_resume(struct device *dev)
  {
  	struct mxsfb_info *host = dev_get_drvdata(dev);
  
@@ -124,7 +124,7 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  	if (host->devdata->flags & MXSFB_FLAG_BUSFREQ)
  		request_bus_freq(BUS_FREQ_HIGH);
  
-@@ -2408,6 +2477,10 @@ static int mxsfb_suspend(struct device *pdev)
+@@ -2439,6 +2508,10 @@ static int mxsfb_suspend(struct device *pdev)
  	struct fb_info *fb_info = host->fb_info;
  	int saved_blank;
  
@@ -135,7 +135,7 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  	console_lock();
  	mxsfb_overlay_suspend(host);
  	fb_set_suspend(fb_info, 1);
-@@ -2428,6 +2501,10 @@ static int mxsfb_resume(struct device *pdev)
+@@ -2459,6 +2532,10 @@ static int mxsfb_resume(struct device *pdev)
  
  	pinctrl_pm_select_default_state(pdev);
  
@@ -147,5 +147,5 @@ index 52ee3e5163bc..c2385a9fbee1 100644
  	mxsfb_blank(host->restore_blank, fb_info);
  	fb_set_suspend(fb_info, 0);
 -- 
-2.11.0
+2.17.1
 

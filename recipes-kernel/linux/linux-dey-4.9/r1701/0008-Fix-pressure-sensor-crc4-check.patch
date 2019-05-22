@@ -1,7 +1,7 @@
-From 3d4c32b30a9e27c811f77c20efbbef7574aa3644 Mon Sep 17 00:00:00 2001
+From e00656ff90ef777981ea718d7f682543c8ead174 Mon Sep 17 00:00:00 2001
 From: Robert Yang <ryang@hach.com>
 Date: Thu, 24 Jan 2019 12:49:29 -0700
-Subject: [PATCH 09/10] Fix pressure sensor crc4 check
+Subject: [PATCH 08/10] Fix pressure sensor crc4 check
 
 ---
  drivers/iio/pressure/ms5611_core.c | 2 +-
@@ -9,7 +9,7 @@ Subject: [PATCH 09/10] Fix pressure sensor crc4 check
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index 8cc7156b5ace..8b2745c3b743 100644
+index 2a77a2f15752..409357154352 100644
 --- a/drivers/iio/pressure/ms5611_core.c
 +++ b/drivers/iio/pressure/ms5611_core.c
 @@ -79,7 +79,7 @@ static bool ms5611_prom_is_valid(u16 *prom, size_t len)
@@ -35,5 +35,5 @@ index 932e05001e1a..74dee9a9e8ef 100644
  	ret = spi_setup(spi);
  	if (ret < 0)
 -- 
-2.11.0
+2.17.1
 
