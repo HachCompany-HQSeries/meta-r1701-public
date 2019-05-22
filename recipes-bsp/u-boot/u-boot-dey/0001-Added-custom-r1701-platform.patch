@@ -1,17 +1,20 @@
-From 2ee32eb688ae1d90ed8d6c0b3e2264deced65019 Mon Sep 17 00:00:00 2001
+From 3bd7136d5d44414024c342a4f207379fa7fa7145 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Thu, 4 Oct 2018 13:11:11 -0600
-Subject: [PATCH 15/15] Added-custom-r1701-platform
+Date: Sun, 19 May 2019 19:39:15 -0600
+Subject: [PATCH 1/1] Added-custom-r1701-platform
 
 ---
- arch/arm/Kconfig             |   5 +
- board/digi/r1701/Kconfig     |  15 ++
- board/digi/r1701/MAINTAINERS |   6 +
- board/digi/r1701/Makefile    |  10 +
- board/digi/r1701/r1701.c     | 584 +++++++++++++++++++++++++++++++++++++++++++
- configs/r1701_defconfig      |   7 +
- include/configs/r1701.h      | 294 ++++++++++++++++++++++
- 7 files changed, 921 insertions(+)
+ arch/arm/cpu/armv7/mx6/Kconfig |  12 +
+ arch/arm/dts/Makefile          |   1 +
+ arch/arm/dts/imx6ul-r1701.dts  | 173 ++++++++++++
+ board/digi/r1701/Kconfig       |  19 ++
+ board/digi/r1701/MAINTAINERS   |   6 +
+ board/digi/r1701/Makefile      |  10 +
+ board/digi/r1701/r1701.c       | 501 +++++++++++++++++++++++++++++++++
+ configs/r1701_defconfig        |  30 ++
+ include/configs/r1701.h        | 288 +++++++++++++++++++
+ 9 files changed, 1040 insertions(+)
+ create mode 100644 arch/arm/dts/imx6ul-r1701.dts
  create mode 100644 board/digi/r1701/Kconfig
  create mode 100644 board/digi/r1701/MAINTAINERS
  create mode 100644 board/digi/r1701/Makefile
@@ -19,36 +22,238 @@ Subject: [PATCH 15/15] Added-custom-r1701-platform
  create mode 100644 configs/r1701_defconfig
  create mode 100644 include/configs/r1701.h
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 6be5d26878..57fe8a8a59 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -589,6 +589,10 @@ config TARGET_CCIMX6ULSTARTER
-         bool "Support ccimx6ulstarter"
-         select CPU_V7
-
+diff --git a/arch/arm/cpu/armv7/mx6/Kconfig b/arch/arm/cpu/armv7/mx6/Kconfig
+index a51fc4e9dd..8c255cf5e4 100644
+--- a/arch/arm/cpu/armv7/mx6/Kconfig
++++ b/arch/arm/cpu/armv7/mx6/Kconfig
+@@ -139,6 +139,17 @@ config TARGET_CCIMX6ULSTARTER
+ 	select MCA
+ 	select MTD_UBI_SKIP_REATTACH
+ 
 +config TARGET_R1701
-+        bool "Support for the r1701"
-+        select CPU_V7
++	bool "Support for HACH r1701 handheld meter"
++	select MX6UL
++	select BOARD_LATE_INIT
++	select SUPPORT_SPL
++	select DM
++	select DM_THERMAL
++	select BOARD_EARLY_INIT_F
++	select MCA
++	select MTD_UBI_SKIP_REATTACH
 +
- config TARGET_PICOSOM_IMX6UL
-         bool "Support picosom-imx6ul"
-         select CPU_V7
-@@ -868,6 +872,7 @@ source "board/denx/m53evk/Kconfig"
+ config TARGET_CGTQMX6EVAL
+ 	bool "cgtqmx6eval"
+ 	select BOARD_LATE_INIT
+@@ -521,6 +532,7 @@ source "board/congatec/cgtqmx6eval/Kconfig"
  source "board/digi/ccimx6sbc/Kconfig"
  source "board/digi/ccimx6ulsbc/Kconfig"
  source "board/digi/ccimx6ulstarter/Kconfig"
 +source "board/digi/r1701/Kconfig"
+ source "board/el/el6x/Kconfig"
  source "board/embest/mx6boards/Kconfig"
- source "board/esg/ima3-mx53/Kconfig"
- source "board/freescale/ls2085a/Kconfig"
+ source "board/engicam/geam6ul/Kconfig"
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index f559015264..5f5cdd028d 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -364,6 +364,7 @@ dtb-$(CONFIG_MX6) += imx6ul-14x14-ddr3-arm2.dtb \
+ 	imx6qp-sabresd.dtb \
+ 	imx6ul-ccimx6ulsbc.dtb \
+ 	imx6ul-ccimx6ulstarter.dtb \
++	imx6ul-r1701.dtb \
+ 	imx6ul-geam-kit.dtb \
+ 	imx6dqscm-1gb-qwks-rev2-fix-ldo.dtb \
+ 	imx6dqscm-1gb-qwks-rev3-fix-ldo.dtb \
+diff --git a/arch/arm/dts/imx6ul-r1701.dts b/arch/arm/dts/imx6ul-r1701.dts
+new file mode 100644
+index 0000000000..e3a939dcdb
+--- /dev/null
++++ b/arch/arm/dts/imx6ul-r1701.dts
+@@ -0,0 +1,173 @@
++/*
++ * Copyright 2016, 2017 Digi International, Inc.
++ *
++ * The code contained herein is licensed under the GNU General Public
++ * License. You may obtain a copy of the GNU General Public License
++ * Version 2 or later at the following locations:
++ *
++ * http://www.opensource.org/licenses/gpl-license.html
++ * http://www.gnu.org/copyleft/gpl.html
++ */
++
++/dts-v1/;
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++#include "imx6ul.dtsi"
++#include "imx6ul-ccimx6ul.dtsi"
++
++/ {
++	model = "HACH r1701 handheld meter.";
++	compatible = "digi,ccimx6ulstarter", "digi,ccimx6ul", "fsl,imx6ul";
++	digi,machine,name = "r1701";
++};
++
++/* UART5 (Console) */
++&uart5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart5>;
++	status = "okay";
++};
++
++/* USDHC2 (microSD) */
++&usdhc2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_usdhc2>;
++	broken-cd;
++	no-1-8-v;
++	status = "okay";
++};
++
++&fec1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet1>;
++	phy-mode = "rmii";
++	phy-handle = <&ethphy0>;
++	phy-reset-gpios = <&mca_gpio 7 GPIO_ACTIVE_LOW>;
++	phy-reset-duration = <26>;
++	digi,phy-reset-in-suspend;
++	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy0: ethernet-phy@0 {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			smsc,disable-energy-detect;
++			reg = <0>;
++		};
++	};
++};
++
++&caam_keyblob {
++	status = "disabled";
++};
++
++&adc1 {
++	status = "disabled";
++};
++
++&i2c2 {
++	status = "disabled";
++};
++
++&i2c3 {
++	status = "disabled";
++};
++
++&pwm1 {
++	status = "disabled";
++};
++
++&pwm2 {
++	status = "disabled";
++};
++
++&pwm3 {
++	status = "disabled";
++};
++
++&pwm4 {
++	status = "disabled";
++};
++
++&pwm5 {
++	status = "disabled";
++};
++
++&pwm6 {
++	status = "disabled";
++};
++
++&pwm7 {
++	status = "disabled";
++};
++
++&pwm8 {
++	status = "disabled";
++};
++
++&usbotg1 {
++	dr_mode = "otg";
++	digi,power-line-active-high;
++	disable-over-current;
++	status = "disabled";
++};
++
++&usbotg2 {
++	dr_mode = "host";
++	digi,power-line-active-high;
++	disable-over-current;
++	status = "disabled";
++};
++
++/* Pin mux configuration */
++&iomuxc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_hog>;
++
++	imx6ul-ccimx6ul {
++		// Console
++		pinctrl_uart5: uart5grp {
++			fsl,pins = <
++				MX6UL_PAD_UART5_TX_DATA__UART5_DCE_TX	0x1b0b1
++				MX6UL_PAD_UART5_RX_DATA__UART5_DCE_RX	0x1b0b1
++			>;
++		};
++
++		// SD card
++		pinctrl_usdhc2: usdhc2grp {
++			fsl,pins = <
++				MX6UL_PAD_CSI_HSYNC__USDHC2_CMD			0x17059
++				MX6UL_PAD_CSI_VSYNC__USDHC2_CLK			0x10071
++				MX6UL_PAD_CSI_DATA00__USDHC2_DATA0		0x17059
++				MX6UL_PAD_CSI_DATA01__USDHC2_DATA1		0x17059
++				MX6UL_PAD_CSI_DATA02__USDHC2_DATA2		0x17059
++				MX6UL_PAD_CSI_DATA03__USDHC2_DATA3		0x17059
++			>;
++		};
++
++		// Ethernet.
++		pinctrl_enet1: enet1grp {
++			fsl,pins = <
++				MX6UL_PAD_GPIO1_IO07__ENET1_MDC			0x1b0b0
++				MX6UL_PAD_GPIO1_IO06__ENET1_MDIO		0x1b0b0
++				MX6UL_PAD_ENET1_RX_EN__ENET1_RX_EN		0x1b0b0
++				MX6UL_PAD_ENET1_RX_ER__ENET1_RX_ER		0x1b0b0
++				MX6UL_PAD_ENET1_RX_DATA0__ENET1_RDATA00	0x1b0b0
++				MX6UL_PAD_ENET1_RX_DATA1__ENET1_RDATA01	0x1b0b0
++				MX6UL_PAD_ENET1_TX_EN__ENET1_TX_EN		0x1b0b0
++				MX6UL_PAD_ENET1_TX_DATA0__ENET1_TDATA00	0x1b0b0
++				MX6UL_PAD_ENET1_TX_DATA1__ENET1_TDATA01	0x1b0b0
++				MX6UL_PAD_ENET1_TX_CLK__ENET1_REF_CLK1	0x40017051
++			>;
++		};
++		
++		/* General purpose pinctrl */
++		pinctrl_hog: hoggrp {
++			fsl,pins = <
++				MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // SPARE_W10_TP1
++			>;
++		};
++	};
++};
 diff --git a/board/digi/r1701/Kconfig b/board/digi/r1701/Kconfig
 new file mode 100644
-index 0000000000..caa2456cce
+index 0000000000..78238e43e1
 --- /dev/null
 +++ b/board/digi/r1701/Kconfig
-@@ -0,0 +1,15 @@
+@@ -0,0 +1,19 @@
 +if TARGET_R1701
++
++config MCA
++	bool
++	default y
 +
 +config SYS_BOARD
 +	default "r1701"
@@ -65,12 +270,12 @@ index 0000000000..caa2456cce
 +endif
 diff --git a/board/digi/r1701/MAINTAINERS b/board/digi/r1701/MAINTAINERS
 new file mode 100644
-index 0000000000..8e4c57f6fc
+index 0000000000..93328ab1a7
 --- /dev/null
 +++ b/board/digi/r1701/MAINTAINERS
 @@ -0,0 +1,6 @@
-+CCIMX6ULSTARTER BOARD
-+M:	Tim Higgins <thiggins@hach.com>
++R1701 BOARD
++M:	Devang Patel <dpatel@hach.com>
 +S:	Supported
 +F:	board/digi/r1701/
 +F:	include/configs/r1701.h
@@ -93,12 +298,12 @@ index 0000000000..be50bf5b9e
 +	$(OBJCOPY) -O binary --gap-fill 0xff $< $@
 diff --git a/board/digi/r1701/r1701.c b/board/digi/r1701/r1701.c
 new file mode 100644
-index 0000000000..3d58ea2856
+index 0000000000..1f51b5f52f
 --- /dev/null
 +++ b/board/digi/r1701/r1701.c
-@@ -0,0 +1,584 @@
+@@ -0,0 +1,501 @@
 +/*
-+ * Copyright (C) 2016 Digi International, Inc
++ * Copyright (C) 2016-2018 Digi International, Inc
 + * Copyright (C) 2015 Freescale Semiconductor, Inc.
 + *
 + * SPDX-License-Identifier:	GPL-2.0+
@@ -125,17 +330,19 @@ index 0000000000..3d58ea2856
 +#include <mxsfb.h>
 +#include <netdev.h>
 +#include <usb.h>
-+#include <usb/ehci-fsl.h>
++#include <usb/ehci-ci.h>
 +#include <command.h>
 +#include "../ccimx6ul/ccimx6ul.h"
 +#include "../common/carrier_board.h"
 +#include "../common/helper.h"
 +#include "../common/hwid.h"
 +#include "../common/mca_registers.h"
++#include "../common/mca.h"
++#include "../common/trustfence.h"
 +
 +#ifdef CONFIG_POWER
 +#include <power/pmic.h>
-+#include <power/pfuze300_pmic.h>
++#include <power/pfuze3000_pmic.h>
 +#include "../../freescale/common/pfuze.h"
 +#endif
 +
@@ -150,6 +357,10 @@ index 0000000000..3d58ea2856
 +
 +unsigned int board_version = CARRIERBOARD_VERSION_UNDEFINED;
 +unsigned int board_id = CARRIERBOARD_ID_UNDEFINED;
++
++// We do not use I2C multi bus and spare console gpio lines.
++#undef CONFIG_I2C_MULTI_BUS
++#undef CONFIG_CONSOLE_ENABLE_GPIO
 +
 +#define UART_PAD_CTRL  (PAD_CTL_PKE | PAD_CTL_PUE |		\
 +	PAD_CTL_PUS_100K_UP | PAD_CTL_SPEED_MED |		\
@@ -198,6 +409,12 @@ index 0000000000..3d58ea2856
 +	MX6_PAD_JTAG_TRST_B__GPIO1_IO15 | MUX_PAD_CTRL(GPI_PAD_CTRL),
 +	MX6_PAD_JTAG_TCK__GPIO1_IO14 | MUX_PAD_CTRL(GPI_PAD_CTRL),
 +};
++
++static void setup_iomux_ext_gpios(void)
++{
++	imx_iomux_v3_setup_multiple_pads(ext_gpios_pads,
++					 ARRAY_SIZE(ext_gpios_pads));
++}
 +#endif
 +
 +/* micro SD */
@@ -208,6 +425,9 @@ index 0000000000..3d58ea2856
 +	MX6_PAD_CSI_DATA01__USDHC2_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 +	MX6_PAD_CSI_DATA02__USDHC2_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 +	MX6_PAD_CSI_DATA03__USDHC2_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
++	
++	/* Add SD Card power control pin Port-5 Pin-1 */
++	MX6_PAD_SNVS_TAMPER1__GPIO5_IO01 | MUX_PAD_CTRL(GPI_PAD_CTRL),
 +};
 +
 +#ifdef CONFIG_SYS_I2C_MXC
@@ -244,10 +464,9 @@ index 0000000000..3d58ea2856
 +	MX6_PAD_ENET1_RX_ER__ENET1_RX_ER | MUX_PAD_CTRL(ENET_PAD_CTRL),
 +	MX6_PAD_ENET1_RX_EN__ENET1_RX_EN | MUX_PAD_CTRL(ENET_PAD_CTRL),
 +	/*
-+	 * GPIO3_IO2 is used as PHY reset in Starter Board v1 and as PHY power
-+	 * enable on Starter Board v2
++	 * GPIO5_IO2 is used as PHY power enable on r1701 board.
 +	 */
-+	MX6_PAD_LCD_HSYNC__GPIO3_IO02 | MUX_PAD_CTRL(NO_PAD_CTRL),
++	MX6_PAD_CSI_DATA07__GPIO4_IO28 | MUX_PAD_CTRL(GPI_PAD_CTRL),
 +};
 +
 +static void setup_iomux_fec(void)
@@ -307,6 +526,10 @@ index 0000000000..3d58ea2856
 +		case 0:
 +			imx_iomux_v3_setup_multiple_pads(
 +				usdhc2_pads, ARRAY_SIZE(usdhc2_pads));
++			
++			/* Enable SD Card power - Active low signal */
++			//gpio_direction_output(IMX_GPIO_NR(5, 7) , 0);
++			
 +			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC2_CLK);
 +			break;
 +		default:
@@ -338,6 +561,7 @@ index 0000000000..3d58ea2856
 +		int phy_reset_gpio = IMX_GPIO_NR(3, 2);
 +
 +		/* Assert PHY reset (low) */
++		gpio_request(phy_reset_gpio, "ENET PHY Reset");
 +		gpio_direction_output(phy_reset_gpio , 0);
 +		udelay(100);
 +		/* Deassert PHY reset (high) */
@@ -347,12 +571,12 @@ index 0000000000..3d58ea2856
 +		int reset = (1 << 7);
 +
 +		/* Configure as output */
-+		mca_update_bits(MCA_CC6UL_GPIO_DIR_0, reset, reset);
++		mca_update_bits(MCA_GPIO_DIR_0, reset, reset);
 +		/* Assert PHY reset (low) */
-+		mca_update_bits(MCA_CC6UL_GPIO_DATA_0, reset, 0);
++		mca_update_bits(MCA_GPIO_DATA_0, reset, 0);
 +		udelay(100);
 +		/* Deassert PHY reset (high) */
-+		mca_update_bits(MCA_CC6UL_GPIO_DATA_0, reset, reset);
++		mca_update_bits(MCA_GPIO_DATA_0, reset, reset);
 +	}
 +}
 +
@@ -361,6 +585,10 @@ index 0000000000..3d58ea2856
 +	int ret;
 +
 +	setup_iomux_fec();
++	
++    /* Turn on power to ethernet module */
++    //gpio_direction_output(IMX_GPIO_NR(4, 28) , 0);
++    //udelay(50);
 +
 +	ret = fecmxc_initialize_multi(bis, CONFIG_FEC_ENET_DEV,
 +		CONFIG_FEC_MXC_PHYADDR, IMX_FEC_BASE);
@@ -378,12 +606,8 @@ index 0000000000..3d58ea2856
 +		= (struct iomuxc_gpr_base_regs *) IOMUXC_GPR_BASE_ADDR;
 +	int ret;
 +
-+	if (board_version != 1) {
-+		/* Enable PHY power */
-+		int phy_power_gpio = IMX_GPIO_NR(3, 2);
-+
-+		gpio_direction_output(phy_power_gpio , 1);
-+	}
++	/* Enable PHY power */
++	//gpio_direction_output(IMX_GPIO_NR(4, 28) , 0);
 +
 +	if (0 == fec_id) {
 +		if (check_module_fused(MX6_MODULE_ENET1))
@@ -462,39 +686,12 @@ index 0000000000..3d58ea2856
 +}
 +#endif
 +
-+#ifdef CONFIG_CONSOLE_ENABLE_GPIO
-+static void setup_iomux_ext_gpios(void)
-+{
-+	imx_iomux_v3_setup_multiple_pads(ext_gpios_pads,
-+					 ARRAY_SIZE(ext_gpios_pads));
-+}
-+#endif
-+
 +int board_early_init_f(void)
 +{
-+#ifdef CONFIG_CONSOLE_ENABLE_GPIO
-+	int ext_gpios[] =  {
-+		IMX_GPIO_NR(1, 4),
-+		IMX_GPIO_NR(1, 12),
-+		IMX_GPIO_NR(1, 13),
-+		IMX_GPIO_NR(1, 11),
-+		IMX_GPIO_NR(1, 15),
-+		IMX_GPIO_NR(1, 14),
-+	};
-+	int console_enable_gpio_nr = ext_gpios[CONFIG_CONSOLE_ENABLE_GPIO_NR];
-+
-+	setup_iomux_ext_gpios();
-+	gpio_direction_input(console_enable_gpio_nr);
-+#endif
-+
 +	setup_iomux_uart();
 +
 +#ifdef CONFIG_CONSOLE_DISABLE
 +	gd->flags |= (GD_FLG_DISABLE_CONSOLE | GD_FLG_SILENT);
-+#ifdef CONFIG_CONSOLE_ENABLE_GPIO
-+	if (console_enable_gpio(console_enable_gpio_nr))
-+		gd->flags &= ~(GD_FLG_DISABLE_CONSOLE | GD_FLG_SILENT);
-+#endif
 +#endif
 +
 +	return 0;
@@ -558,6 +755,22 @@ index 0000000000..3d58ea2856
 +
 +int board_late_init(void)
 +{
++#ifdef CONFIG_CONSOLE_ENABLE_GPIO
++	int ext_gpios[] =  {
++		IMX_GPIO_NR(1, 4),
++		IMX_GPIO_NR(1, 12),
++		IMX_GPIO_NR(1, 13),
++		IMX_GPIO_NR(1, 11),
++		IMX_GPIO_NR(1, 15),
++		IMX_GPIO_NR(1, 14),
++	};
++	int console_enable_gpio_nr = ext_gpios[CONFIG_CONSOLE_ENABLE_GPIO_NR];
++
++	setup_iomux_ext_gpios();
++	
++	if (console_enable_gpio(console_enable_gpio_nr))
++		gd->flags &= ~(GD_FLG_DISABLE_CONSOLE | GD_FLG_SILENT);
++#endif
 +	/* SOM late init */
 +	ccimx6ul_late_init();
 +
@@ -573,9 +786,7 @@ index 0000000000..3d58ea2856
 +/* Platform function to modify the FDT as needed */
 +int ft_board_setup(void *blob, bd_t *bd)
 +{
-+	/* Re-read HWID which could have been overriden by U-Boot commands */
 +	fdt_fixup_hwid(blob);
-+
 +	fdt_fixup_ccimx6ul(blob);
 +	fdt_fixup_carrierboard(blob);
 +
@@ -592,129 +803,63 @@ index 0000000000..3d58ea2856
 +
 +	return 0;
 +}
-+
-+#ifdef CONFIG_FSL_FASTBOOT
-+
-+void board_fastboot_setup(void)
-+{
-+	switch (get_boot_device()) {
-+#if defined(CONFIG_FASTBOOT_STORAGE_MMC)
-+	case SD1_BOOT:
-+	case MMC1_BOOT:
-+		if (!getenv("fastboot_dev"))
-+			setenv("fastboot_dev", "mmc0");
-+		if (!getenv("bootcmd"))
-+			setenv("bootcmd", "boota mmc0");
-+		break;
-+	case SD2_BOOT:
-+	case MMC2_BOOT:
-+		if (!getenv("fastboot_dev"))
-+			setenv("fastboot_dev", "mmc1");
-+		if (!getenv("bootcmd"))
-+			setenv("bootcmd", "boota mmc1");
-+		break;
-+#endif /*CONFIG_FASTBOOT_STORAGE_MMC*/
-+#if defined(CONFIG_FASTBOOT_STORAGE_NAND)
-+	case NAND_BOOT:
-+		if (!getenv("fastboot_dev"))
-+			setenv("fastboot_dev", "nand");
-+		if (!getenv("fbparts"))
-+			setenv("fbparts", ANDROID_FASTBOOT_NAND_PARTS);
-+		if (!getenv("bootcmd"))
-+			setenv("bootcmd",
-+				"nand read ${loadaddr} ${boot_nand_offset} "
-+				"${boot_nand_size};boota ${loadaddr}");
-+		break;
-+#endif /*CONFIG_FASTBOOT_STORAGE_NAND*/
-+
-+	default:
-+		printf("unsupported boot devices\n");
-+		break;
-+	}
-+}
-+
-+#ifdef CONFIG_ANDROID_RECOVERY
-+int check_recovery_cmd_file(void)
-+{
-+	int recovery_mode = 0;
-+
-+	recovery_mode = recovery_check_and_clean_flag();
-+
-+	return recovery_mode;
-+}
-+
-+void board_recovery_setup(void)
-+{
-+	int bootdev = get_boot_device();
-+
-+	switch (bootdev) {
-+#if defined(CONFIG_FASTBOOT_STORAGE_MMC)
-+	case SD1_BOOT:
-+	case MMC1_BOOT:
-+		if (!getenv("bootcmd_android_recovery"))
-+			setenv("bootcmd_android_recovery", "boota mmc0 recovery");
-+		break;
-+	case SD2_BOOT:
-+	case MMC2_BOOT:
-+		if (!getenv("bootcmd_android_recovery"))
-+			setenv("bootcmd_android_recovery", "boota mmc1 recovery");
-+		break;
-+#endif /*CONFIG_FASTBOOT_STORAGE_MMC*/
-+#if defined(CONFIG_FASTBOOT_STORAGE_NAND)
-+	case NAND_BOOT:
-+		if (!getenv("bootcmd_android_recovery"))
-+			setenv("bootcmd_android_recovery",
-+				"nand read ${loadaddr} ${recovery_nand_offset} "
-+				"${recovery_nand_size};boota ${loadaddr}");
-+		break;
-+#endif /*CONFIG_FASTBOOT_STORAGE_NAND*/
-+
-+	default:
-+		printf("Unsupported bootup device for recovery: dev: %d\n",
-+			bootdev);
-+		return;
-+	}
-+
-+	printf("setup env for recovery..\n");
-+	setenv("bootcmd", "run bootcmd_android_recovery");
-+}
-+#endif /*CONFIG_ANDROID_RECOVERY*/
-+
-+#endif /*CONFIG_FSL_FASTBOOT*/
 diff --git a/configs/r1701_defconfig b/configs/r1701_defconfig
 new file mode 100644
-index 0000000000..a23f37d211
+index 0000000000..95da29f920
 --- /dev/null
 +++ b/configs/r1701_defconfig
-@@ -0,0 +1,7 @@
+@@ -0,0 +1,30 @@
 +CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++# CONFIG_SECURE_BOOT is not set
++CONFIG_MODULE_FUSE=y
 +CONFIG_TARGET_R1701=y
-+CONFIG_DM=y
-+CONFIG_IMX_HAB=y
-+CONFIG_SECURE_BOOT=y
-+CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/digi/ccimx6ul/imximage.cfg,MX6UL,DDR_MB=256"
-+CONFIG_DM_THERMAL=y
++CONFIG_DEFAULT_DEVICE_TREE="imx6ul-r1701"
++CONFIG_DISTRO_DEFAULTS=y
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/digi/ccimx6ul/imximage.cfg,DDR_MB=256"
++CONFIG_BOOTDELAY=1
++CONFIG_SILENT_CONSOLE=y
++# CONFIG_SILENT_CONSOLE_UPDATE_ON_SET is not set
++# CONFIG_CMD_IMLS is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_GPT=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_TIME=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_UBI=y
++# CONFIG_ISO_PARTITION is not set
++CONFIG_PARTITION_TYPE_GUID=y
++CONFIG_OF_CONTROL=y
++CONFIG_DM_GPIO=y
++CONFIG_PHYLIB=y
++CONFIG_IMX_THERMAL=y
++CONFIG_RNG_SW_TEST=y
 diff --git a/include/configs/r1701.h b/include/configs/r1701.h
 new file mode 100644
-index 0000000000..70d66ef460
+index 0000000000..9304fc4feb
 --- /dev/null
 +++ b/include/configs/r1701.h
-@@ -0,0 +1,294 @@
+@@ -0,0 +1,288 @@
 +/*
 + * Copyright (C) 2018 HACH Company
-+ * Copyright (C) 2016 Digi International, Inc.
++ * Copyright (C) 2016-2018 Digi International, Inc.
 + * Copyright (C) 2015 Freescale Semiconductor, Inc.
 + *
 + * Configuration settings for the Digi ConnecCore 6UL Starter board.
 + *
 + * SPDX-License-Identifier:	GPL-2.0+
 + */
-+#ifndef CCIMX6ULSTARTER_CONFIG_H
-+#define CCIMX6ULSTARTER_CONFIG_H
++#ifndef R1701_CONFIG_H
++#define R1701_CONFIG_H
 +
 +#include "ccimx6ul_common.h"
 +
-+#define CONFIG_BOARD_DESCRIPTION	"R1701 Board"
++#define CONFIG_BOARD_DESCRIPTION	"HACH R1701 Board"
 +
 +/* uncomment for PLUGIN mode support */
 +/* #define CONFIG_USE_PLUGIN */
@@ -738,23 +883,8 @@ index 0000000000..70d66ef460
 +#undef CONFIG_SHA256
 +#endif
 +
-+/* USB Configs - remove it
-+#ifdef CONFIG_CMD_USB
-+#undef CONFIG_USB_EHCI
-+#undef CONFIG_USB_EHCI_MX6
-+#undef CONFIG_USB_STORAGE
-+#undef CONFIG_EHCI_HCD_INIT_AFTER_RESET
-+#undef CONFIG_USB_HOST_ETHER
-+#undef CONFIG_USB_ETHER_ASIX
-+#undef CONFIG_MXC_USB_PORTSC
-+#undef CONFIG_MXC_USB_FLAGS
-+#undef CONFIG_USB_MAX_CONTROLLER_COUNT
-+#undef CONFIG_CMD_USB
-+#endif */
-+
 +/* FLASH and environment organization */
 +#define CONFIG_SYS_BOOT_NAND
-+#define CONFIG_SYS_NO_FLASH
 +
 +#if defined(CONFIG_SYS_BOOT_NAND)
 +#define CONFIG_SYS_USE_NAND
@@ -817,25 +947,30 @@ index 0000000000..70d66ef460
 +/* Serial port */
 +#define CONFIG_MXC_UART
 +#define CONFIG_MXC_UART_BASE		UART5_BASE
++#undef CONFIG_CONS_INDEX
 +#define CONFIG_CONS_INDEX		5
-+#define CONFIG_CONSOLE_PORT		"ttymxc4"
++#define CONSOLE_DEV			"ttymxc4"
 +#define CONFIG_BAUDRATE			115200
-+
-+#define CONFIG_MODULE_FUSE
-+#define CONFIG_OF_SYSTEM_SETUP
 +
 +/* Ethernet */
 +#define CONFIG_FEC_ENET_DEV		0
 +#if (CONFIG_FEC_ENET_DEV == 0)
 +#define IMX_FEC_BASE			ENET_BASE_ADDR
 +#define CONFIG_FEC_MXC_PHYADDR          0x0
++#define CONFIG_ETHPRIME                 "FEC0"
 +#define CONFIG_FEC_XCV_TYPE             RMII
 +#elif (CONFIG_FEC_ENET_DEV == 1)
 +#define IMX_FEC_BASE			ENET2_BASE_ADDR
 +#define CONFIG_FEC_MXC_PHYADDR          0x1
++#define CONFIG_ETHPRIME                 "FEC1"
 +#define CONFIG_FEC_XCV_TYPE             RMII
 +#endif
 +
++/* I2C */
++#define CONFIG_SYS_I2C_MXC_I2C1
++#define CONFIG_SYS_I2C_MXC_I2C2
++
++#undef CONFIG_DEFAULT_FDT_FILE
 +#define CONFIG_DEFAULT_FDT_FILE		"zImage-imx6ul-" CONFIG_SYS_BOARD ".dtb"
 +
 +#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
@@ -866,6 +1001,9 @@ index 0000000000..70d66ef460
 +	CONFIG_DEFAULT_NETWORK_SETTINGS \
 +	CONFIG_EXTRA_NETWORK_SETTINGS \
 +	"boot_fdt=yes\0" \
++	"bootargs_mmc_linux=setenv bootargs console=${console},${baudrate} " \
++		"${bootargs_linux} root=${mmcroot} ${mtdparts}" \
++		"${bootargs_once} ${extra_bootargs}\0" \
 +	"bootargs_nfs=" \
 +		"if test ${ip_dyn} = yes; then " \
 +			"bootargs_ip=\"ip=dhcp\";" \
@@ -892,13 +1030,16 @@ index 0000000000..70d66ef460
 +		"${bootargs_linux} root=/dev/nfs " \
 +		"${bootargs_ip} nfsroot=${serverip}:${rootpath},v3,tcp " \
 +		"${mtdparts} ${bootargs_once} ${extra_bootargs}\0" \
-+	"console=" CONFIG_CONSOLE_PORT "\0" \
++	"console=" CONSOLE_DEV "\0" \
++	"dboot_kernel_var=zimage\0" \
 +	"fdt_addr=0x83000000\0" \
 +	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0" \
 +	"fdt_high=0xffffffff\0"	  \
 +	"initrd_addr=0x83800000\0" \
 +	"initrd_file=uramdisk.img\0" \
 +	"initrd_high=0xffffffff\0" \
++	"update_addr=" __stringify(CONFIG_DIGI_UPDATE_ADDR) "\0" \
++	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 +	"recovery_file=recovery.img\0" \
 +	"script=boot.scr\0" \
 +	"uboot_file=u-boot.imx\0" \
@@ -908,11 +1049,12 @@ index 0000000000..70d66ef460
 +	"test-mode=On\0" \
 +	"serial-number=1234567890\0" \
 +	"factory-restore=0\0"
++
 +#if defined(CONFIG_SYS_BOOT_NAND)
 +#define CONFIG_EXTRA_ENV_SETTINGS \
 +	CONFIG_COMMON_ENV \
 +	CONFIG_ENV_MTD_SETTINGS \
-+	"bootargs_linux=vt.global_cursor_default=0\0" \
++	"bootargs_linux=\0" \
 +	"bootargs_nand_linux=setenv bootargs console=${console},${baudrate} " \
 +		"${bootargs_linux} ${mtdparts} ubi.mtd=${mtdlinuxindex} " \
 +		"ubi.mtd=${mtdrootfsindex} root=ubi1_0 " \
@@ -947,7 +1089,6 @@ index 0000000000..70d66ef460
 +	"loadscript=load mmc ${mmcbootdev}:${mmcpart} ${loadaddr} ${script}\0" \
 +	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
 +	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
-+	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
 +	"mmcautodetect=yes\0" \
 +	"mmcargs=setenv bootargs console=${console},${baudrate} " \
 +		"${mtdparts} " \
@@ -958,6 +1099,10 @@ index 0000000000..70d66ef460
 +#define CONFIG_SYS_MMC_ENV_DEV		0   /* USDHC2 */
 +#define CONFIG_SYS_MMC_ENV_PART		0	/* user area */
 +#define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */
++
++/* Carrier board version and ID commands */
++#define CONFIG_CMD_BOARD_VERSION
++#define CONFIG_CMD_BOARD_ID
 +
 +/* Carrier board version in OTP bits */
 +#define CONFIG_HAS_CARRIERBOARD_VERSION
@@ -981,19 +1126,13 @@ index 0000000000..70d66ef460
 +#define CONFIG_CARRIERBOARD_ID_OFFSET	4
 +#endif /* CONFIG_HAS_CARRIERBOARD_ID */
 +
-+#define CONFIG_BOOTDELAY               1
-+
 +/* UBI and UBIFS support */
-+#define CONFIG_CMD_UBI
 +#define CONFIG_RBTREE
 +#define CONFIG_CMD_UBIFS
 +#define CONFIG_LZO
 +#define CONFIG_DIGI_UBI
 +
-+/* Disable all UBI messages during boot */
-+#define CONFIG_UBI_SILENCE_MSG
-+
-+#endif /* CCIMX6ULSTARTER_CONFIG_H */
---
-2.11.0
++#endif /* R1701_CONFIG_H */
+-- 
+2.17.1
 
