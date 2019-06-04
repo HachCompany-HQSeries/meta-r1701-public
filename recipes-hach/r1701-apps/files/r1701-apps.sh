@@ -4,6 +4,9 @@ case "$1" in
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
         echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
 
+        # Handle SD card. Format SD card if first partition (vfat) and second partition (ext4) is not available.
+        sh /opt/hach/bin/formatsd
+
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
         # sheet.
         screen_active_area_size="mmsize=42.672x68.072"
@@ -32,6 +35,10 @@ case "$1" in
 
             # Delete all exceptions files.
             rm -rf /opt/hach/exceptions/*
+
+            # Delete data base.
+            rm -rf /run/media/mmcblk1p2/db
+            rm -rf /run/media/mmcblk1p1/*
             sync
 
             # since factory restore is done, reset u-boot variable to 0.
@@ -46,15 +53,6 @@ case "$1" in
                 echo "Factory restore done."
             fi
         fi
-
-        # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
-        #if [ "${testmode}" = "On" ]; then
-            #echo "r1701 - Ethernet enabled..."
-        #else
-            # ifconfig eth0 down
-            # modprobe -r fec smsc libphy
-            #echo "r1701 - Ethernet disabled..."
-        #fi
 
         # Make sure that all USB related kernel modules are not loaded. Firmware will handle the USB gadget connection
         # based on meter settings.

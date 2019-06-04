@@ -15,7 +15,7 @@ index 1e34792f2017..9958c50b6e87 100644
 --- a/drivers/video/fbdev/Kconfig
 +++ b/drivers/video/fbdev/Kconfig
 @@ -2507,3 +2507,17 @@ config FB_RPISENSE
- 
+
  	help
  	  This is the framebuffer driver for the Raspberry Pi Sense HAT
 +
@@ -39,7 +39,7 @@ index bcd656d6da80..b4d9065aea8b 100644
 @@ -149,5 +149,8 @@ obj-$(CONFIG_FB_SSD1307)	  += ssd1307fb.o
  obj-$(CONFIG_FB_SIMPLE)           += simplefb.o
  obj-$(CONFIG_FB_RPISENSE)	  += rpisense-fb.o
- 
+
 +# HACH - r1701 MIP display driver
 +obj-$(CONFIG_FB_LS0XXB7DXXX)	  += mipdisplay-3-2-inch.o
 +
@@ -956,13 +956,13 @@ index 000000000000..072dcc71c292
 +        pr_err(KERN_ERR "%s: Failed to request GPIO for DISP control pin, return code # %d\n", __func__, ret);
 +        goto free_unreg_fb;
 +    }
-+
++    gpio_export(privdata->disp, true);
 +    ret = gpio_request_one(of_get_named_gpio(np, "gpios", 1), GPIOF_OUT_INIT_LOW, "SER_LCD_EXTCOM");
 +    if(ret < 0){
 +        pr_err(KERN_ERR "%s: Failed to request GPIO for EXTCOMIN control pin, return code # %d\n", __func__, ret);
 +        goto free_disp_pin;
 +    }
-+
++    gpio_export(privdata->extcomin, true);
 +    ret = mipdisplay_On(privdata);
 +    if(ret < 0){
 +        pr_err(KERN_ERR "%s: Failed to turn on display!\n", __func__);
@@ -991,11 +991,11 @@ index 000000000000..072dcc71c292
 +    spi_set_drvdata(spi, NULL);
 +
 +free_extcomin_pin:
++    gpio_unexport(privdata->extcomin);
 +    gpio_free(privdata->extcomin);
-+
 +free_disp_pin:
++    gpio_unexport(privdata->disp);
 +    gpio_free(privdata->disp);
-+
 +free_unreg_fb:
 +    unregister_framebuffer(privdata->info);
 +
@@ -1090,6 +1090,6 @@ index 000000000000..072dcc71c292
 +MODULE_DESCRIPTION("Sharp 3.2 inch portrait Memory LCD Driver");
 +MODULE_AUTHOR("Devang Patel");
 +MODULE_LICENSE("GPL v2");
--- 
+--
 2.11.0
 
