@@ -566,8 +566,8 @@ index 000000000000..33f4a4aadec5
 +        // maximum charging voltage (in uV) - 4.1 VDC
 +        ti,battery-regulation-voltage = <4100000>;
 +
-+        // maximum charging current (in uA) - 1024 mA
-+        ti,charge-current = <1024000>;
++        // maximum charging current (in uA) - 1536 mA
++        ti,charge-current = <1536000>;
 +
 +        // charge will be terminated when current in constant-voltage phase drops below this value (in uA) - 256 mA
 +        ti,termination-current = <256000>;
@@ -588,8 +588,8 @@ index 000000000000..33f4a4aadec5
 +        // charge timer in hours: 5,8,12 and 20 - 8 hours
 +        ti,charge-timer= <8>;
 +
-+        // IR Compensation Resistor Setting (uOhm) - 80mOhm
-+        ti,compensation-resistor= <80000>;
++        // IR Compensation Resistor Setting (uOhm) - 40mOhm
++        ti,compensation-resistor= <40000>;
 +
 +        //IR Compensation Voltage Clamp (uV) - 96mV
 +        ti,compensation-voltage= <96000>;
@@ -1483,8 +1483,8 @@ index 000000000000..df165787ea26
 +        // maximum charging voltage (in uV) - 4.1 VDC
 +        ti,battery-regulation-voltage = <4100000>;
 +
-+        // maximum charging current (in uA) - 1024 mA
-+        ti,charge-current = <1024000>;
++        // maximum charging current (in uA) - 1536 mA
++        ti,charge-current = <1536000>;
 +
 +        // charge will be terminated when current in constant-voltage phase drops below this value (in uA) - 256 mA
 +        ti,termination-current = <256000>;
@@ -1505,8 +1505,8 @@ index 000000000000..df165787ea26
 +        // charge timer in hours: 5,8,12 and 20 - 8 hours
 +        ti,charge-timer= <8>;
 +
-+        // IR Compensation Resistor Setting (uOhm) - 80mOhm
-+        ti,compensation-resistor= <80000>;
++        // IR Compensation Resistor Setting (uOhm) - 40mOhm
++        ti,compensation-resistor= <40000>;
 +
 +        //IR Compensation Voltage Clamp (uV) - 96mV
 +        ti,compensation-voltage= <96000>;
