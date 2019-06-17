@@ -7,10 +7,10 @@
 #
 if test -n "${model-type}"; then
     if test "${model-type}" = "HQ_MPP"; then
-        setenv fdt_file zImage-imx6ul-r1701-mpp.dtb
+        setenv fdt_file imx6ul-r1701-mpp.dtb
         echo "# Using fdt_file: $fdt_file for ${model-type}"
     elif test "${model-type}" = "HQ_HPP"; then
-        setenv fdt_file zImage-imx6ul-r1701-hpp.dtb
+        setenv fdt_file imx6ul-r1701-hpp.dtb
         echo "# Using fdt_file: $fdt_file for ${model-type}"
     else
         echo "Failed to detect correct model type, Detected Model Type # ${model-type}"
@@ -21,7 +21,7 @@ else
     # Set device tree filename depending on the hardware variant i.e. Does SOM is wireless or non-wireless. 2 & 4 are
     # are Wireless variant and 3 is non wireless one.
     #
-    setenv fdt_file zImage-imx6ul-r1701-mpp.dtb
+    setenv fdt_file imx6ul-r1701-mpp.dtb
     if test "${module_variant}" = "0x02" || test "${module_variant}" = "0x04"; then
         echo "------ Wireless SOM variant, Wrong SOM for this instrument ------ Using default fdt_file: $fdt_file"
     elif test "${module_variant}" = "0x03"; then
