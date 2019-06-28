@@ -230,7 +230,7 @@ format_ubi_volume() {
 #------------------------------------------------------------------------------
 format_emmc_block() {
 	# Find partition block number.
-	local partition_block="/dev/mmcblk0p$(fdisk -l /dev/mmcblk0 | sed -ne "s,^[^0-9]*\([0-9]\+\).*\<${1}\>.*,\1,g;T;p")"
+	local partition_block="/dev/mmcblk0p$(parted -s /dev/mmcblk0 print | sed -ne "s,^[^0-9]*\([0-9]\+\).*\<${1}\>.*,\1,g;T;p")"
 	if [ -b "${partition_block}" ]; then
 		# Umount in case partition is mounted, ignore errors.
 		if grep -qs "${partition_block}" /proc/mounts; then
@@ -262,7 +262,7 @@ swu_package_path() {
 		local pkg_name="$(basename ${1})"
 
 		for i in ${UPDATE_MOUNT_DIR} $(echo ${USB_MOUNT_DIR}/*); do
-			echo $i | grep -qs "${USB_MOUNT_DIR}/\*" && continue
+			# echo $i | grep -qs "${USB_MOUNT_DIR}/\*" && continue
 			if [ -f "${i}/${pkg_name}" ]; then
 				swu_abspath="${i}/${pkg_name}"
 				break
@@ -272,7 +272,7 @@ swu_package_path() {
 		if [ -n "${swu_abspath}" ]; then
 			echo "${swu_abspath}"
 		else
-			quit_with_error "Unable to find update package '${pkg_name}'"
+			quit_with_error "Unable to find update package ${1}"
 		fi
 	else
 		echo "${1}"
@@ -287,7 +287,7 @@ swu_package_path() {
 # @param ${1}  - SWU package
 #------------------------------------------------------------------------------
 check_swu_package() {
-	log "Checking update package '$(basename ${1})'"
+	log "Checking update package ${1}"
 
 	if [ -z "${1}" ]; then
 		quit_with_error "Firmware update package not specified"
@@ -303,7 +303,7 @@ check_swu_package() {
 	fi
 
 	if [ "$?" != "0" ]; then
-		quit_with_error "Invalid update package '$(basename ${1})'"
+		quit_with_error "Invalid update package ${1}"
 	fi
 }
 
@@ -349,19 +349,6 @@ set_encryption_flag() {
 	fi
 }
 
-#------------------------------------------------------------------------------
-# Function - get_kernel_version
-#
-# Obtain the kernel version and return it in number format
-#
-# @return  - kernel version
-#------------------------------------------------------------------------------
-get_kernel_version() {
-	major="$(uname -r | cut -d'.' -f1)"
-	minor="$(uname -r | cut -d'.' -f2)"
-	echo $(((major << 8) + minor))
-}
-
 # Main
 #------------------------------------------------------------------------------
 # Setup the environment.
@@ -382,8 +369,6 @@ if [ -f /proc/sys/kernel/hotplug ]; then
 	mdev -s
 fi
 
-# Give some time for the devices to settle down
-sleep 2
 
 # Run all shell scripts in postinstall folder
 run-parts /etc/*-postinsts
@@ -394,8 +379,32 @@ mkdir -p /var/lock
 # Set kernel console loglevel.
 sysctl -q -w kernel.printk=4
 
-# Start psplash.
-psplash &
+if [ "$(is_nand)" = "no" ]; then
+	# Launch 'rngd' to feed random data to kernel entropy pool
+	mkdir -p /var/run && rngd
+fi
+
+# Read the model type variable.
+read_uboot_var model-type modeltype
+
+# Load display driver.
+#if [ "${modeltype}" = "HQ_HPP" ]; then
+    #modprobe -r mipdisplay-3-2-inch
+    #modprobe mxsfb
+    #export FRAMEBUFFER=/dev/fb0
+#else
+    #modprobe -r mxsfb
+    #modprobe mipdisplay-3-2-inch
+    #export FRAMEBUFFER=/dev/fb0
+#fi
+
+#modprobe sdhci_esdhc_imx
+
+# Give some time for the devices to settle down
+sleep 2
+
+# Start xsplash.
+xsplash &
 
 # Parse the kernel command line.
 for arg in $(cat /proc/cmdline); do
@@ -413,8 +422,8 @@ if [ -n "${rescue}" ]; then
 	done
 fi
 
-log "Starting recovery..."
-psplash_message "Starting recovery..."
+log "Starting update..."
+psplash_message "Starting update..."
 
 # Read the recovery command.
 read_uboot_var "${ENV_RECOVERY_COMMAND}" COMMAND
@@ -466,7 +475,7 @@ if [ -n "${encryption_key_bool}" ]; then
 	# Format partition.
 	if [ "$(is_nand)" = "no" ]; then
 		psplash_message "Formatting rootfs partition..."
-		rootfs_block="/dev/mmcblk0p$(fdisk -l /dev/mmcblk0 | sed -ne "s,^[^0-9]*\([0-9]\+\).*\<rootfs\>.*,\1,g;T;p")"
+		rootfs_block="/dev/mmcblk0p$(parted -s /dev/mmcblk0 print | sed -ne "s,^[^0-9]*\([0-9]\+\).*\<rootfs\>.*,\1,g;T;p")"
 		trustfence-tool --format ${rootfs_block} cryptroot
 	fi
 	psplash_progress "100"
@@ -512,3 +521,4 @@ fi
 # End the recovery process.
 clear_uboot_vars
 reboot_system
+
