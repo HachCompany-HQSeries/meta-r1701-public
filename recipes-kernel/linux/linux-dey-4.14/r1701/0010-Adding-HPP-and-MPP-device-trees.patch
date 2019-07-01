@@ -1,13 +1,13 @@
-From 6f64391acfe38dc4e31fe524326db66e76b8c1b1 Mon Sep 17 00:00:00 2001
-From: Devang Patel <dpatel@hach.com>
-Date: Sun, 19 May 2019 15:58:31 -0600
+From 0b371703d20e2792f7cab0c0021a63c6fa59610a Mon Sep 17 00:00:00 2001
+From: Robert Yang <ryang@hach.com>
+Date: Mon, 1 Jul 2019 17:28:49 +0000
 Subject: [PATCH 10/10] Adding-HPP-and-MPP-device-trees
 
 ---
  arch/arm/boot/dts/Makefile             |   4 +-
- arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 945 +++++++++++++++++++++++++
- arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 796 +++++++++++++++++++++
- 3 files changed, 1744 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx6ul-r1701-hpp.dts | 952 +++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6ul-r1701-mpp.dts | 804 +++++++++++++++++++++
+ 3 files changed, 1759 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-hpp.dts
  create mode 100644 arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 
@@ -28,10 +28,10 @@ index 9dfad2cf1135..bb8a5f92666e 100644
  	imx6ull-14x14-ddr3-arm2-adc.dtb \
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-hpp.dts b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
 new file mode 100644
-index 000000000000..d1b655bf1eee
+index 000000000000..3c1d5b28610c
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
-@@ -0,0 +1,945 @@
+@@ -0,0 +1,952 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -557,9 +557,12 @@ index 000000000000..d1b655bf1eee
 +
 +        // The INT pin sends active low, 256-µs pulse to host to report charger device status and fault.
 +        pinctrl-names = "default";
-+        //pinctrl-0 = <&pinctrl_charger_irq>;
-+        interrupt-parent = <&mca_gpio>;
-+        interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
++  
++        //interrupt-parent = <&mca_gpio>;
++        //interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
++        pinctrl-0 = <&pinctrl_charger_irq>;
++        interrupt-parent = <&gpio4>;
++        interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
 +
 +        // maximum charging voltage (in uV) - 4.1 VDC
 +        ti,battery-regulation-voltage = <4100000>;
@@ -879,7 +882,12 @@ index 000000000000..d1b655bf1eee
 +                MX6UL_PAD_ENET2_RX_DATA1__I2C3_SDA      0x4001b8b0
 +            >;
 +        };
-+
++        /* Battery Charger IRQ - Active Low Signal */
++        pinctrl_charger_irq: chargerIrq {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0
++            >;
++        };
 +		// Battery Charger Chip - I2C Bus as GPIO definition.
 +		pinctrl_i2c3_gpio: i2c3gpiogrp {
 +			fsl,pins = <
@@ -972,17 +980,16 @@ index 000000000000..d1b655bf1eee
 +                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // SPARE_W10_TP1
 +                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
-+                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  // SPARE_Y2_TP2
 +            >;
 +        };
 +    };
 +};
 diff --git a/arch/arm/boot/dts/imx6ul-r1701-mpp.dts b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
 new file mode 100644
-index 000000000000..b1508f9ba210
+index 000000000000..5e2bece5a17e
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
-@@ -0,0 +1,796 @@
+@@ -0,0 +1,804 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1480,9 +1487,12 @@ index 000000000000..b1508f9ba210
 +
 +        // The INT pin sends active low, 256-µs pulse to host to report charger device status and fault.
 +        pinctrl-names = "default";
-+        //pinctrl-0 = <&pinctrl_charger_irq>;
-+        interrupt-parent = <&mca_gpio>;
-+        interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
++  
++        //interrupt-parent = <&mca_gpio>;
++        //interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
++        pinctrl-0 = <&pinctrl_charger_irq>;
++        interrupt-parent = <&gpio4>;
++        interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
 +
 +        // maximum charging voltage (in uV) - 4.1 VDC
 +        ti,battery-regulation-voltage = <4100000>;
@@ -1706,6 +1716,12 @@ index 000000000000..b1508f9ba210
 +                MX6UL_PAD_ENET2_RX_DATA1__I2C3_SDA      0x4001b8b0
 +            >;
 +        };
++        /* Battery Charger IRQ - Active Low Signal */
++        pinctrl_charger_irq: chargerIrq {
++            fsl,pins = <
++                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0
++            >;
++        };
 +
 +		// Battery Charger Chip - I2C Bus as GPIO definition.
 +		pinctrl_i2c3_gpio: i2c3gpiogrp {
@@ -1772,8 +1788,7 @@ index 000000000000..b1508f9ba210
 +
 +                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // SPARE_W10_TP1
-+                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
-+                MX6UL_PAD_CSI_DATA05__GPIO4_IO26        0x10b0  // SPARE_Y2_TP2
++                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27 
 +
 +            >;
 +        };
