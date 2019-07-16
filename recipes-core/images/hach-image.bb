@@ -80,6 +80,8 @@ IMAGE_INSTALL += " \
     tzdata \
     sysinfo \
     r1701-apps \
+    dosfstools \
+    simple-mtpfs \
 "
 
 # Add predefined runtime package groups.
