@@ -81,7 +81,7 @@ IMAGE_INSTALL += " \
     sysinfo \
     r1701-apps \
     dosfstools \
-    simple-mtpfs \
+    umtp \
 "
 
 # Add predefined runtime package groups.
