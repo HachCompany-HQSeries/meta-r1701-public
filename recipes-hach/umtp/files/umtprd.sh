@@ -6,6 +6,7 @@ UMTPRD_DAEMON_PATH=/usr/bin/umtprd
 UMTPRD_DAEMON_USER=root
 UMTPRD_MOUNT_DIR=/tmp/cfg
 UMTPRD_FUNCTIONFS_MOUNT_DIR=/dev/ffs-mtp
+UMTPRD_CONF_PATH=/etc/umtprd/umtprd.conf
 
 case "$1" in
   start)
@@ -13,6 +14,7 @@ case "$1" in
 
     modelName=$(fw_printenv -n "model-name" 2>/dev/null)
     serialNumber=$(fw_printenv -n "serial-number" 2>/dev/null)
+    sed -i "s/MODELNAME/$modelName/;s/SERIALNUMBER/$serialNumber/" ${UMTPRD_CONF_PATH}
 
     # Make sure that all USB related kernel modules are not loaded. Firmware will handle the USB gadget connection
     # based on meter settings.
@@ -59,7 +61,7 @@ case "$1" in
 
     start-stop-daemon --start --quiet --exec ${UMTPRD_DAEMON_PATH}&
 
-    #sleep 2
+    #sleep 1
 
     # Disable the usb functions in beginning.
     #echo "" > ${UMTPRD_MOUNT_DIR}/usb_gadget/g1/UDC
@@ -76,7 +78,7 @@ case "$1" in
     ;;
   restart|reload)
     "$0" stop
-    "$0" start
+    start-stop-daemon --start --quiet --exec ${UMTPRD_DAEMON_PATH}&
     ;;
   *)
     echo "Usage: $0 {start|stop|restart}"
