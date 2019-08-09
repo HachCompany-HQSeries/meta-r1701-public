@@ -42,8 +42,8 @@ case "$1" in
     mkdir -p configs/c.1/strings/0x409
     #echo "DIR made - strings/0x409  and configs/c.1/strings/0x409"
 
-    echo 0x025C > idProduct
     echo 0x1670 > idVendor
+    echo 0x025C > idProduct
     echo ${serialNumber} > strings/0x409/serialnumber
     echo "Hach" > strings/0x409/manufacturer
     echo ${modelName} > strings/0x409/product
