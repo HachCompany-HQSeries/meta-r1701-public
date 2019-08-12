@@ -82,6 +82,8 @@ IMAGE_INSTALL += " \
     tzdata \
     sysinfo \
     r1701-apps \
+    dosfstools  \
+    umtp  \
 "
 
 # Add predefined runtime package groups.
