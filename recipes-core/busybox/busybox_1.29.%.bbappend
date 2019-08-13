@@ -3,15 +3,16 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_append = " file://udhcpd.conf"
 
 # USB DHCP Daemon package
-FILES_${PN}-udhcpd = "${sysconfdir}/init.d/udhcpd.conf"
-INITSCRIPT_PACKAGES =+ "${PN}-udhcpd"
-INITSCRIPT_NAME_${PN}-udhcpd = "udhcpd.conf"
+FILES_${PN}-udhcpd = "${sysconfdir}/udhcpd.conf"
+#FILES_${PN}-udhcpd = "${sysconfdir}/init.d/udhcpd.conf"
+#INITSCRIPT_PACKAGES =+ "${PN}-udhcpd"
+#INITSCRIPT_NAME_${PN}-udhcpd = "udhcpd.conf"
 
 do_install_append_r1701() {
 
     # Install USB RNDIS related static IP address information.
-    install -m 0755 ${WORKDIR}/udhcpd.conf ${D}${sysconfdir}/init.d/
-
+    #install -m 0755 ${WORKDIR}/udhcpd.conf ${D}${sysconfdir}/init.d/
+    install -m 0644 ${WORKDIR}/udhcpd.conf ${D}/${sysconfdir}/udhcpd.conf
     # Removed HTTPD related stuff.
     if grep "CONFIG_HTTPD=y" ${WORKDIR}/defconfig; then
         rm -f ${D}/srv/www/index.html

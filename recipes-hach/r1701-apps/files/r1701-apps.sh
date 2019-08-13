@@ -4,6 +4,9 @@ case "$1" in
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
         echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
 
+        # Handle SD card. Format SD card if first partition (vfat) and second partition (ext4) is not available.
+        sh /opt/hach/bin/formatsd
+
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
         # sheet.
         screen_active_area_size="mmsize=42.672x68.072"
