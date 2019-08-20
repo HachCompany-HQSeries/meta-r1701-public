@@ -1,7 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 SRC_URI += " \
     file://sw-version \
-	file://authorized_keys \
+    file://authorized_keys \
 "
 SOFTWARE_VERSION ?= "0.0.1"
 USER="root"
