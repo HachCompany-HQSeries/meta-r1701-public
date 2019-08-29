@@ -48,7 +48,7 @@ index dd0e27364da1..119f37657f63 100644
 +	if (strcmp(model, "HQ_MPP") == 0){
 +		logo_shown = FBCON_LOGO_DONTSHOW;
 +		fbcon_device = ERR_PTR(EPERM);
-+		status = -1;
++		status = -1; return;
 +	}
 +	else{
 +		status = 0;
