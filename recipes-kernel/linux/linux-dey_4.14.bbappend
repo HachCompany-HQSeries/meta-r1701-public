@@ -7,6 +7,11 @@ SRC_URI = " \
     file://defconfig \
 "
 
+# Using special version of Linux. See git log for why.. see the fixes they have done. We need those.
+LOCALVERSION = "-dey"
+SRCBRANCH = "v4.14/dey-2.6/maint"
+SRCREV = "8aed12dc111bfd08c60db6299366706634c920bc"
+
 SRC_URI_append = " \
     file://0001-Adding-hach-r1701-as-carrier-board-in-to-OTP-kernel.patch \
     file://0002-Adding-sharp-MIP-display-support.patch \
@@ -17,5 +22,6 @@ SRC_URI_append = " \
     file://0007-NAND-suspend-resume-initialization-issue-patch.patch \
     file://0008-Fix-pressure-sensor-crc4-check.patch \
     file://0009-Exporting-fix-regulator-GPIO-pin-to-sysfs-for-usersp.patch \
-    file://0010-Adding-HPP-and-MPP-device-trees.patch \
+    file://0010-Fix-for-SDMA-firmware-loading-during-kernel-boot-rat.patch \
+    file://0011-Adding-HPP-and-MPP-device-trees.patch \
 "
