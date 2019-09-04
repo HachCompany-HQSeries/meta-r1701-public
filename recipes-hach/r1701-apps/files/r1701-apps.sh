@@ -35,6 +35,10 @@ case "$1" in
 
             # Delete all exceptions files.
             rm -rf /opt/hach/exceptions/*
+
+            # Delete data base.
+            rm -rf /run/media/mmcblk1p2/db
+            rm -rf /run/media/mmcblk1p1/*
             sync
 
             # since factory restore is done, reset u-boot variable to 0.
@@ -49,15 +53,6 @@ case "$1" in
                 echo "Factory restore done."
             fi
         fi
-
-        # Handle RJ45 (Ethernet module), firmware will disable ethernet power control line if test mode is not set.
-        #if [ "${testmode}" = "On" ]; then
-            #echo "r1701 - Ethernet enabled..."
-        #else
-            # ifconfig eth0 down
-            # modprobe -r fec smsc libphy
-            #echo "r1701 - Ethernet disabled..."
-        #fi
 
         # Make sure that all USB related kernel modules are not loaded. Firmware will handle the USB gadget connection
         # based on meter settings.
