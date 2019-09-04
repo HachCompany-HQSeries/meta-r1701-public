@@ -398,10 +398,10 @@ read_uboot_var model-type modeltype
     #export FRAMEBUFFER=/dev/fb0
 #fi
 
-modprobe sdhci_esdhc_imx
+#modprobe sdhci_esdhc_imx
 
 # Give some time for the devices to settle down
-sleep 5
+sleep 2
 
 # Start xsplash.
 xsplash &
@@ -521,3 +521,4 @@ fi
 # End the recovery process.
 clear_uboot_vars
 reboot_system
+

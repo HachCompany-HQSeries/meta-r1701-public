@@ -32,7 +32,7 @@ DISTRO_EXTRA_RDEPENDS_append_qemux86-64 = " ${POKYQEMUDEPS}"
 IMAGE_FEATURES_remove_r1701 = "package-management"
 
 # Remove distribution feature.
-DISTRO_FEATURES_remove = "x11 wayland wifi bluetooth"
+DISTRO_FEATURES_remove += " x11 wayland wifi bluetooth"
 
 # We only use direct framebuffer. No need to have x11 realted tools and libraries.
 CONFLICT_DISTRO_FEATURES = "directfb x11"
@@ -64,6 +64,8 @@ IMAGE_FEATURES_remove += " \
     modemmanager \
     libdrm \
     cryptoauthlib \
+    dey-examples-digiapix \
+    ssh-server-dropbear \
 "
 
 IMAGE_INSTALL += " \
@@ -80,8 +82,8 @@ IMAGE_INSTALL += " \
     tzdata \
     sysinfo \
     r1701-apps \
-    dosfstools \
-    umtp \
+    dosfstools  \
+    umtp  \
 "
 
 # Add predefined runtime package groups.

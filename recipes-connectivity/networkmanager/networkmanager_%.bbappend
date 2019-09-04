@@ -2,12 +2,11 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
 # Removed redudant packages.
 PACKAGECONFIG_remove = "netconfig nss modemmanager \
-                        ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', '${BLUEZ}', '', d)} \
-                        ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', 'wifi', '', d)}"
+                        ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', '', '', d)} \
+                        ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', '', '', d)}"
 PACKAGECONFIG[bluez5] = ""
 PACKAGECONFIG[wifi] = ""
 PACKAGECONFIG[modemmanager] = ""
-#PACKAGECONFIG[ppp] = ""
 
 # We do not use ethernet 1 and wireless
 ETH1_STATIC_CIDR = ""

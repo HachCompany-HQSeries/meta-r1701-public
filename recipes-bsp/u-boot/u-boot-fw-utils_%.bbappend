@@ -1,11 +1,11 @@
-# Copyright (C) 2018 HACH Company
+# Copyright (C) 2019 HACH Company
+FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
+SRC_URI += " \
+    file://fw_env.config \
+"
 
-pkg_postinst_${PN}() {
-	# run the postinst script on first boot
-	if [ x"$D" != "x" ]; then
-		exit 1
-	fi
+pkg_postinst_ontarget_${PN}() {
 	CONFIG_FILE="/etc/fw_env.config"
 	MMCDEV="$(sed -ne 's,.*root=/dev/mmcblk\([0-9]\)p.*,\1,g;T;p' /proc/cmdline)"
 	if [ -n "${MMCDEV}" ]; then
@@ -13,13 +13,14 @@ pkg_postinst_${PN}() {
 	fi
 
 	PARTTABLE="/proc/mtd"
-    # create update partition ubifs
+	
+	# HACH Start - Create update partition ubifs.
 	update_mtd="$(sed -ne "s/\(^mtd[0-9]\+\):.*\<update\>.*/\1/g;T;p" ${PARTTABLE} 2>/dev/null)"
 	ubidetach -p /dev/${update_mtd} 2>/dev/null
 	dev_number="$(ubiattach -p /dev/${update_mtd} 2>/dev/null | sed -ne 's,.*device number \([0-9]\).*,\1,g;T;p' 2>/dev/null)"
 	ubimkvol "/dev/ubi${dev_number}" -N "update" -m 2>/dev/null
-
-
+	# HACH End
+	
 	MTDINDEX="$(sed -ne "s/\(^mtd[0-9]\+\):.*\<environment\>.*/\1/g;T;p" ${PARTTABLE} 2>/dev/null)"
 	if [ -n "${MTDINDEX}" ]; then
 		# Initialize variables for fixed offset values
@@ -35,9 +36,9 @@ pkg_postinst_${PN}() {
 			# - Both copies starting at the same offset
 			ENV_REDUND_OFFSET="${UBOOT_ENV_OFFSET}"
 			# - Calculated erase block size
-			ERASEBLOCK="$(grep "^${MTDINDEX}" ${PARTTABLE} | awk '{printf("0x%s",$3)}')"
+			ERASEBLOCK="$(grep "^${MTDINDEX}:" ${PARTTABLE} | awk '{printf("0x%s",$3)}')"
 			# - Calculated number of blocks
-			MTDSIZE="$(grep "^${MTDINDEX}" ${PARTTABLE} | awk '{printf("0x%s",$2)}')"
+			MTDSIZE="$(grep "^${MTDINDEX}:" ${PARTTABLE} | awk '{printf("0x%s",$2)}')"
 			NBLOCKS="$(((MTDSIZE - UBOOT_ENV_OFFSET) / ERASEBLOCK))"
 			# If a range was provided, calculate the number of
 			# blocks in the range and use that number, unless they
