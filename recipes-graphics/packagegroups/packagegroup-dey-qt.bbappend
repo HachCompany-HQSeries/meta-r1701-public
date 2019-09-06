@@ -3,11 +3,24 @@
 #
 SUMMARY = "QT packagegroup for HACH image"
 
-QT5_PKS_append_ccimx6ul = " qtdeclarative-tools"
-QT5_PKS_append_r1701 = " qtdeclarative-tools"
+# Do not install.
+QT5_APPS_imxgpu3d = ""
 
-# remove serail port support.
-QT5_PKS_remove += "qtserialport"
+# Do not install fonts.
+QT5_FONTS = ""
+
+QT5_RDEPENDS_common = ""
+
+QT5_RDEPENDS_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11','${QT5_RDEPENDS_common}', \
+    'qtbase qtbase-plugins', d)}"
+
+QT5_RDEPENDS_imxpxp = "${@bb.utils.contains('DISTRO_FEATURES', 'x11','${QT5_RDEPENDS_common}', \
+    'qtbase qtbase-plugins', d)}"
+
+QT5_RDEPENDS_imxgpu3d = " \
+    ${QT5_RDEPENDS_common} \
+    gstreamer1.0-plugins-good-qt \
+"
 
 # We do not want any example and demos in final image.
 QT5_EXAMPLES = ""

@@ -8,7 +8,7 @@ DESCRIPTION = "A recipe for building the Hach r1701 target applications."
 LICENSE = "CLOSED"
 
 # Build time dependencies with other recipes.
-DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-native recovery-utils gtest gtest-native"
+DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-native recovery-utils gtest gtest-native cmake cmake-native"
 
 # Use Yocto to perform CMake configuration.
 inherit cmake pkgconfig
@@ -29,13 +29,13 @@ S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
 EXTRA_OECMAKE += " -DUNIT_TEST=OFF \
-                   -DDEBUG=OFF \
+                   -DDEBUG=ON \
                    -DENABLE_CLANG_FORMATTER=OFF \
                    -DCMAKE_CXX_STANDARD=17 \
                    -DCMAKE_CXX_STANDARD_REQUIRED=ON \
                    -DCMAKE_CXX_EXTENSIONS=OFF \
                    -DCMAKE_VERBOSE_MAKEFILE=ON \
-                   -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE}/qt5 \
+                   -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_BINDIR_NATIVE}\
                    -DCMAKE_INSTALL_PREFIX=${base_prefix}/opt/hach \
                    -DCMAKE_INSTALL_SYSCONFDIR=${base_prefix}/opt/hach/ \
                    -DCMAKE_INSTALL_BINDIR=bin \

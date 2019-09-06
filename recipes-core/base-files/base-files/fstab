@@ -7,5 +7,5 @@ tmpfs                /run                 tmpfs      mode=0755,nodev,nosuid,stri
 tmpfs                /var/volatile        tmpfs      defaults              0  0
 
 # uncomment this if your device has a SD/MMC/Transflash slot
-#/dev/mmcblk1p2      /opt                 auto       defaults,sync         1  1
+#/dev/mmcblk1p2       /opt                 auto       defaults,sync         1  1
 
