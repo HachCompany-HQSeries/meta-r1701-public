@@ -564,8 +564,8 @@ index 000000000000..3c1d5b28610c
 +        interrupt-parent = <&gpio4>;
 +        interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
 +
-+        // maximum charging voltage (in uV) - 4.1 VDC
-+        ti,battery-regulation-voltage = <4100000>;
++        // maximum charging voltage (in uV) - 4.192 VDC
++        ti,battery-regulation-voltage = <4192000>;
 +
 +        // maximum charging current (in uA) - 1024 mA
 +        ti,charge-current = <1024000>;
@@ -589,8 +589,8 @@ index 000000000000..3c1d5b28610c
 +        // charge timer in hours: 5,8,12 and 20 - 8 hours
 +        ti,charge-timer= <8>;
 +
-+        // IR Compensation Resistor Setting (uOhm) - 80mOhm
-+        ti,compensation-resistor= <80000>;
++        // IR Compensation Resistor Setting (uOhm) - 0mOhm
++        ti,compensation-resistor= <00000>;
 +
 +        //IR Compensation Voltage Clamp (uV) - 96mV
 +        ti,compensation-voltage= <96000>;
@@ -1494,8 +1494,8 @@ index 000000000000..5e2bece5a17e
 +        interrupt-parent = <&gpio4>;
 +        interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
 +
-+        // maximum charging voltage (in uV) - 4.1 VDC
-+        ti,battery-regulation-voltage = <4100000>;
++        // maximum charging voltage (in uV) - 4.192 VDC
++        ti,battery-regulation-voltage = <4192000>;
 +
 +        // maximum charging current (in uA) - 1024 mA
 +        ti,charge-current = <1024000>;
@@ -1519,8 +1519,8 @@ index 000000000000..5e2bece5a17e
 +        // charge timer in hours: 5,8,12 and 20 - 8 hours
 +        ti,charge-timer= <8>;
 +
-+        // IR Compensation Resistor Setting (uOhm) - 80mOhm
-+        ti,compensation-resistor= <80000>;
++        // IR Compensation Resistor Setting (uOhm) - 0mOhm
++        ti,compensation-resistor= <00000>;
 +
 +        //IR Compensation Voltage Clamp (uV) - 96mV
 +        ti,compensation-voltage= <96000>;
