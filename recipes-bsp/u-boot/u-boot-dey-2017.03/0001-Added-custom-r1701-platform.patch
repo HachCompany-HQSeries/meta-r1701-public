@@ -1046,7 +1046,7 @@ index 0000000000..9304fc4feb
 +	"zimage=zImage-" CONFIG_SYS_BOARD ".bin\0" \
 +	"model-type=HQ_MPP\0" \
 +	"model-name=HQ1110\0" \
-+	"test-mode=On\0" \
++	"test-mode=Off\0" \
 +	"serial-number=1234567890\0" \
 +	"factory-restore=0\0"
 +

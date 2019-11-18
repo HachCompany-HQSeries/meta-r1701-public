@@ -8,7 +8,10 @@ SRC_URI = "git://github.com/viveris/uMTP-Responder.git;branch=master;protocol=ht
            file://umtprd.conf \
            file://umtprd.sh \
 "
-SRCREV = "${AUTOREV}"
+
+# Version - v0.14.1
+# https://github.com/viveris/uMTP-Responder/commit/78d244b30dd4c2a8f04a86a92f9ec51cf08756e6
+SRCREV = "78d244b30dd4c2a8f04a86a92f9ec51cf08756e6"
 
 # Configure the SysV initialization service for the sys_mgr within the r1701_applications.
 inherit update-rc.d
