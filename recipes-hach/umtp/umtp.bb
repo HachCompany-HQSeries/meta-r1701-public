@@ -2,15 +2,23 @@ DESCRIPTION = "A recipe for building Lightweight Media Transfer Protocol (MTP) r
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d32239bcb673463ab874e80d47fae504"
 
-# Location of source code and artifacts used by this recipe.
+# Location of source code and artifacts used by this recipe. From ORIGIN
 # https://github.com/viveris/uMTP-Responder.git
-SRC_URI = "git://github.com/viveris/uMTP-Responder.git;branch=master;protocol=https \
+#SRC_URI = "git://github.com/viveris/uMTP-Responder.git;branch=master;protocol=https \
+#           file://umtprd.conf \
+#           file://umtprd.sh \
+#"
+
+# Location of source code and artifacts used by this recipe from HACH forked address.
+# https://github.com/viveris/uMTP-Responder.git
+SRC_URI = "git://github.com/HachCompany-HQSeries/uMTP-Responder.git;branch=master;protocol=https \
            file://umtprd.conf \
            file://umtprd.sh \
 "
 
 # Version - v0.14.1
-# https://github.com/viveris/uMTP-Responder/commit/78d244b30dd4c2a8f04a86a92f9ec51cf08756e6
+# https://github.com/viveris/uMTP-Responder/commit/78d244b30dd4c2a8f04a86a92f9ec51cf08756e6 (ORIGIN Link)
+# https://github.com/HachCompany-HQSeries/uMTP-Responder/commit/78d244b30dd4c2a8f04a86a92f9ec51cf08756e6 (Forked Link)
 SRCREV = "78d244b30dd4c2a8f04a86a92f9ec51cf08756e6"
 
 # Configure the SysV initialization service for the sys_mgr within the r1701_applications.
