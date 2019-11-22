@@ -24,4 +24,5 @@ SRC_URI_append = " \
     file://0009-Exporting-fix-regulator-GPIO-pin-to-sysfs-for-usersp.patch \
     file://0010-Fix-for-SDMA-firmware-loading-during-kernel-boot-rat.patch \
     file://0011-Adding-HPP-and-MPP-device-trees.patch \
+    file://0012-Configure-PWM-output-to-GPIO-in-disabled-state.patch \
 "
