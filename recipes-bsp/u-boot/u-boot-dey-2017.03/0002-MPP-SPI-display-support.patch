@@ -259,7 +259,7 @@ index 1f51b5f52f..d6edc92017 100644
  #endif
  
 +#ifdef CONFIG_VIDEO_R1701
-+    if(strcmp(getenv("model-name"), "HQ_MPP") == 0)
++    if(strcmp(getenv("model-type"), "HQ_MPP") == 0)
 +        setup_mpp_display();
 +    else
 +        setup_hpp_display();
