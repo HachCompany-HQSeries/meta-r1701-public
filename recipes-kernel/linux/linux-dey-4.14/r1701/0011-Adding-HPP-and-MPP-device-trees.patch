@@ -31,7 +31,7 @@ new file mode 100644
 index 000000000000..3c1d5b28610c
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-hpp.dts
-@@ -0,0 +1,952 @@
+@@ -0,0 +1,963 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -498,8 +498,9 @@ index 000000000000..3c1d5b28610c
 +
 +// AUDIO Module (Beeper)
 +&pwm1 {
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&pinctrl_pwm1>;
++    pinctrl-names = "default","pwm";
++    pinctrl-0 = <&pinctrl_pwm1_gpio>;
++    pinctrl-1 = <&pinctrl_pwm1_pwm>;
 +    clocks =    <&clks IMX6UL_CLK_PWM1>,
 +                <&clks IMX6UL_CLK_PWM1>;
 +    status = "okay";
@@ -507,8 +508,9 @@ index 000000000000..3c1d5b28610c
 +
 +// Color LCD backlight PWM
 +&pwm2 {
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&pinctrl_pwm2>;
++    pinctrl-names = "default","pwm";
++    pinctrl-0 = <&pinctrl_pwm2_gpio>;
++    pinctrl-1 = <&pinctrl_pwm2_pwm>;
 +    clocks =    <&clks IMX6UL_CLK_PWM2>,
 +    <&clks IMX6UL_CLK_PWM2>;
 +    status = "okay";
@@ -862,18 +864,27 @@ index 000000000000..3c1d5b28610c
 +        // };
 +
 +        // AUDIO PWM - Beeper
-+        pinctrl_pwm1: pwm1grp {
++        pinctrl_pwm1_pwm: pwm1grp-pwm {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO08__PWM1_OUT          0x110b0
 +            >;
 +        };
-+
++       pinctrl_pwm1_gpio: pwm1grp-gpio {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO08__GPIO1_IO08          0x130b0
++            >;
++        };
 +        // Color LCD back light control signal
-+        pinctrl_pwm2: pwm2grp {
++        pinctrl_pwm2_pwm: pwm2grp-pwm {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO09__PWM2_OUT          0x110b0
 +            >;
 +        };
++        pinctrl_pwm2_gpio: pwm2grp-gpio {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO09__GPIO1_IO09          0x1f0b0
++           >;
++       };
 +
 +        // Battery Charger Chip - I2C Bus definition.
 +        pinctrl_i2c3: i2c3grp {
@@ -989,7 +1000,7 @@ new file mode 100644
 index 000000000000..5e2bece5a17e
 --- /dev/null
 +++ b/arch/arm/boot/dts/imx6ul-r1701-mpp.dts
-@@ -0,0 +1,804 @@
+@@ -0,0 +1,810 @@
 +/*
 + * Copyright 2016, 2017 Digi International, Inc.
 + * Copyright 2017, 2018 HACH Company
@@ -1432,8 +1443,9 @@ index 000000000000..5e2bece5a17e
 +
 +// AUDIO Module (Beeper)
 +&pwm1 {
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&pinctrl_pwm1>;
++    pinctrl-names = "default","pwm";
++    pinctrl-0 = <&pinctrl_pwm1_gpio>;
++    pinctrl-1 = <&pinctrl_pwm1_pwm>;
 +    clocks =    <&clks IMX6UL_CLK_PWM1>,
 +                <&clks IMX6UL_CLK_PWM1>;
 +    status = "okay";
@@ -1703,9 +1715,14 @@ index 000000000000..5e2bece5a17e
 +        };
 +
 +        // AUDIO PWM - Beeper
-+        pinctrl_pwm1: pwm1grp {
++        pinctrl_pwm1_pwm: pwm1grp-pwm {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO08__PWM1_OUT          0x110b0
++            >;
++        };
++       pinctrl_pwm1_gpio: pwm1grp-gpio {
++            fsl,pins = <
++                MX6UL_PAD_GPIO1_IO08__GPIO1_IO08          0x130b0
 +            >;
 +        };
 +

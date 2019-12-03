@@ -52,7 +52,7 @@ index 5659ec2d18c4..87891c25c3e1 100644
 +        return -ENODEV;
 +    }
 +    else{
-+        //gpio_export(host->lcd_pwr_en, 0);
++        gpio_export(host->lcd_pwr_en, 1);
 +        mdelay(50);
 +    }
 +
@@ -63,7 +63,7 @@ index 5659ec2d18c4..87891c25c3e1 100644
 +        return -ENODEV;
 +    }
 +    else{
-+        //gpio_export(host->lcd_reset, 0);
++        gpio_export(host->lcd_reset, 1);
 +        mdelay(20);
 +        gpio_set_value(host->lcd_reset, 1);
 +        mdelay(10);
@@ -76,7 +76,7 @@ index 5659ec2d18c4..87891c25c3e1 100644
 +        return -ENODEV;
 +    }
 +    else{
-+        //gpio_export(host->lcd_standby, 1);
++        gpio_export(host->lcd_standby, 1);
 +        gpio_set_value(host->lcd_standby, 1);
 +    }
 +
