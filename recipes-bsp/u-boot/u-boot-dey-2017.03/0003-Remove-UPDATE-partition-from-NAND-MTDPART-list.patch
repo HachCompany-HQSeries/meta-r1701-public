@@ -1,0 +1,26 @@
+From 3dddb0b327d49ecce11b016590d449e4b5e7b307 Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Tue, 3 Dec 2019 16:07:53 -0700
+Subject: [PATCH 1/1] Remove UPDATE partition from NAND MTDPART list.
+
+---
+ include/configs/ccimx6ul_common.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/include/configs/ccimx6ul_common.h b/include/configs/ccimx6ul_common.h
+index 4ca8b5b758..6871961855 100644
+--- a/include/configs/ccimx6ul_common.h
++++ b/include/configs/ccimx6ul_common.h
+@@ -199,8 +199,7 @@
+ 					"1m(safe)," \
+ 					"12m(" CONFIG_LINUX_PARTITION ")," \
+ 					"14m(" CONFIG_RECOVERY_PARTITION ")," \
+-					"122m(rootfs)," \
+-					"-(update)"
++					"-(rootfs)"
+ #define MTDPARTS_1024MB			"mtdparts=" CONFIG_NAND_NAME ":" \
+ 					"3m(" CONFIG_UBOOT_PARTITION ")," \
+ 					"3m(environment)," \
+-- 
+2.17.1
+
