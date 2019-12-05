@@ -510,13 +510,14 @@ if [ -n "${update_package_bool}" ]; then
 	fi
 fi
 
-# Check if wipe update patition command is configured.
-if [ -n "${wipe_update_bool}" ]; then
-	log "Wipe 'update' partition requested"
-	psplash_message "Erasing update partition..."
-	psplash_progress "0"
-	format_partition update
-fi
+# Check if wipe update patition command is configured. NO NEED TO WIPE UPDATE partition, since it is not there any more
+# on NAND for HACH.
+#if [ -n "${wipe_update_bool}" ]; then
+#	log "Wipe 'update' partition requested"
+#	psplash_message "Erasing update partition..."
+#	psplash_progress "0"
+#	format_partition update
+#fi
 
 # End the recovery process.
 clear_uboot_vars
