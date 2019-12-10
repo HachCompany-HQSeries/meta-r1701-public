@@ -27,9 +27,6 @@ case "$1" in
         if [ "${factoryRestore}" = "1" ]; then
             echo "Factory restore requested..."
 
-            # Delete Database.
-            rm -rf /mnt/update/*
-
             # Delete all user settings
             rm -rf /opt/hach/settings/*
 
