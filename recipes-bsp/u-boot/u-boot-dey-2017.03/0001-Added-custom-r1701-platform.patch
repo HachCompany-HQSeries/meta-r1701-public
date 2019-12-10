@@ -844,7 +844,7 @@ new file mode 100644
 index 0000000000..9304fc4feb
 --- /dev/null
 +++ b/include/configs/r1701.h
-@@ -0,0 +1,288 @@
+@@ -0,0 +1,289 @@
 +/*
 + * Copyright (C) 2018 HACH Company
 + * Copyright (C) 2016-2018 Digi International, Inc.
@@ -1048,7 +1048,8 @@ index 0000000000..9304fc4feb
 +	"model-name=HQ1110\0" \
 +	"test-mode=Off\0" \
 +	"serial-number=1234567890\0" \
-+	"factory-restore=0\0"
++	"factory-restore=0\0" \
++	"sw-update-req=0\0"
 +
 +#if defined(CONFIG_SYS_BOOT_NAND)
 +#define CONFIG_EXTRA_ENV_SETTINGS \
