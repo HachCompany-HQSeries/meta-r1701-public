@@ -28,6 +28,7 @@ case "$1" in
         if [ "${swUpdateReq}" = "1" ]; then
             echo "Software update done... restoring settings..."
             cp -fa /run/media/mmcblk1p2/backup/settings /opt/hach/settings
+            rm -rf /run/media/mmcblk1p1/*.swu
             sync
 
             # since factory restore is done, reset u-boot variable to 0.
