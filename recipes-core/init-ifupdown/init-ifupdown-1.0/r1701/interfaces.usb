@@ -1,9 +1,0 @@
-
-#auto ##USB_INTERFACE##
-iface ##USB_INTERFACE## inet static
-        address ##USB0_STATIC_IP##
-        netmask ##USB0_STATIC_NETMASK##
-        gateway ##USB0_STATIC_GATEWAY##
-        dns-nameservers ##USB0_STATIC_DNS##
-        post-up /usr/sbin/udhcpd /etc/udhcpd.conf
-        pre-down pkill udhcpd

@@ -2,10 +2,9 @@
 
 HACH provides the following image recipes for r1701 project:
 
-  * hach-image-dbg : r1701 image with Qt and Debug suppoort
+  * hach-image-private : A QT5 busybox framebuffer image with HQ series proprietary application.
 
-  * hach-image : A QT5 busybox framebuffer image with out debug support
+  * hach-image-recovery-initramfs : HACH recovery image
 
-  * hach-image-recovery-initramfs : r1701 recovery image
 
 
