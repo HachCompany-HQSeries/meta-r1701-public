@@ -1,0 +1,316 @@
+#!/bin/sh
+#===============================================================================
+#
+#  sysinfo
+#
+#  Copyright (C) 2016-2018 by Digi International Inc.
+#  All rights reserved.
+#
+#  This program is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License version 2 as published by
+#  the Free Software Foundation.
+#
+#
+#  !Description: System information gather script
+#
+#===============================================================================
+
+FW_PRINTENV="$(which fw_printenv)"
+
+make_report(){
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-               Uptime               -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	uptime
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-          Kernel version            -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	uname -a
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-             OS release             -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	if [ -f "/etc/os-release" ]; then
+		cat /etc/os-release
+	else
+		echo "[NOT FOUND] /etc/os-release"
+	fi
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-         Build configurations       -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	if [ -f "/etc/build" ]; then
+		cat /etc/build
+	else
+		echo "[NOT FOUND] /etc/build"
+	fi
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-      U-boot saved environment      -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	if [ -x "${FW_PRINTENV}" ]; then
+		${FW_PRINTENV}
+	else
+		echo "[NOT FOUND] fw_printenv"
+	fi
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-          Linux boot log            -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	dmesg
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-       Log files from /var/log      -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	for f in $(find /var/log/ -name "*.log"); do
+		echo "${f} FILE";
+		echo "---------------------------------------";
+		cat ${f};
+		printf "\n\n"
+	done
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-         /var/log/messages          -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	if [ -f "/var/log/messages" ]; then
+		cat /var/log/messages
+	else
+		echo "[NOT FOUND] /var/log/messages"
+	fi
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-     Linux kernel configuration     -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	if [ -f "/proc/config.gz" ]; then
+		zcat /proc/config.gz
+	else
+		echo "[NOT FOUND] /proc/config.gz"
+	fi
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-         Memory consumption         -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	free
+	printf "\n"
+	cat /proc/meminfo
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-          Running processes         -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	ps -l
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-              Mounts                -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	mount
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-            Opened ports            -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	netstat -n -a -p
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-               Routes               -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	route -n
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-        Network configuration       -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	ifconfig -a
+	printf "\n"
+	ip link show
+	printf "\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-       Wireless configuration       -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+	wpa_supplicant -v 2>/dev/null
+	echo ""
+	if [ -f "/etc/wpa_supplicant.conf" ]; then
+		echo "wpa_supplicant.conf:"
+		cat "/etc/wpa_supplicant.conf"
+	else
+		echo "[NOT FOUND] /etc/wpa_supplicant.conf"
+	fi
+	echo ""
+	if [ -f "/etc/wpa_supplicant_p2p.conf" ]; then
+		echo "wpa_supplicant_p2p.conf:"
+		cat "/etc/wpa_supplicant_p2p.conf"
+	else
+		echo "[NOT FOUND] /etc/wpa_supplicant_p2p.conf"
+	fi
+	echo ""
+
+	hostapd -v 2>&1
+	echo ""
+	if [ -f "/etc/hostapd.conf" ]; then
+		echo "hostapd.conf:"
+		cat "/etc/hostapd.conf"
+	else
+		echo "[NOT FOUND] hostapd.conf"
+	fi
+	echo ""
+	if [ -f "/etc/hostapd_wlan0.conf" ]; then
+		echo "hostapd_wlan0.conf:"
+		cat "/etc/hostapd_wlan0.conf"
+	else
+		echo "[NOT FOUND] /etc/hostapd_wlan0.conf"
+	fi
+	echo ""
+	if [ -f "/etc/hostapd_wlan1.conf" ]; then
+		echo "hostapd_wlan1.conf:"
+		cat "/etc/hostapd_wlan1.conf"
+	else
+		echo "[NOT FOUND] /etc/hostapd_wlan1.conf"
+	fi
+	printf "\n\n"
+
+	echo "--------------------------------------"
+	echo "-                                    -"
+	echo "-             TrustFence             -"
+	echo "-                                    -"
+	echo "--------------------------------------"
+	echo ""
+
+	if [ -e /sys/fsl_otp/HW_OCOTP_CFG5 ]; then
+		if [ "$(($(cat /sys/fsl_otp/HW_OCOTP_CFG5) & 2))" != "0" ]; then
+			echo "Device status: [CLOSED]"
+		else
+			echo "Device status: [OPEN]"
+		fi
+	fi
+
+	if [ -f "/proc/device-tree/digi,uboot-env,encrypted" ]; then
+		echo "U-Boot environment is encrypted"
+	else
+		echo "U-Boot environment is NOT encrypted"
+	fi
+
+	echo "-------------End of report------------"
+}
+
+
+DISTRO="$(sed -ne 's,DISTRO = \(.*\)$,\1,g;T;p' /etc/build)"
+DEY_VERSION="$(sed -ne 's,DISTRO_VERSION = \(.*\)$,\1,g;T;p' /etc/build)"
+UBOOT_VERSION="$(cat /proc/device-tree/digi,uboot,version 2>/dev/null | tr -d '\0')"
+if [ -z "${UBOOT_VERSION}" ]; then
+	UBOOT_PARTITION="/dev/mmcblk0boot0"
+	[ -c "/dev/mtd0" ] && UBOOT_PARTITION="/dev/mtd0"
+	UBOOT_VERSION="$(strings ${UBOOT_PARTITION} | grep -m 1 dub | cut -d' ' -f2)"
+fi
+MACHINE="$(cat /proc/device-tree/hach,machine,name | tr '\0' '\t' | cut -f 1)"
+BOARD_VARIANT="$(cat /proc/device-tree/digi,hwid,variant | tr -d '\0')"
+BOARD_SN="$(cat /proc/device-tree/digi,hwid,sn | tr -d '\0')"
+BOARD_VERSION="$(cat /proc/device-tree/digi,carrierboard,version | tr -d '\0')"
+BOARD_ID="$(cat /proc/device-tree/digi,carrierboard,id | tr -d '\0')"
+
+if grep -qs '\<digi,ccimx6ul\>' /proc/device-tree/compatible; then
+	MCA_NODE="/sys/bus/i2c/devices/0-007e"
+elif grep -qs '\<digi,ccimx8x\>' /proc/device-tree/compatible; then
+	MCA_NODE="/sys/bus/i2c/devices/0-0063"
+fi
+if [ -d "$MCA_NODE" ]; then
+	MCA_HW_VERSION=$(cat ${MCA_NODE}/hw_version 2>/dev/null | tr -d '\0') || MCA_HW_VERSION="??"
+	MCA_FW_VERSION=$(cat ${MCA_NODE}/fw_version 2>/dev/null | tr -d '\0') || MCA_FW_VERSION="??"
+	MCA_VERSION="HW_VERSION=${MCA_HW_VERSION}  FW_VERSION=${MCA_FW_VERSION}"
+fi
+
+IOEXP_NODE="/sys/bus/i2c/devices/0-006e"
+if [ -d "$IOEXP_NODE" ]; then
+	IOEXP_HW_VERSION=$(cat ${IOEXP_NODE}/hw_version 2>/dev/null | tr -d '\0') || IOEXP_HW_VERSION="??"
+	IOEXP_FW_VERSION=$(cat ${IOEXP_NODE}/fw_version 2>/dev/null | tr -d '\0') || IOEXP_FW_VERSION="??"
+	IOEXP_VERSION="HW_VERSION=${IOEXP_HW_VERSION}  FW_VERSION=${IOEXP_FW_VERSION}"
+fi
+
+DATE="$(date "+%Y%m%d%H%M%S")"
+REPORT_PATH="/tmp/sysinfo-${DEY_VERSION}-${BOARD_SN}-${DATE}"
+
+(
+	echo "-------------------------------------"
+	echo "-                                   -"
+	echo "-         ENVIRONMENT TABLE         -"
+	echo "-                                   -"
+	echo "-------------------------------------"
+	echo ""
+
+	echo "||*Component*||*Version*"
+	echo "|| DUT | SN-${BOARD_SN}, ${MACHINE} ${BOARD_VARIANT} SBCv${BOARD_VERSION} board_ID=${BOARD_ID}."
+	echo "|| U-Boot | ${UBOOT_VERSION}"
+	echo "|| Firmware | ${DISTRO}-${DEY_VERSION}-$(cat /etc/version)"
+	echo "|| Kernel | $(uname -a)"
+	echo "|| meta-digi  | $(sed -ne '/^meta-digi-dey/s,.*= \(.*\)$,\1,g;T;p' /etc/build)"
+	echo "|| meta-r1701-private | $(sed -ne '/^meta-digi-dey/s,.*= \(.*\)$,\1,g;T;p' /etc/build)"
+	[ -n "${MCA_VERSION}" ] && echo "|| MCA | ${MCA_VERSION}"
+	[ -n "${IOEXP_VERSION}" ] && echo "|| I/O Expander | ${IOEXP_VERSION}"
+	printf "\n\n"
+) | tee "${REPORT_PATH}.txt"
+
+make_report >> "${REPORT_PATH}.txt"
+tar -zhcf "${REPORT_PATH}.tar.gz" -C $(dirname ${REPORT_PATH}) $(basename "${REPORT_PATH}.txt") /proc/device-tree 2> /dev/null
+echo "Report generated in ${REPORT_PATH}.tar.gz"
+
+rm -rf "${REPORT_PATH}.txt"

@@ -1,0 +1,9 @@
+
+
+HACH provides the following image recipes for r1701 project:
+
+  * hach-image-public : A QT5 busybox framebuffer image.
+
+  * hach-image-recovery-initramfs : HACH recovery image
+
+
