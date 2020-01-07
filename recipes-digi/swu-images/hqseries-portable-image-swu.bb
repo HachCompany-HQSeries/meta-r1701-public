@@ -1,2 +1,2 @@
 require recipes-digi/swu-images/swu.inc
-IMG_NAME = "HQSeries-Portable-Image"
+IMG_NAME = "hqseries-portable-image"

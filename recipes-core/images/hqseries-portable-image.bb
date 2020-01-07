@@ -95,7 +95,7 @@ IMAGE_FEATURES += " \
 "
 
 # export base name.
-export IMAGE_BASENAME = "HQSeries-Portable-Image"
+export IMAGE_BASENAME = "hqseries-portable-image"
 
 # Use custom name.
-IMAGE_NAME = "HQSeries-Portable-Image"
+IMAGE_NAME = "hqseries-portable-image"
