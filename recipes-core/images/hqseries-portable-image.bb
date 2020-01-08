@@ -98,4 +98,4 @@ IMAGE_FEATURES += " \
 export IMAGE_BASENAME = "hqseries-portable-image"
 
 # Use custom name.
-IMAGE_NAME = "hqseries-portable-image"
+#IMAGE_NAME = "hqseries-portable-image"

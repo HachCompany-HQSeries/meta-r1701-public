@@ -13,4 +13,4 @@ PACKAGE_INSTALL_remove += " \
 "
 
 export IMAGE_BASENAME = "hqseries-portable-recovery-image"
-IMAGE_NAME = "hqseries-portable-recovery-image"
+#IMAGE_NAME = "hqseries-portable-recovery-image"
