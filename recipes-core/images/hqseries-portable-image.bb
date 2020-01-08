@@ -94,4 +94,8 @@ IMAGE_FEATURES += " \
     tools-debug \
 "
 
-export IMAGE_BASENAME = "hach-image"
+# export base name.
+export IMAGE_BASENAME = "hqseries-portable-image"
+
+# Use custom name.
+#IMAGE_NAME = "hqseries-portable-image"
