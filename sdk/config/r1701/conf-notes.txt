@@ -1,10 +1,10 @@
 
 
-HACH provides the following image recipes for r1701 project:
+HACH provides the following image recipes for HQ Series Portable meter:
 
-  * hach-image-private : A QT5 busybox framebuffer image with HQ series proprietary application.
+  * hqseries-portable-image : The full image --- WITH --- propriteary HQ Series portable meter application & it's dependancyies.
 
-  * hach-image-recovery-initramfs : HACH recovery image
+  * hqseries-portable-recovery-image : HQ Series portable recovery image.
 
 
 
