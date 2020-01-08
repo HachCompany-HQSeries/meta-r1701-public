@@ -13,14 +13,6 @@ pkg_postinst_ontarget_${PN}() {
 
 	PARTTABLE="/proc/mtd"
 	
-	# HACH Start - Create update partition ubifs.
-	#              NOTE:: Keep it disabled, we do not use update partition any more.
-	#update_mtd="$(sed -ne "s/\(^mtd[0-9]\+\):.*\<update\>.*/\1/g;T;p" ${PARTTABLE} 2>/dev/null)"
-	#ubidetach -p /dev/${update_mtd} 2>/dev/null
-	#dev_number="$(ubiattach -p /dev/${update_mtd} 2>/dev/null | sed -ne 's,.*device number \([0-9]\).*,\1,g;T;p' 2>/dev/null)"
-	#ubimkvol "/dev/ubi${dev_number}" -N "update" -m 2>/dev/null
-	# HACH End
-	
 	MTDINDEX="$(sed -ne "s/\(^mtd[0-9]\+\):.*\<environment\>.*/\1/g;T;p" ${PARTTABLE} 2>/dev/null)"
 	if [ -n "${MTDINDEX}" ]; then
 		# Initialize variables for fixed offset values
