@@ -88,7 +88,7 @@ index 0000000000..e3a939dcdb
 +#include "imx6ul-ccimx6ul.dtsi"
 +
 +/ {
-+	model = "HACH HQ-Series Portable meter.";
++	model = "HACH r1701 handheld meter.";
 +	compatible = "digi,ccimx6ulstarter", "digi,ccimx6ul", "fsl,imx6ul";
 +	digi,machine,name = "r1701";
 +};
