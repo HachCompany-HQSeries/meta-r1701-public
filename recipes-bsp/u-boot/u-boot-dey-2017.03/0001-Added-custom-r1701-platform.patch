@@ -1064,7 +1064,7 @@ index 0000000000..9304fc4feb
 +	"install_linux_fw_sd=if load mmc 0 ${loadaddr} install_linux_fw_sd.scr;then " \
 +			"source ${loadaddr};" \
 +		"fi;\0" \
-+	"linux_file=hach-image-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
++	"linux_file=hqseries-portable-image-" CONFIG_SYS_BOARD ".boot.ubifs\0" \
 +	"loadscript=" \
 +		"if test -z \"${mtdbootpart}\"; then " \
 +			"setenv mtdbootpart " CONFIG_LINUX_PARTITION ";" \
@@ -1082,7 +1082,7 @@ index 0000000000..9304fc4feb
 +	"recoverycmd=" \
 +		"setenv mtdbootpart " CONFIG_RECOVERY_PARTITION ";" \
 +		"boot\0" \
-+	"rootfs_file=hach-image-" CONFIG_SYS_BOARD ".ubifs\0" \
++	"rootfs_file=hqseries-portable-image-" CONFIG_SYS_BOARD ".ubifs\0" \
 +	""	/* end line */
 +#else
 +#define CONFIG_EXTRA_ENV_SETTINGS \

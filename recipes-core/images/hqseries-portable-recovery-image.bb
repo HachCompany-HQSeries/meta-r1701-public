@@ -12,4 +12,5 @@ PACKAGE_INSTALL_remove += " \
     psplash \
 "
 
-export IMAGE_BASENAME = "hach-image-recovery-initramfs"
+export IMAGE_BASENAME = "hqseries-portable-recovery-image"
+#IMAGE_NAME = "hqseries-portable-recovery-image"
