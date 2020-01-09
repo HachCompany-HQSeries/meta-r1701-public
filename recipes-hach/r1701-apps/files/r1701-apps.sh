@@ -4,7 +4,8 @@ case "$1" in
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
         echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
 
-        # Handle SD card. Format SD card if first partition (vfat) and second partition (ext4) is not available.
+        # Handle SD card. Format SD card if first partition (ext4 - For user) and second partition (ext4 - Internal)
+        # is not available.
         sh /opt/hach/bin/formatsd
 
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
@@ -22,13 +23,31 @@ case "$1" in
             screen_active_area_size="mmsize=53.28x71.04"
         fi
 
+        # if software update required is true then we have to restore settings back.
+        swUpdateReq=$(fw_printenv -n "sw-update-req" 2>/dev/null)
+        if [ "${swUpdateReq}" = "1" ]; then
+            echo "Software update done... restoring settings..."
+            cp -fa /run/media/mmcblk1p2/backup/settings /opt/hach/settings
+            rm -rf /run/media/mmcblk1p1/*.swu
+            sync
+
+            # since factory restore is done, reset u-boot variable to 0.
+            fw_setenv sw-update-req 0
+
+            # Make sure that we have reset the flag.
+            swUpdateReq=$(fw_printenv -n "sw-update-req" 2>/dev/null)
+            if [ "${swUpdateReq}" = "1" ]; then
+                echo "ERROR # Restore settings failed!!!"
+                fw_setenv sw-update-req 0
+            else
+                echo "Factory restore done."
+            fi
+        fi
+
         # Manage factory restore.
         factoryRestore=$(fw_printenv -n "factory-restore" 2>/dev/null)
         if [ "${factoryRestore}" = "1" ]; then
             echo "Factory restore requested..."
-
-            # Delete Database.
-            rm -rf /mnt/update/*
 
             # Delete all user settings
             rm -rf /opt/hach/settings/*

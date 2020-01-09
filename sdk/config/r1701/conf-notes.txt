@@ -1,11 +1,10 @@
 
 
-HACH provides the following image recipes for r1701 project:
+HACH provides the following image recipes for HQ Series Portable meter:
 
-  * hach-image-dbg : r1701 image with Qt and Debug suppoort
+  * hqseries-portable-image : The full image --- WITH --- propriteary HQ Series portable meter application & it's dependancyies.
 
-  * hach-image : A QT5 busybox framebuffer image with out debug support
+  * hqseries-portable-recovery-image : HQ Series portable recovery image.
 
-  * hach-image-recovery-initramfs : r1701 recovery image
 
 
