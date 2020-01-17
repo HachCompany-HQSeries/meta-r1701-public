@@ -27,7 +27,7 @@ case "$1" in
         swUpdateReq=$(fw_printenv -n "sw-update-req" 2>/dev/null)
         if [ "${swUpdateReq}" = "1" ]; then
             echo "Software update done... restoring settings..."
-            cp -fa /run/media/mmcblk1p2/backup/settings /opt/hach/settings
+            cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
             rm -rf /run/media/mmcblk1p1/*.swu
             sync
 
