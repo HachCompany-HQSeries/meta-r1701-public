@@ -27,7 +27,8 @@ case "$1" in
         swUpdateReq=$(fw_printenv -n "sw-update-req" 2>/dev/null)
         if [ "${swUpdateReq}" = "1" ]; then
             echo "Software update done... restoring settings..."
-            cp -fa /run/media/mmcblk1p2/backup/settings /opt/hach/settings
+            mkdir -p /opt/hach/settings
+            cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
             rm -rf /run/media/mmcblk1p1/*.swu
             sync
 
@@ -40,7 +41,7 @@ case "$1" in
                 echo "ERROR # Restore settings failed!!!"
                 fw_setenv sw-update-req 0
             else
-                echo "Factory restore done."
+                echo "Settings restored..."
             fi
         fi
 
@@ -55,8 +56,8 @@ case "$1" in
             # Delete all exceptions files.
             rm -rf /opt/hach/exceptions/*
 
-            # Delete data base.
-            rm -rf /run/media/mmcblk1p2/db
+            # Delete data base and other stuff on SD card.
+            rm -rf /run/media/mmcblk1p2/*
             rm -rf /run/media/mmcblk1p1/*
             sync
 
