@@ -14,7 +14,7 @@ case "$1" in
         MCA_VERSION=$(sysinfo | grep -o 'FW_VERSION=.*')
         if [ $MCA_VERSION == 'FW_VERSION=1.13' ]
         then
-            mca_config_tool --boot_mode=W4PK
+            mca_config_tool --boot_mode=W4PK &
         else
             mca_fw_updater -f /mca_cc6ul.bin
         fi
