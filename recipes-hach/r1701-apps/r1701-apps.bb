@@ -16,6 +16,7 @@ inherit cmake pkgconfig
 # Location of source code and artifacts used by this recipe.
 SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=${FW_BRANCH};protocol=ssh \
            file://r1701-apps.sh \
+           file://mca_cc6ul.bin \
 "
 SRCREV = "${FW_COMMIT}"
 
@@ -55,6 +56,7 @@ do_install_append() {
     # Install the SysV init script to the rootfs.
     install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
     install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
+    install -m 0755 ${WORKDIR}/mca_cc6ul.bin ${D}/
 }
 
 # Create /opt directory for r1701 apps installation.
