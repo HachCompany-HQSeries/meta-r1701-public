@@ -57,7 +57,7 @@ do_install_append() {
     install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
     install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
 
-    install -m 0755 ${WORKDIR}/mca_cc6ul.bin ${D}
+    install -m 0755 ${WORKDIR}/mca_cc6ul.bin ${D}/opt/hach/bin
 }
 
 # Create /opt directory for r1701 apps installation.
