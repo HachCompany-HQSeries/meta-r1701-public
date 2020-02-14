@@ -16,7 +16,7 @@ case "$1" in
         then
             mca_config_tool --boot_mode=W4PK &
         else
-            mca_fw_updater -f /mca_cc6ul.bin
+            mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
         fi
 
 

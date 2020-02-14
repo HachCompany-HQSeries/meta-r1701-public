@@ -63,5 +63,5 @@ do_install_append() {
 # Create /opt directory for r1701 apps installation.
 FILES_${PN} += " \
     ${base_prefix}/opt \
-    ${base_prefix}/mca_cc6ul.bin \
+    ${base_prefix}/opt/hach/bin/mca_cc6ul.bin \
 "
