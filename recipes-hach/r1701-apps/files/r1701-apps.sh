@@ -9,13 +9,15 @@ case "$1" in
         sh /opt/hach/bin/formatsd
 
 
-
         # Update MCA firmware and set W4PK mode
-        MCA_VERSION=$(sysinfo | grep -o 'FW_VERSION=.*')
-        if [ $MCA_VERSION == 'FW_VERSION=1.13' ]
-        then
+        MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
+        if [ $MCA_VERSION == '1.13' ]; then
+            echo "MCA FW Version # ${MCA_VERSION}"
             mca_config_tool --boot_mode=W4PK &
+            echo "Set W4PK..."
         else
+            echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
+            echo "Meter will reboot automatically after successful MCA FW update..."
             mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
         fi
 
