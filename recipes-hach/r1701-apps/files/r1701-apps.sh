@@ -8,6 +8,18 @@ case "$1" in
         # is not available.
         sh /opt/hach/bin/formatsd
 
+
+
+        # Update MCA firmware and set W4PK mode
+        MCA_VERSION=$(sysinfo | grep -o 'FW_VERSION=.*')
+        if [ $MCA_VERSION == 'FW_VERSION=1.13' ]
+        then
+            mca_config_tool --boot_mode=W4PK &
+        else
+            mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
+        fi
+
+
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
         # sheet.
         screen_active_area_size="mmsize=42.672x68.072"
