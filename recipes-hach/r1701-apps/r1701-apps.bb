@@ -56,10 +56,12 @@ do_install_append() {
     # Install the SysV init script to the rootfs.
     install -d ${D}${sysconfdir} ${D}${sysconfdir}/init.d
     install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
-    install -m 0755 ${WORKDIR}/mca_cc6ul.bin ${D}/
+
+    install -m 0755 ${WORKDIR}/mca_cc6ul.bin ${D}
 }
 
 # Create /opt directory for r1701 apps installation.
 FILES_${PN} += " \
     ${base_prefix}/opt \
+    ${base_prefix}/mca_cc6ul.bin \
 "
