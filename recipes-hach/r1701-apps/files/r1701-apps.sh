@@ -8,7 +8,6 @@ case "$1" in
         # is not available.
         sh /opt/hach/bin/formatsd
 
-
         # Update MCA firmware and set W4PK mode
         #MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
         #if [ $MCA_VERSION == '1.13' ]; then
@@ -20,6 +19,15 @@ case "$1" in
         #    echo "Meter will reboot automatically after successful MCA FW update..."
         #    mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
         #fi
+
+        # Make sure we have set W4PK (Wait for Power key press for boot mode.)
+        MCA_BOOT_MODE=$(mca_config_tool --boot_mode)
+        echo $MCA_BOOT_MODE
+        MCA_BOOT_MODE=`echo $MCA_BOOT_MODE | awk '{print $5}'`
+        echo "Extracted MCA boot flag # $MCA_BOOT_MODE"
+        if ["$MCA_BOOT_MODE" != "W4PK"]; then
+            mca_config_tool --boot_mode=W4PK &
+        fi
 
 
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
