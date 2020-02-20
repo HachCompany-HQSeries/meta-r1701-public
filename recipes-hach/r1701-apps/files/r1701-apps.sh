@@ -26,6 +26,7 @@ case "$1" in
         MCA_BOOT_MODE=`echo $MCA_BOOT_MODE | awk '{print $5}'`
         echo "Extracted MCA boot flag # $MCA_BOOT_MODE"
         if [ "$MCA_BOOT_MODE" != "W4PK" ]; then
+            echo "Setting MCA Boot mode to W4PK..."
             mca_config_tool --boot_mode=W4PK &
         fi
 
