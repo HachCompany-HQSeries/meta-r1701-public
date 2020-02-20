@@ -10,16 +10,16 @@ case "$1" in
 
 
         # Update MCA firmware and set W4PK mode
-        MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
-        if [ $MCA_VERSION == '1.13' ]; then
-            echo "MCA FW Version # ${MCA_VERSION}"
-            mca_config_tool --boot_mode=W4PK &
-            echo "Set W4PK..."
-        else
-            echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
-            echo "Meter will reboot automatically after successful MCA FW update..."
-            mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
-        fi
+        #MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
+        #if [ $MCA_VERSION == '1.13' ]; then
+        #    echo "MCA FW Version # ${MCA_VERSION}"
+        #    mca_config_tool --boot_mode=W4PK &
+        #    echo "Set W4PK..."
+        #else
+        #    echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
+        #    echo "Meter will reboot automatically after successful MCA FW update..."
+        #    mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
+        #fi
 
 
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
@@ -43,7 +43,7 @@ case "$1" in
             echo "Software update done... restoring settings..."
             mkdir -p /opt/hach/settings
             cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
-            rm -rf /run/media/mmcblk1p1/*.swu
+            #rm -rf /run/media/mmcblk1p1/*.swu
             sync
 
             # since factory restore is done, reset u-boot variable to 0.
