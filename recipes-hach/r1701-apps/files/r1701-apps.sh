@@ -4,21 +4,13 @@ case "$1" in
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
         echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
 
-        # Handle SD card. Format SD card if first partition (ext4 - For user) and second partition (ext4 - Internal)
-        # is not available.
-        sh /opt/hach/bin/formatsd
-
         # Update MCA firmware and set W4PK mode
-        #MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
-        #if [ $MCA_VERSION == '1.13' ]; then
-        #    echo "MCA FW Version # ${MCA_VERSION}"
-        #    mca_config_tool --boot_mode=W4PK &
-        #    echo "Set W4PK..."
-        #else
-        #    echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
-        #    echo "Meter will reboot automatically after successful MCA FW update..."
-        #    mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
-        #fi
+        MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
+        if [ $MCA_VERSION != '1.13' ]; then
+            echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
+            echo "Meter will reboot automatically after successful MCA FW update..."
+            mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
+        fi
 
         # Make sure we have set W4PK (Wait for Power key press for boot mode.)
         MCA_BOOT_MODE=$(mca_config_tool --boot_mode)
@@ -30,6 +22,19 @@ case "$1" in
             mca_config_tool --boot_mode=W4PK &
         fi
 
+        # TODO:: We have to make sure that we have correct "/etc/fw_env.config" file. Word count has to be close to 480
+        #        If it is 0 then we have issue with RFS where Kernel/RFS not able to read u-boot ENV variables. This 
+        #        will not only affects the SD card partition but run time HQD application as well due to unable to read
+        #        model name, type, SN and many more other ENV variables that we use during APP runtime.
+        UBOOT_ENV_VER_FILE_WORD_CNT=$(cat /etc/fw_env.config | wc -c)
+        echo "U-Boot ENV file --> /etc/fw_env.config SIZE ### $UBOOT_ENV_VER_FILE_WORD_CNT"
+        if [ "$UBOOT_ENV_VER_FILE_WORD_CNT" != "480" ]; then
+            echo "HQ Series meter application can not run properly without it!!!"
+        fi
+
+        # Handle SD card. Format SD card if first partition (ext4 - For user) and second partition (ext4 - Internal)
+        # is not available.
+        sh /opt/hach/bin/formatsd
 
         # Handle Display based on model type. Screen size is the total visible area. These numbers are taken from data
         # sheet.
@@ -51,7 +56,11 @@ case "$1" in
         if [ "${swUpdateReq}" = "1" ]; then
             echo "Software update done... restoring settings..."
             mkdir -p /opt/hach/settings
-            cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
+
+            # NOTE:: Let's not restore settings for now, we are constantly changing PROTOBUF, restorng might break unit.
+            #cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
+
+            # NOTE:: Do not remove SWU file, if for some reason update does not work then customer can upgrade again.
             #rm -rf /run/media/mmcblk1p1/*.swu
             sync
 
