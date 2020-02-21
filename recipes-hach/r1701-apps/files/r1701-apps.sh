@@ -6,11 +6,26 @@ case "$1" in
 
         # Update MCA firmware and set W4PK mode
         MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
-        if [ $MCA_VERSION != '1.13' ]; then
-            echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
-            echo "Meter will reboot automatically after successful MCA FW update..."
-            mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
-        fi
+        echo "MCA FW Ver # $MCA_VERSION"
+
+        # NOTE:: Do not do MCA FW update from here otherwise some first time initialization will corrupt NAND. This
+        #        Update will hard boot as soon as MCA FW update is done and this will leave below mentioned first time
+        #        INIT service write operation on NAND in corrupt state. DO NOT DO MCA FW UPDATE
+        #        Ex.
+        #        onfiguring packages on first boot....
+        #        (This may take several minutes. Please do not power off the machine.)
+        #        Running postinst /etc/rpm-postinsts/100-init-ifupdown...
+        #        Running postinst /etc/rpm-postinsts/101-u-boot-fw-utils...
+        #        update-rc.d: /etc/init.d/run-postinsts exists during rc.d purge (continuing)
+        #        Removing any system startup links for run-postinsts ...
+        #        /etc/rcS.d/S99run-postinsts
+        #        INIT: Entering runlevel: 5
+
+        #if [ $MCA_VERSION != '1.13' ]; then
+        #    echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
+        #    echo "Meter will reboot automatically after successful MCA FW update..."
+        #    mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
+        #fi
 
         # Make sure we have set W4PK (Wait for Power key press for boot mode.)
         MCA_BOOT_MODE=$(mca_config_tool --boot_mode)
