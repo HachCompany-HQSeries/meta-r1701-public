@@ -4,6 +4,49 @@ case "$1" in
         # set cpu to the performance level, maximum frequency i.e. 528 MHz
         echo performance > /sys/bus/cpu/devices/cpu0/cpufreq/scaling_governor
 
+        # Update MCA firmware and set W4PK mode
+        MCA_VERSION=$(cat /sys/class/i2c-dev/i2c-0/device/0-007e/fw_version)
+        echo "MCA FW Ver # $MCA_VERSION"
+
+        # NOTE:: Do not do MCA FW update from here otherwise some first time initialization will corrupt NAND. This
+        #        Update will hard boot as soon as MCA FW update is done and this will leave below mentioned first time
+        #        INIT service write operation on NAND in corrupt state. DO NOT DO MCA FW UPDATE
+        #        Ex.
+        #        onfiguring packages on first boot....
+        #        (This may take several minutes. Please do not power off the machine.)
+        #        Running postinst /etc/rpm-postinsts/100-init-ifupdown...
+        #        Running postinst /etc/rpm-postinsts/101-u-boot-fw-utils...
+        #        update-rc.d: /etc/init.d/run-postinsts exists during rc.d purge (continuing)
+        #        Removing any system startup links for run-postinsts ...
+        #        /etc/rcS.d/S99run-postinsts
+        #        INIT: Entering runlevel: 5
+
+        #if [ $MCA_VERSION != '1.13' ]; then
+        #    echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
+        #    echo "Meter will reboot automatically after successful MCA FW update..."
+        #    mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
+        #fi
+
+        # Make sure we have set W4PK (Wait for Power key press for boot mode.)
+        MCA_BOOT_MODE=$(mca_config_tool --boot_mode)
+        echo $MCA_BOOT_MODE
+        MCA_BOOT_MODE=`echo $MCA_BOOT_MODE | awk '{print $5}'`
+        echo "Extracted MCA boot flag # $MCA_BOOT_MODE"
+        if [ "$MCA_BOOT_MODE" != "W4PK" ]; then
+            echo "Setting MCA Boot mode to W4PK..."
+            mca_config_tool --boot_mode=W4PK &
+        fi
+
+        # TODO:: We have to make sure that we have correct "/etc/fw_env.config" file. Word count has to be close to 480
+        #        If it is 0 then we have issue with RFS where Kernel/RFS not able to read u-boot ENV variables. This 
+        #        will not only affects the SD card partition but run time HQD application as well due to unable to read
+        #        model name, type, SN and many more other ENV variables that we use during APP runtime.
+        UBOOT_ENV_VER_FILE_WORD_CNT=$(cat /etc/fw_env.config | wc -c)
+        echo "U-Boot ENV file --> /etc/fw_env.config SIZE ### $UBOOT_ENV_VER_FILE_WORD_CNT"
+        if [ "$UBOOT_ENV_VER_FILE_WORD_CNT" != "480" ]; then
+            echo "HQ Series meter application can not run properly without it!!!"
+        fi
+
         # Handle SD card. Format SD card if first partition (ext4 - For user) and second partition (ext4 - Internal)
         # is not available.
         sh /opt/hach/bin/formatsd
@@ -28,8 +71,12 @@ case "$1" in
         if [ "${swUpdateReq}" = "1" ]; then
             echo "Software update done... restoring settings..."
             mkdir -p /opt/hach/settings
-            cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
-            rm -rf /run/media/mmcblk1p1/*.swu
+
+            # NOTE:: Let's not restore settings for now, we are constantly changing PROTOBUF, restorng might break unit.
+            #cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
+
+            # NOTE:: Do not remove SWU file, if for some reason update does not work then customer can upgrade again.
+            #rm -rf /run/media/mmcblk1p1/*.swu
             sync
 
             # since factory restore is done, reset u-boot variable to 0.
