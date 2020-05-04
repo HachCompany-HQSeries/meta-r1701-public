@@ -1,0 +1,6 @@
+This file contains the MCA firmware for the CC6UL
+Version: v1.15
+MD5SUMs:
+ * CHANGELOG.md: 2c09702743417e633888c66e7463fc1c
+ * mca_cc6ul.bin: 47e32955f814122067e853484c1b8a97
+ * mca_cc6ul.sap: 4d62ef726b8cd8c8c762770e578975b9
