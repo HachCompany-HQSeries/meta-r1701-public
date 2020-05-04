@@ -21,9 +21,11 @@ case "$1" in
         #        /etc/rcS.d/S99run-postinsts
         #        INIT: Entering runlevel: 5
 
-        #if [ $MCA_VERSION != '1.13' ]; then
-        #    echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.13. Updating to latest..."
+        #if [ $MCA_VERSION != '1.15' ]; then
+        #    echo "Current MCA FW version (${MCA_VERSION}) is not latest, has to be >= 1.15. Updating to latest..."
         #    echo "Meter will reboot automatically after successful MCA FW update..."
+        #    sync
+        #    sync
         #    mca_fw_updater -f /opt/hach/bin/mca_cc6ul.bin
         #fi
 
