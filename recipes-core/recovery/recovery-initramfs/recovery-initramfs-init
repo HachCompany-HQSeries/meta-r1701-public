@@ -303,7 +303,9 @@ check_swu_package() {
 	fi
 
 	if [ "$?" != "0" ]; then
-		quit_with_error "Invalid update package ${1}"
+        # Don't include the filename in the error message, it wont wrap and the user wont be able to see the words 
+        # "Invalid update package"
+		quit_with_error "Invalid update package"
 	fi
 }
 
