@@ -17,6 +17,7 @@ inherit cmake pkgconfig
 SRC_URI = "gitsm://git@stash.hach.ewqg.com:7999/r1701/r1701_fw.git;branch=${FW_BRANCH};protocol=ssh \
            file://r1701-apps.sh \
            file://mca_cc6ul.bin \
+           file://public.pem \
 "
 SRCREV = "${FW_COMMIT}"
 
@@ -58,6 +59,10 @@ do_install_append() {
     install -m 0755 ${WORKDIR}/r1701-apps.sh ${D}${sysconfdir}/init.d
 
     install -m 0755 ${WORKDIR}/mca_cc6ul.bin ${D}/opt/hach/bin
+
+    # Install RSA public key for verifying firmware images
+    install -d ${D}${sysconfdir}/ssl/certs
+    install -m 0600 ${WORKDIR}/public.pem ${D}${sysconfdir}/ssl/certs/key.pub
 }
 
 # Create /opt directory for r1701 apps installation.
