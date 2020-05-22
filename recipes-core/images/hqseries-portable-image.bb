@@ -85,6 +85,7 @@ IMAGE_INSTALL += " \
     umtp \
     htop \
     mtd-utils \
+    openssl-bin \
 "
 
 # Add predefined runtime package groups.
