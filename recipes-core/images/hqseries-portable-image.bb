@@ -86,6 +86,7 @@ IMAGE_INSTALL += " \
     htop \
     mtd-utils \
     openssl-bin \
+    p7zip \
 "
 
 # Add predefined runtime package groups.
