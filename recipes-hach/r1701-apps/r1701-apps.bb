@@ -30,8 +30,10 @@ INITSCRIPT_PARAMS = "defaults 99"
 S = "${WORKDIR}/git"
 
 # Additional configuration of CMake.
-EXTRA_OECMAKE += " -DUNIT_TEST=OFF \
-                   -DDEBUG=ON \
+# NOTE:: For Unit test build, we hve to make UNIT_TEST=ON and Turn off DEBUG mode other wise unit will not run.
+EXTRA_OECMAKE += " -DUNIT_TEST=${@oe.utils.ifelse(d.getVar('FW_UNIT_TEST') == 'OFF', 'OFF', 'ON')} \
+                   -DDEBUG=${@oe.utils.ifelse(d.getVar('FW_UNIT_TEST') == 'OFF', 'ON', 'OFF')} \
+                   -DR1701_RELEASE=${@oe.utils.ifelse(d.getVar('FW_BRANCH') == 'develop', 'OFF', 'ON')} \
                    -DENABLE_CLANG_FORMATTER=OFF \
                    -DCMAKE_CXX_STANDARD=17 \
                    -DCMAKE_CXX_STANDARD_REQUIRED=ON \
