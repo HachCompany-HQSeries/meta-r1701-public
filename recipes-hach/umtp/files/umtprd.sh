@@ -7,14 +7,30 @@ UMTPRD_DAEMON_USER=root
 UMTPRD_MOUNT_DIR=/tmp/cfg
 UMTPRD_FUNCTIONFS_MOUNT_DIR=/dev/ffs-mtp
 UMTPRD_CONF_PATH=/etc/umtprd/umtprd.conf
+PROD="HQ-Series"
 
 case "$1" in
   start)
-    echo -n "Start uMTPrd daemon :"
+    echo "Start uMTPrd daemon :"
 
+    # get the FW environment variables
     modelName=$(fw_printenv -n "model-name" 2>/dev/null)
     serialNumber=$(fw_printenv -n "serial-number" 2>/dev/null)
-    sed -i "s/MODELNAME/$modelName/;s/SERIALNUMBER/$serialNumber/" ${UMTPRD_CONF_PATH}
+    printf "environment: modelName='%s', productName='$PROD', serialNumber='%s'\n" "$modelName" "$serialNumber"
+
+    # check the current uMTPrd settings; if incorrect, update them
+    STORAGE=$(grep "^storage" $UMTPRD_CONF_PATH | awk -F \" '{print $4}')
+    PRODUCT=$(grep "^product" $UMTPRD_CONF_PATH | awk -F \" '{print $2}')
+    SERIAL=$(grep "^serial" $UMTPRD_CONF_PATH | awk -F \" '{print $2}')
+    printf "settings: storage='%s', product='%s', serial='%s'\n" "$STORAGE" "$PRODUCT" "$SERIAL"
+    if [ "$STORAGE" != "$modelName" -o "$PRODUCT" != "$PROD" -o "$SERIAL" != "$serialNumber" ]; then
+        printf "Updating uMTPrd settings to match environment\n"
+        sed -i "s/\(^storage.*\"\)[^\"]*\"$/\1${modelName}\"/" $UMTPRD_CONF_PATH
+        sed -i "s/^product.*/product \"HQ-Series\"/" $UMTPRD_CONF_PATH
+        sed -i "s/^serial.*/serial \"$serialNumber\"/" $UMTPRD_CONF_PATH
+        sync
+    else printf "uMTPrd configuration is up-to-date\n"
+    fi
 
     # Make sure that all USB related kernel modules are not loaded. Firmware will handle the USB gadget connection
     # based on meter settings.
