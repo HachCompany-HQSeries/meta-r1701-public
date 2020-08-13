@@ -75,7 +75,7 @@ case "$1" in
             mkdir -p /opt/hach/settings
 
             # NOTE:: Let's not restore settings for now, we are constantly changing PROTOBUF, restorng might break unit.
-            #cp -fa /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
+            mv -f /run/media/mmcblk1p2/backup/settings/* /opt/hach/settings/.
 
             # NOTE:: Do not remove SWU file, if for some reason update does not work then customer can upgrade again.
             #rm -rf /run/media/mmcblk1p1/*.swu
