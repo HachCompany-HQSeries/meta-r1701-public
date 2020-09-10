@@ -61,7 +61,7 @@ index e67a6172deea..e7e8a3d6d0ce 100644
  		period_cycles /= prescale;
  		c = (unsigned long long)period_cycles * state->duty_cycle;
 -		do_div(c, state->period);
-+		do_div(c, state->period);		
++		do_div(c, state->period);
  		duty_cycles = c;
  
  		/*
