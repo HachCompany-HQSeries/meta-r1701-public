@@ -10,7 +10,7 @@ SRC_URI = " \
 # Using special version of Linux. See git log for why.. see the fixes they have done. We need those.
 LOCALVERSION = "-dey"
 SRCBRANCH = "v4.14/dey-2.6/maint"
-SRCREV = "8aed12dc111bfd08c60db6299366706634c920bc"
+SRCREV = "8dbae0c90779edf86a76487738b7d85cd6d1d615"
 
 SRC_URI_append = " \
     file://0001-Adding-hach-r1701-as-carrier-board-in-to-OTP-kernel.patch \
