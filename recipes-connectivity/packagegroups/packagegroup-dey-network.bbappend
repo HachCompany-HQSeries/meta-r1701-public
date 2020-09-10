@@ -8,9 +8,11 @@ CELLULAR_PKGS = ""
 
 RDEPENDS_${PN} = "\
 	iproute2 \
+	batctl \
+	${@bb.utils.contains('DISTRO_FEATURES', 'cellular', '${CELLULAR_PKGS}', '', d)} \
 	${VIRTUAL-RUNTIME_ftp-server} \
 	${VIRTUAL-RUNTIME_http-server} \
 	${VIRTUAL-RUNTIME_network-utils} \
 	${VIRTUAL-RUNTIME_snmp-manager} \
-	${VIRTUAL-RUNTIME_ntp-client} \
+	${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', '${VIRTUAL-RUNTIME_ntp-client}', d)} \
 "
