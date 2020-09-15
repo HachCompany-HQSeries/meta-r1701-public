@@ -11,6 +11,7 @@ do_install_append_r1701() {
     if grep "CONFIG_HTTPD=y" ${WORKDIR}/defconfig; then
         rm -f ${D}/srv/www/index.html
         rm -f ${D}/srv/www/digi-logo.png
+        rm -f ${D}/srv/www/cgi-bin/nm
     fi
 
     # Remove NTPD files.

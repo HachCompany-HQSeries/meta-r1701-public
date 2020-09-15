@@ -559,7 +559,7 @@ index 000000000000..3c1d5b28610c
 +
 +        // The INT pin sends active low, 256-µs pulse to host to report charger device status and fault.
 +        pinctrl-names = "default";
-+  
++
 +        //interrupt-parent = <&mca_gpio>;
 +        //interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
 +        pinctrl-0 = <&pinctrl_charger_irq>;
@@ -1499,7 +1499,7 @@ index 000000000000..5e2bece5a17e
 +
 +        // The INT pin sends active low, 256-µs pulse to host to report charger device status and fault.
 +        pinctrl-names = "default";
-+  
++
 +        //interrupt-parent = <&mca_gpio>;
 +        //interrupts = <6 IRQ_TYPE_EDGE_FALLING>;
 +        pinctrl-0 = <&pinctrl_charger_irq>;
@@ -1805,7 +1805,7 @@ index 000000000000..5e2bece5a17e
 +
 +                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // SPARE_W10_TP1
-+                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27 
++                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
 +
 +            >;
 +        };
