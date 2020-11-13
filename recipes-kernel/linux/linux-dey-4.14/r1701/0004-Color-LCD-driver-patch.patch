@@ -1,46 +1,44 @@
-From fe95b9ec83b4214ce52e00fa51ecff713390e5d1 Mon Sep 17 00:00:00 2001
+From f07236405265b5ef2bf7367da396ae0fa161bf17 Mon Sep 17 00:00:00 2001
 From: Devang Patel <dpatel@hach.com>
-Date: Tue, 17 Apr 2018 15:22:36 -0600
-Subject: [PATCH 04/10] Color LCD driver patch
+Date: Thu, 10 Sep 2020 11:21:37 -0600
+Subject: [PATCH 1/1] Color LCD driver patch
 
 ---
- drivers/video/fbdev/mxsfb.c | 79 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 78 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/mxsfb.c | 71 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
 diff --git a/drivers/video/fbdev/mxsfb.c b/drivers/video/fbdev/mxsfb.c
-index 5659ec2d18c4..87891c25c3e1 100644
+index 33750af90c05..b0ce6a7b4d25 100644
 --- a/drivers/video/fbdev/mxsfb.c
 +++ b/drivers/video/fbdev/mxsfb.c
-@@ -62,7 +62,8 @@
- #include <video/of_display_timing.h>
+@@ -63,6 +63,10 @@
  #include <video/videomode.h>
  #include <linux/uaccess.h>
--
+ 
++// HACH - For LCD Control lines initialization.
 +#include <linux/gpio.h>
 +#include <linux/delay.h>
++
  #include "mxc/mxc_dispdrv.h"
  
  #define REG_SET	4
-@@ -268,6 +269,12 @@ struct mxsfb_info {
+@@ -268,6 +272,11 @@ struct mxsfb_info {
  #ifdef CONFIG_FB_MXC_OVERLAY
  	struct mxsfb_layer overlay;
  #endif
 +
-+    /* r1701 - start */
++    // HACH - LCD control lines GPIO pins.
 +    int lcd_pwr_en;
 +    int lcd_standby;
 +    int lcd_reset;
-+    /* r1701 - end */
  };
  
  #define mxsfb_is_v3(host) (host->devdata->ipversion == 3)
-@@ -2220,6 +2227,50 @@ static int mxsfb_probe(struct platform_device *pdev)
+@@ -2231,6 +2240,47 @@ static int mxsfb_probe(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
-+	/* r1701 start - Initialize control lines */
-+
-+    /* LCD Initialization routine */
++    // HACH - Initialize LCD Control lines.
 +    host->lcd_pwr_en                = of_get_named_gpio(pdev->dev.of_node, "gpios", 0);    /* LCD_PWR_EN&  */
 +    host->lcd_reset                 = of_get_named_gpio(pdev->dev.of_node, "gpios", 1);    /* LCD_RESET&   */
 +    host->lcd_standby               = of_get_named_gpio(pdev->dev.of_node, "gpios", 2);    /* LCD_STANDBY& */
@@ -79,17 +77,16 @@ index 5659ec2d18c4..87891c25c3e1 100644
 +        gpio_export(host->lcd_standby, 1);
 +        gpio_set_value(host->lcd_standby, 1);
 +    }
-+
-+    /* r1701 end */
++    // HACH - Initialization ends.
 +
  	fb_info = framebuffer_alloc(0, &pdev->dev);
  	if (!fb_info) {
  		dev_err(&pdev->dev, "Failed to allocate fbdev\n");
-@@ -2378,6 +2429,16 @@ static int mxsfb_remove(struct platform_device *pdev)
+@@ -2389,6 +2439,15 @@ static int mxsfb_remove(struct platform_device *pdev)
  	unregister_framebuffer(fb_info);
  	mxsfb_free_videomem(host);
  
-+    /* r1701 - start */
++    // HACH - De-init contol lines.
 +    gpio_set_value(host->lcd_standby, 0);
 +    mdelay(10);
 +    gpio_set_value(host->lcd_reset, 0);
@@ -97,55 +94,50 @@ index 5659ec2d18c4..87891c25c3e1 100644
 +    devm_gpio_free(&pdev->dev, host->lcd_standby);
 +    devm_gpio_free(&pdev->dev, host->lcd_reset);
 +    devm_gpio_free(&pdev->dev, host->lcd_pwr_en);
-+    /* r1701 - end */
 +
  	platform_set_drvdata(pdev, NULL);
  
  	devm_kfree(&pdev->dev, fb_info->pseudo_palette);
-@@ -2406,6 +2467,10 @@ static int mxsfb_runtime_suspend(struct device *dev)
+@@ -2417,6 +2476,9 @@ static int mxsfb_runtime_suspend(struct device *dev)
  {
  	struct mxsfb_info *host = dev_get_drvdata(dev);
  
-+    /* r1701 - start */
++    // HACH - Put LCD standby control line in to standby.
 +    gpio_set_value(host->lcd_standby, 0);
-+    /* r1701 - end */
 +
  	if (host->devdata->flags & MXSFB_FLAG_BUSFREQ)
  		release_bus_freq(BUS_FREQ_HIGH);
  
-@@ -2421,6 +2486,10 @@ static int mxsfb_runtime_resume(struct device *dev)
+@@ -2432,6 +2494,9 @@ static int mxsfb_runtime_resume(struct device *dev)
  {
  	struct mxsfb_info *host = dev_get_drvdata(dev);
  
-+    /* r1701 - start */
++    // HACH - Put LCD standby control line out of standby.
 +    gpio_set_value(host->lcd_standby, 1);
-+    /* r1701 - end */
 +
  	if (host->devdata->flags & MXSFB_FLAG_BUSFREQ)
  		request_bus_freq(BUS_FREQ_HIGH);
  
-@@ -2439,6 +2508,10 @@ static int mxsfb_suspend(struct device *pdev)
+@@ -2452,6 +2517,9 @@ static int mxsfb_suspend(struct device *pdev)
  	struct fb_info *fb_info = host->fb_info;
  	int saved_blank;
  
-+    /* r1701 - start */
++    // HACH - Put LCD standby control line in to standby.
 +    gpio_set_value(host->lcd_standby, 0);
-+    /* r1701 - end */
 +
  	console_lock();
  	mxsfb_overlay_suspend(host);
  	fb_set_suspend(fb_info, 1);
-@@ -2459,6 +2532,10 @@ static int mxsfb_resume(struct device *pdev)
+@@ -2472,6 +2540,9 @@ static int mxsfb_resume(struct device *pdev)
  
  	pinctrl_pm_select_default_state(pdev);
  
-+    /* r1701 - start */
++    // HACH - Put LCD standby control line out of standby.
 +    gpio_set_value(host->lcd_standby, 1);
-+    /* r1701 - end */
 +
  	console_lock();
+ 	mxsfb_overlay_resume(host);
  	mxsfb_blank(host->restore_blank, fb_info);
- 	fb_set_suspend(fb_info, 0);
 -- 
 2.17.1
 

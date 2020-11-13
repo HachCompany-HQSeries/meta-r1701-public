@@ -351,6 +351,19 @@ set_encryption_flag() {
 	fi
 }
 
+#------------------------------------------------------------------------------
+# Function - get_kernel_version
+#
+# Obtain the kernel version and return it in number format
+#
+# @return  - kernel version
+#------------------------------------------------------------------------------
+get_kernel_version() {
+	major="$(uname -r | cut -d'.' -f1)"
+	minor="$(uname -r | cut -d'.' -f2)"
+	echo $(((major << 8) + minor))
+}
+
 # Main
 #------------------------------------------------------------------------------
 # Setup the environment.
@@ -371,6 +384,8 @@ if [ -f /proc/sys/kernel/hotplug ]; then
 	mdev -s
 fi
 
+# Give some time for the devices to settle down
+sleep 2
 
 # Run all shell scripts in postinstall folder
 run-parts /etc/*-postinsts

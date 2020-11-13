@@ -87,6 +87,7 @@ IMAGE_INSTALL += " \
     mtd-utils \
     openssl-bin \
     p7zip \
+    sysstat \
 "
 
 # Add predefined runtime package groups.
