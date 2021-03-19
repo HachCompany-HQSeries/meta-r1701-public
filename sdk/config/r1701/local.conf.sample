@@ -267,6 +267,8 @@ SOURCE_MIRROR_URL ?= "file://${HOME}/.yocto_sources/"
 INHERIT += "own-mirrors"
 BB_GENERATE_MIRROR_TARBALLS = "1"
 
+INHERIT += "archiver"
+ARCHIVER_MODE[src] = "original"
 
 #
 # Some libraries and packages are covered by NXP EULA
