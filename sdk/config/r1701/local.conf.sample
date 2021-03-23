@@ -267,11 +267,8 @@ SOURCE_MIRROR_URL ?= "file://${HOME}/.yocto_sources/"
 INHERIT += "own-mirrors"
 BB_GENERATE_MIRROR_TARBALLS = "1"
 
-# Include license files in image
-COPY_LIC_MANIFEST = "1"
-COPY_LIC_DIRS = "1"
-LICENSE_CREATE_PACKAGE = "1"
-
+INHERIT += "archiver"
+ARCHIVER_MODE[src] = "original"
 
 #
 # Some libraries and packages are covered by NXP EULA
