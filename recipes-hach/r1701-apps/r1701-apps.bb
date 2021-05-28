@@ -45,6 +45,8 @@ EXTRA_OECMAKE += " -DUNIT_TEST=${@oe.utils.ifelse(d.getVar('FW_UNIT_TEST') == 'O
                    -DCMAKE_INSTALL_BINDIR=bin \
 "
 
+OECMAKE_GENERATOR = "Unix Makefiles"
+
 # Special compiler flags this appliction uses.
 CFLAGS_R1701 = "-Wno-poison-system-directories -Wall -Wpointer-arith -Wno-psabi \
                 -ffunction-sections -fdata-sections -feliminate-unused-debug-types"
