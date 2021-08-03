@@ -63,14 +63,14 @@ index 000000000000..3c1d5b28610c
 +    };
 +
 +    // USB 1 - OTG port bus power setting for HOST mode
-+    reg_usb_otg1_vbus: reg_usb_otg1:@0 {
++    /*reg_usb_otg1_vbus: reg_usb_otg1:@0 {
 +        compatible = "regulator-fixed";
 +        regulator-name = "usb_otg1_vbus";
 +        regulator-min-microvolt = <5000000>;
 +        regulator-max-microvolt = <5000000>;
 +        gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 +        enable-active-high;
-+    };
++    };*/
 +
 +    // USB 2 - HOST port bus power setting for HOST mode,
 +    // NOTE:: Keep GPIO line commented. Our application controls the power line.
@@ -694,10 +694,10 @@ index 000000000000..3c1d5b28610c
 +
 +// USB - 1 # OTG (Battery Charger port)
 +&usbotg1 {
-+    dr_mode = "otg";
-+    pinctrl-0 = <&pinctrl_usbotg1>;
-+    vbus-supply = <&reg_usb_otg1_vbus>;
-+    digi,power-line-active-high;
++    dr_mode = "peripheral";
++    //pinctrl-0 = <&pinctrl_usbotg1>;
++    //vbus-supply = <&reg_usb_otg1_vbus>;
++    //digi,power-line-active-high;
 +
 +    // We do not have OC detect line on hardware for OTG port
 +    disable-over-current;
@@ -848,12 +848,12 @@ index 000000000000..3c1d5b28610c
 +        };
 +
 +        // USB 1 OTG port pins (Battery Charger)
-+        pinctrl_usbotg1: usbotg1grp {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
-+                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059
-+            >;
-+        };
++        //pinctrl_usbotg1: usbotg1grp {
++        //    fsl,pins = <
++        //        MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
++        //        MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059
++        //    >;
++        //};
 +
 +        // USB 2 HOST port pins (Battery Compartment) - DO NOT ENABLE THIS BLOCK.
 +        // pinctrl_usbotg2: usbotg2grp {
@@ -869,7 +869,7 @@ index 000000000000..3c1d5b28610c
 +                MX6UL_PAD_GPIO1_IO08__PWM1_OUT          0x110b0
 +            >;
 +        };
-+       pinctrl_pwm1_gpio: pwm1grp-gpio {
++        pinctrl_pwm1_gpio: pwm1grp-gpio {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO08__GPIO1_IO08          0x130b0
 +            >;
@@ -884,7 +884,7 @@ index 000000000000..3c1d5b28610c
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO09__GPIO1_IO09          0x1f0b0
 +           >;
-+       };
++        };
 +
 +        // Battery Charger Chip - I2C Bus definition.
 +        pinctrl_i2c3: i2c3grp {
@@ -987,7 +987,7 @@ index 000000000000..3c1d5b28610c
 +                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  // PWR_ON_OFF_C
 +
 +                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  // CHRGR_PRESENT
-+
++                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x10b0  // Battery charger USB port's OTG Power enable pin.
 +                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // SPARE_W10_TP1
 +                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
@@ -1032,14 +1032,14 @@ index 000000000000..5e2bece5a17e
 +    };
 +
 +    // USB 1 - OTG port bus power setting for HOST mode
-+    reg_usb_otg1_vbus: reg_usb_otg1:@0 {
++    /*reg_usb_otg1_vbus: reg_usb_otg1:@0 {
 +        compatible = "regulator-fixed";
 +        regulator-name = "usb_otg1_vbus";
 +        regulator-min-microvolt = <5000000>;
 +        regulator-max-microvolt = <5000000>;
 +        gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 +        enable-active-high;
-+    };
++    };*/
 +
 +    // Gpio based matrix Keyboard
 +    matrix_keypad: matrix-keypad@0 {
@@ -1562,10 +1562,10 @@ index 000000000000..5e2bece5a17e
 +
 +// USB - 1 # OTG (Battery Charger port)
 +&usbotg1 {
-+    dr_mode = "otg";
-+    pinctrl-0 = <&pinctrl_usbotg1>;
-+    vbus-supply = <&reg_usb_otg1_vbus>;
-+    digi,power-line-active-high;
++    dr_mode = "peripheral";
++    //pinctrl-0 = <&pinctrl_usbotg1>;
++    //vbus-supply = <&reg_usb_otg1_vbus>;
++    //digi,power-line-active-high;
 +
 +    // We do not have OC detect line on hardware for OTG port
 +    disable-over-current;
@@ -1707,12 +1707,12 @@ index 000000000000..5e2bece5a17e
 +        };
 +
 +        // USB 1 OTG port pins (Battery Charger)
-+        pinctrl_usbotg1: usbotg1grp {
-+            fsl,pins = <
-+                MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
-+                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059
-+            >;
-+        };
++        //pinctrl_usbotg1: usbotg1grp {
++        //    fsl,pins = <
++        //        MX6UL_PAD_GPIO1_IO00__ANATOP_OTG1_ID    0x17059
++        //        MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x17059
++        //    >;
++        //};
 +
 +        // AUDIO PWM - Beeper
 +        pinctrl_pwm1_pwm: pwm1grp-pwm {
@@ -1802,7 +1802,7 @@ index 000000000000..5e2bece5a17e
 +                MX6UL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x10b0  // PWR_ON_OFF_C
 +
 +                MX6UL_PAD_SD1_DATA1__GPIO2_IO19         0x10b0  // CHRGR_PRESENT
-+
++                MX6UL_PAD_GPIO1_IO04__GPIO1_IO04        0x10b0  // Battery charger USB port's OTG Power enable pin.
 +                MX6UL_PAD_GPIO1_IO05__GPIO1_IO05        0x10b0  // SPARE_W1_TP65
 +                MX6UL_PAD_LCD_DATA16__GPIO3_IO21        0x10b0  // SPARE_W10_TP1
 +                MX6UL_PAD_NAND_DQS__GPIO4_IO16          0x10b0  // SPARE_M2_TP27
