@@ -869,7 +869,7 @@ index 000000000000..3c1d5b28610c
 +                MX6UL_PAD_GPIO1_IO08__PWM1_OUT          0x110b0
 +            >;
 +        };
-+       pinctrl_pwm1_gpio: pwm1grp-gpio {
++        pinctrl_pwm1_gpio: pwm1grp-gpio {
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO08__GPIO1_IO08          0x130b0
 +            >;
@@ -884,7 +884,7 @@ index 000000000000..3c1d5b28610c
 +            fsl,pins = <
 +                MX6UL_PAD_GPIO1_IO09__GPIO1_IO09          0x1f0b0
 +           >;
-+       };
++        };
 +
 +        // Battery Charger Chip - I2C Bus definition.
 +        pinctrl_i2c3: i2c3grp {
