@@ -55,6 +55,9 @@ GPU_SUPPORT = " \
     packagegroup-fsl-tools-gpu-external \
 "
 
+# Build time dependencies with other recipes.
+DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-native gtest gtest-native cmake cmake-native gmock gmock-native"
+
 CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-core-full-cmdline \
     \

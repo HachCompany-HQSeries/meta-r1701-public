@@ -5,9 +5,9 @@ inherit packagegroup
 
 # Install Freescale QT demo applications
 QT5_APPS = ""
-QT5_APPS_imxgpu3d = "${@bb.utils.contains("MACHINE_GSTREAMER_1_0_PLUGIN", "imx-gst1.0-plugin", "imx-qtapplications", "", d)}"
+QT5_APPS_imxgpu3d = ""
 
-# Install fonts
+# Install fonts (TODO: Remove them later...)
 QT5_FONTS = " \
     ttf-dejavu-mathtexgyre \
     ttf-dejavu-sans \
@@ -39,7 +39,7 @@ QT5_RDEPENDS_common = " \
 QT5_RDEPENDS_imxgpu2d = "${@bb.utils.contains('DISTRO_FEATURES', 'x11','${QT5_RDEPENDS_common}', \
     'qtbase qtbase-plugins', d)}"
 
-# qtbase-examples
+# qtbase-examples, Do we need --> qtquickcontrols2 qtquickcontrols2-qmlplugins
 QT5_RDEPENDS_imxpxp = "${@bb.utils.contains('DISTRO_FEATURES', 'x11','${QT5_RDEPENDS_common}', \
     'qtbase qtbase-plugins qtquickcontrols2 qtquickcontrols2-qmlplugins', d)}"
 
@@ -48,9 +48,7 @@ QT5_RDEPENDS_imxgpu3d = " \
     gstreamer1.0-plugins-good-qt \
 "
 
-QT5_IMAGE_INSTALL_append_imxgpu3d = " \
-    packagegroup-qt5-3d \
-"
+QT5_IMAGE_INSTALL_append_imxgpu3d = ""
 
 # Add packagegroup-qt5-webengine to QT5_RDEPENDS_mx6 and comment out the line below to install qtwebengine to the rootfs.
 QT5_RDEPENDS_remove = " packagegroup-qt5-webengine packagegroup-qt5-webkit"
@@ -58,4 +56,16 @@ QT5_RDEPENDS_remove = " packagegroup-qt5-webengine packagegroup-qt5-webkit"
 RDEPENDS_${PN} += " \
     liberation-fonts \
     ${QT5_RDEPENDS} \
+"
+
+# We do not want any example and demos in final image.
+QT5_EXAMPLES = ""
+QT5_DEMOS = ""
+MACHINE_QT5_EXTRA_INSTALL = ""
+
+# No need to have these dependancies.
+RDEPENDS_${PN}_remove += " \
+    liberation-fonts \
+    ${QT5_DEMOS} \
+    ${QT5_EXAMPLES} \
 "
