@@ -10,6 +10,8 @@ inherit populate_sdk_qt5 populate_sdk_qt5_base
 # SDK features (for toolchains generated from an image with populate_sdk)
 SDKIMAGE_FEATURES ?= "dev-pkgs dbg-pkgs staticdev-pkgs"
 
+POKY_DEFAULT_DISTRO_FEATURES_remove = " ptest wayland vulkan bluez5"
+
 # We use only Linux FB, No X11, Wayland or XWayland.
 CONFLICT_DISTRO_FEATURES = "directfb"
 
@@ -55,8 +57,23 @@ GPU_SUPPORT = " \
     packagegroup-fsl-tools-gpu-external \
 "
 
+# TFTP & NFS Support.
+TFTP_NFS_SUPPORT = " bash e2fsprogs-mke2fs tar mtd-utils imx-kobs mtd-utils-ubifs"
+
 # Build time dependencies with other recipes.
-DEPENDS += "zeromq cppzmq boost sqlite3 protobuf protobuf-native qtbase qtbase-native gtest gtest-native cmake cmake-native gmock gmock-native"
+DEPENDS += "zeromq \
+            cppzmq \
+            boost \
+            sqlite3 \
+            protobuf \
+            protobuf-native \
+            qtbase \
+            qtbase-native \
+            gtest \
+            gtest-native \
+            cmake cmake-native \
+            gmock gmock-native \
+"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-core-full-cmdline \
@@ -94,7 +111,6 @@ IMAGE_INSTALL += " \
     protobuf \
     cppzmq \
     \
-    e2fsprogs-mke2fs \
     util-linux-sfdisk \
     tzdata \
     dosfstools  \
@@ -102,7 +118,6 @@ IMAGE_INSTALL += " \
     p7zip \
     sysstat \
     \
-    mtd-utils \
     openssl-bin \
     \
     screen \
@@ -111,6 +126,8 @@ IMAGE_INSTALL += " \
     \
     libgpiod \
     libgpiod-tools \
+    \
+    ${TFTP_NFS_SUPPORT} \
 "
 
 # Remove X11, wireless and sound related packages.
