@@ -1,0 +1,21 @@
+diff --git a/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-wifi.dtsi b/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-wifi.dtsi
+index 43f670af7525..36062e044c6a 100644
+--- a/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-wifi.dtsi
++++ b/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-wifi.dtsi
+@@ -73,12 +73,14 @@
+ 	assigned-clock-parents = <&clks IMX6UL_CLK_PLL2_PFD2>;
+ 	assigned-clock-rates = <0>, <132000000>;
+ 	fsl,tuning-step = <2>;
+-	keep-power-in-suspend;
++	keep-power-in-suspend; // Should we keep power in suspend?
+ 	vmmc-supply = <&reg_sd1_vmmc>;
+-	status = "okay";
++	status = "okay"; // Should we disable?
+ 
+ 	brcmf: bcrmf@1 {
+ 		reg = <1>;
+ 		compatible = "brcm,bcm4329-fmac";
++        // Should we add any status disabled for wifi?
++        // status = "disabled";
+ 	};
+ };

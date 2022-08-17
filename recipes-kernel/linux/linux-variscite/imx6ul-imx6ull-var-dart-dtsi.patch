@@ -1,0 +1,29 @@
+diff --git a/arch/arm/boot/dts/imx6ul-imx6ull-var-dart.dtsi b/arch/arm/boot/dts/imx6ul-imx6ull-var-dart.dtsi
+index 5203f8f615a4..2854a89598bd 100644
+--- a/arch/arm/boot/dts/imx6ul-imx6ull-var-dart.dtsi
++++ b/arch/arm/boot/dts/imx6ul-imx6ull-var-dart.dtsi
+@@ -133,6 +133,8 @@
+ 		reg = <0x1a>;
+ 		clocks = <&clks IMX6UL_CLK_SAI2>;
+ 		clock-names = "mclk";
++        // Should we disable Sound Codec wm8731?
++        // status = "disabled";
+ 	};
+ };
+ 
+@@ -205,7 +207,7 @@
+ 	assigned-clock-parents = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+ 	assigned-clock-rates = <0>, <12288000>;
+ 	fsl,sai-mclk-direction-output;
+-	status = "okay";
++	status = "okay"; // Disable sai2 (Sound)?
+ };
+ 
+ &snvs_poweroff {
+@@ -230,5 +232,5 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart2>;
+ 	uart-has-rtscts;
+-	status = "okay";
++	status = "okay"; // Disable uart2 for Bluetooth UART?
+ };
