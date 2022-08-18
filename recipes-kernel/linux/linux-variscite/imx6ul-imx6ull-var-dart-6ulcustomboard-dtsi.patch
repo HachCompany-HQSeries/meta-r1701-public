@@ -1,5 +1,5 @@
 diff --git a/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-6ulcustomboard.dtsi b/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-6ulcustomboard.dtsi
-index 965f64c87c56..4461ce7af2cd 100644
+index 965f64c87c56..a229683bcad7 100644
 --- a/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-6ulcustomboard.dtsi
 +++ b/arch/arm/boot/dts/imx6ul-imx6ull-var-dart-6ulcustomboard.dtsi
 @@ -10,8 +10,19 @@
@@ -24,16 +24,32 @@ index 965f64c87c56..4461ce7af2cd 100644
  		status = "okay";
  	};
  
-@@ -27,6 +38,8 @@
- 		user {
- 			gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
- 			linux,code = <KEY_BACK>;
-+			wakeup-source;
-+			// wakeup-event-action = <EV_ACT_ASSERTED>; // OR EV_ACT_DEASSERTED,  EV_ACT_ANY (For both ways...)
- 			gpio-key,wakeup;
+@@ -41,12 +52,32 @@
+ 			linux,default-trigger = "heartbeat";
  		};
  	};
-@@ -46,7 +59,7 @@
++
++	gpio_keys {
++		compatible = "gpio-keys";
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpio_wake_keys>;
++
++		autorepeat;
++
++		button@21 {
++			label = "GPIO Key UP";
++			linux,code = <KEY_UP>;
++			gpios = <&gpio5 1 GPIO_ACTIVE_LOW>;
++			gpio-key,wakeup;
++		};
++	};
+ };
+ 
++// Disable CAN BUS
  &can1 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&pinctrl_flexcan1>;
@@ -42,7 +58,16 @@ index 965f64c87c56..4461ce7af2cd 100644
  };
  
  &fec1 {
-@@ -116,6 +129,7 @@
+@@ -108,7 +139,7 @@
+ 		touchscreen-inverted-y;
+ 	};
+ 
+-	/* DS1337 RTC module */
++	/* DS1337 RTC module - With wakeup source property enabled.*/
+ 	rtc@68 {
+ 		compatible = "dallas,ds1337";
+ 		reg = <0x68>;
+@@ -116,6 +147,7 @@
  		pinctrl-0 = <&pinctrl_rtc>;
  		interrupt-parent = <&gpio5>;
  		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
@@ -50,7 +75,20 @@ index 965f64c87c56..4461ce7af2cd 100644
  	};
  };
  
-@@ -276,7 +290,7 @@
+@@ -165,6 +197,12 @@
+ 		>;
+ 	};
+ 
++	pinctrl_gpio_wake_keys: gpio_wakeupgrp {
++		fsl,pins = <
++			MX6UL_PAD_SNVS_TAMPER1__GPIO5_IO01	0x1b0b0 /* WAKE gpio */
++		>;
++	};
++
+ 	pinctrl_gpio_leds: gpio_ledsgrp {
+ 		fsl,pins = <
+ 			MX6UL_PAD_CSI_HSYNC__GPIO4_IO20		0x1b0b0 /* User LED */
+@@ -276,7 +314,7 @@
  };
  
  &snvs_rtc {

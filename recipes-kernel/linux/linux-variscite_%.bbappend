@@ -16,6 +16,7 @@ DESCRIPTION = "Linux kernel provided and supported by Variscite (based on the ke
 KBUILD_DEFCONFIG_imx6ul-var-dart = ""
 
 # Add custom defconfig and Patches.
+# file://imx6ul-imx6ull-var-dart-6ulcustomboard-dtsi.patch
 SRC_URI += " \
     file://defconfig \
     \
