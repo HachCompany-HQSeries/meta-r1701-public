@@ -147,6 +147,8 @@ IMAGE_FEATURES_remove += " \
 "
 
 # Disable Console on main display. We do not want to see kernel logs, boot messages on main display.
+USE_VT = "0"
+SYSVINIT_ENABLED_GETTYS = "0"
 systemd_disable_vt () {
     rm ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/getty.target.wants/getty@tty*.service
 }
