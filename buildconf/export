@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Colors...
+CK="\033[30;1m"; CR="\033[31;1m"; CG="\033[32;1m"; CY="\033[33;1m"; CB="\033[34;1m";
+CM="\033[35;1m"; CC="\033[36;1m"; CW="\033[37;1m"; CE="\033[0m"   ; LF="\n";
+
+ECHO=$(env which echo)
+
+if [ -z "${WDIR}" ]
+then
+    WDIR="/opt/hachdev/buildsystem/r1701-dart6ul"
+fi
+
+BUILDDIR="${WDIR}/build"
+FIRST_TIME=0
+cd ${WDIR}/sources/poky
+if [ ! -f ${BUILDDIR}/conf/local.conf ]; then
+    FIRST_TIME=1
+fi
+
+. ./oe-init-build-env ${BUILDDIR} >/dev/null
+
+echo -e "${LF}"
+echo -e " +-----------------------------------------------------------------------------------------------------+"
+echo -e " |                                                                                                     |"
+echo -e " |    HACH provides the following ${CY}Open Source Compliant${CE} image for HQ Series Handheld Meter platform    |"
+echo -e " |                                                                                                     |"
+echo -e " |        Image : \"${CY}hqseries-portable-image-swu${CE}\"                                                          |"
+echo -e " |        Kernel: \"${CY}virtual/kernel${CE}\"                                                                       |"
+echo -e " |        U-Boot: \"${CY}virtual/u-boot${CE}\"                                                                       |"
+echo -e " |                                                                                                     |"
+echo -e " |    Yocto Build Usage Ex. - \"${CY}bitbake hqseries-portable-image-swu${CE}\"                                      |"
+echo -e " |                                                                                                     |"
+echo -e " +-----------------------------------------------------------------------------------------------------+"
+echo -e "${LF}"
+
+if [ $FIRST_TIME -eq 1 ]; then
+    mkdir -p conf
+    cp ../sources/meta-r1701-public/buildconf/*.conf conf/
+    echo -e " ${CM}+-------------------------------------------------------------------------------+${CE}"
+    echo -e " ${CM}| Hq-Series Handheld Meter platform PUBLIC Layer set as Primary layer - ENABLED |${CE}"
+    echo -e " ${CM}+-------------------------------------------------------------------------------+${CE}"
+    echo -e "${LF}"
+fi
