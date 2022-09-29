@@ -129,6 +129,12 @@ IMAGE_INSTALL += " \
     ${TFTP_NFS_SUPPORT} \
 "
 
+IMAGE_INSTALL_remove += "\
+    bcm43xx-utils \
+    bluez-alsa \
+    wpa-supplicant \
+"
+
 # Remove X11, wireless and sound related packages.
 # NOTE - SOC_PACKAGES contains only IMX graphics demo tools and examples. We do not need them.
 IMAGE_FEATURES_remove += " \
