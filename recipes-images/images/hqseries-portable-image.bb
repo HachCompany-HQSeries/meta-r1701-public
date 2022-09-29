@@ -154,4 +154,4 @@ IMAGE_PREPROCESS_COMMAND_append = " ${@ 'systemd_disable_vt;' if bb.utils.contai
 
 # Due to the Qt samples the resulting image will not fit the default NAND size. Removing default ubi creation for this
 # image
-IMAGE_FSTYPES_remove = "multiubi"
+#IMAGE_FSTYPES_remove = "multiubi"
