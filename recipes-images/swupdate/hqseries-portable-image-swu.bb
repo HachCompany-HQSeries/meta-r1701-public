@@ -23,4 +23,4 @@ SWUPDATE_IMAGES = " \
 "
 
 # Images can have multiple formats - define which image must be taken to be put in the compound image
-SWUPDATE_IMAGES_FSTYPES[var-image-swupdate] = ".tar.gz"
+SWUPDATE_IMAGES_FSTYPES[hqseries-portable-image-swupdate] = ".tar.gz"
