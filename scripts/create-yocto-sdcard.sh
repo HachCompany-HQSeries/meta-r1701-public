@@ -14,6 +14,9 @@ readonly ABSOLUTE_DIRECTORY=`dirname ${ABSOLUTE_FILENAME}`
 readonly SCRIPT_POINT=${ABSOLUTE_DIRECTORY}
 
 readonly YOCTO_ROOT="${SCRIPT_POINT}/../../.."
+echo ""
+echo "YOCTO_ROOT: ${YOCTO_ROOT}"
+echo ""
 
 if [[ -e ${YOCTO_ROOT}/sources/meta-boot2qt ]] ; then
 	readonly BSP_TYPE="B2QT"
@@ -21,13 +24,22 @@ if [[ -e ${YOCTO_ROOT}/sources/meta-boot2qt ]] ; then
 	readonly YOCTO_DEFAULT_IMAGE=b2qt-embedded-qt6-image
 else
 	readonly BSP_TYPE="YOCTO"
-	readonly YOCTO_BUILD=${YOCTO_ROOT}/build
+	if [[ $MACHINE = "imx6ul-var-dart" || $MACHINE = "imx7-var-som" ]]; then
+		readonly YOCTO_BUILD=${YOCTO_ROOT}/build
+	else
+		readonly YOCTO_BUILD=${YOCTO_ROOT}/build_xwayland
+	fi
 	readonly YOCTO_DEFAULT_IMAGE=hqseries-portable-image
 fi
 echo "BSP type: ${BSP_TYPE}"
 
 readonly YOCTO_SCRIPTS_PATH=${SCRIPT_POINT}/../../meta-variscite-fslc/scripts/var_mk_yocto_sdcard/variscite_scripts
 readonly YOCTO_IMGS_PATH=${YOCTO_BUILD}/tmp/deploy/images/${MACHINE}
+
+echo ""
+echo "YOCTO_SCRIPTS_PATH: ${YOCTO_SCRIPTS_PATH}"
+echo "YOCTO_IMGS_PATH:    ${YOCTO_IMGS_PATH}"
+echo ""
 
 # Sizes are in MiB
 BOOTLOAD_RESERVE_SIZE=8
@@ -99,7 +111,7 @@ echo "================================================"
 
 help() {
 	bn=`basename $0`
-	echo " Usage: MACHINE=<var-som-mx6|imx6ul-var-dart|imx7-var-som|imx8mq-var-dart|imx8mm-var-dart|imx8qxp-var-som|imx8qxpb0-var-som|imx8qm-var-som|imx8mn-var-som|imx8mp-var-dart> $bn <options> device_node"
+	echo " Usage: MACHINE=<var-som-mx6|imx6ul-var-dart|imx7-var-som|imx8mq-var-dart|imx8mm-var-dart|imx8qxp-var-som|imx8qxpb0-var-som|imx8qm-var-som|imx8mn-var-som> $bn <options> device_node"
 	echo
 	echo " options:"
 	echo " -h		display this Help message"
@@ -107,6 +119,7 @@ help() {
 	echo " -a		Automatically set the rootfs partition size to fill the SD card (leaving spare ${SPARE_SIZE}MiB)"
 	echo " -r ROOTFS_NAME	select an alternative Rootfs for recovery images"
 	echo " 		(default: \"${YOCTO_RECOVERY_ROOTFS_PATH}/${YOCTO_DEFAULT_IMAGE}-\${MACHINE}\")"
+	echo " -n TEXT_FILE	add a release Notes text file"
 	echo
 }
 
@@ -123,9 +136,6 @@ case $MACHINE in
 		IMXBOOT_TARGET=flash_ddr4_evk
 		;;
 	"imx8mq-var-dart")
-		IMXBOOT_TARGET=flash_evk
-		;;
-	"imx8mp-var-dart")
 		IMXBOOT_TARGET=flash_evk
 		;;
 	"imx8qm-var-som")
@@ -164,9 +174,7 @@ if [[ $MACHINE = "imx6ul-var-dart" || $MACHINE = "imx7-var-som" ]]; then
 	HAS_DESKTOP_ICONS=1
 fi
 
-if [[ $MACHINE = "imx8qxp-var-som" || $MACHINE = "imx8qxpb0-var-som" || \
-	  $MACHINE = "imx8qm-var-som" || $MACHINE = "imx8mn-var-som" || \
-	  $MACHINE = "imx8mp-var-dart" ]]; then
+if [[ $MACHINE = "imx8qxp-var-som" || $MACHINE = "imx8qxpb0-var-som" || $MACHINE = "imx8qm-var-som" || $MACHINE = "imx8mn-var-som" ]]; then
 	BOOTLOADER_OFFSET=32
 fi
 
@@ -189,6 +197,15 @@ while [ "$moreoptions" = 1 -a $# -gt 0 ]; do
 			YOCTO_RECOVERY_ROOTFS_MASK_PATH=`readlink -e "${1}.tar.gz"`;
 			YOCTO_RECOVERY_ROOTFS_PATH=`dirname ${YOCTO_RECOVERY_ROOTFS_MASK_PATH}`
 			YOCTO_RECOVERY_ROOTFS_BASE_IN_NAME=`basename ${1}`
+			
+			echo ""
+			echo "YOCTO_RECOVERY_ROOTFS_MASK_PATH:		${YOCTO_RECOVERY_ROOTFS_MASK_PATH}"
+			echo "YOCTO_RECOVERY_ROOTFS_PATH:			${YOCTO_RECOVERY_ROOTFS_PATH}"
+			echo "YOCTO_RECOVERY_ROOTFS_BASE_IN_NAME:	${YOCTO_RECOVERY_ROOTFS_BASE_IN_NAME}"
+			echo ""
+	    ;;
+	    -n) shift;
+			RELEASE_NOTES_FILE=${1}
 	    ;;
 	    *)  moreoptions=0; node=$1 ;;
 	esac
@@ -459,6 +476,10 @@ function copy_scripts
 
 			if ! ls ${P2_MOUNT_DIR}/opt/images/Yocto/rootfs*.ubi &> /dev/null; then
 				rm -rf ${P2_MOUNT_DIR}/usr/share/applications/${MACHINE}*yocto*nand*.desktop
+			fi
+
+			if [ ${RELEASE_NOTES_FILE} ] && [ -f ${RELEASE_NOTES_FILE} ]; then
+				cp ${YOCTO_SCRIPTS_PATH}/release_notes.desktop	${P2_MOUNT_DIR}/usr/share/applications/
 			fi
 
 			if [[ ${YOCTO_RECOVERY_ROOTFS_BASE_IN_NAME} == var-image-swupdate* ]]; then
