@@ -1,0 +1,26 @@
+From e507e4dd20f5ceedb1ae05f49d487ab8e1684eed Mon Sep 17 00:00:00 2001
+From: Devang Patel <dpatel@hach.com>
+Date: Sun, 12 May 2024 12:56:40 -0600
+Subject: [PATCH 2/2] - BUGFIX: Don't call trustfence function since HQ meter does not use this feature.
+
+---
+ board/digi/ccimx6ul/ccimx6ul.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/board/digi/ccimx6ul/ccimx6ul.c b/board/digi/ccimx6ul/ccimx6ul.c
+index 278e715a50..62004416b1 100644
+--- a/board/digi/ccimx6ul/ccimx6ul.c
++++ b/board/digi/ccimx6ul/ccimx6ul.c
+@@ -543,7 +543,9 @@ void fdt_fixup_ccimx6ul(void *fdt)
+ 	if (board_has_bluetooth())
+ 		fdt_fixup_mac(fdt, "btaddr", "/bluetooth", "mac-address");
+ 
++#ifdef CONFIG_HAS_TRUSTFENCE
+ 	fdt_fixup_trustfence(fdt);
++#endif
+ 	fdt_fixup_uboot_info(fdt);
+ }
+ 
+-- 
+2.37.3
+
