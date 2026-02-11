@@ -14,7 +14,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}-${PV}:"
 
 # Override the main Source URL since FTP site is not longer available.
 SRC_URI = " \
-    http://microwindows.censoft.com/pub/microwindows/microwindows-src-${PV}.tar.gz \
+    https://microwindows.censoft.com/pub/microwindows/microwindows-src-${PV}.tar.gz \
     file://0001-defconfig.patch;striplevel=2 \
     file://0002-Use-14x16-font.patch;striplevel=2 \
 "
